@@ -21,7 +21,7 @@ function App() {
           <img src={SPJCLogo} className="base" width="170" height="179" alt="SPJC logo" />
         </div>
         <div>
-          <h1>Jason Owen</h1>
+          <h1>CSC425FA26 Course Project</h1>
           <h1>SPJC</h1> {/* Change to College Name */}
           <p>Edit <code>src/App.tsx</code> and save to test <code>HMR</code></p>
         </div>
