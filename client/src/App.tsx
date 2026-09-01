@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import SPJCLogo from './assets/SPJCLogo.jpg'
-import Dashboard from './Dashboardstudent'
+import StudentDashboard from './Dashboardstudent'
+import FacultyDashboard from './Dashboardfaculty'
 import studentDashHTML from './studentdash.html?url'
 import './App.css'
 
@@ -23,13 +24,21 @@ function App() {
           </li>
           <li>
             <button type="button" onClick={() => setShowDashboard(true)}>
-              Dashboard
+              StudentDashboard
+            </button>
+
+            <button type="button" onClick={() => setShowDashboard(true)}>
+              FacultyDashboard
+            </button>
+
+            <button type="button" onClick={() => setShowDashboard(true)}>
+              AdminDashboard
             </button>
           </li>
         </ul>
       </nav>
 
-      {showDashboard ? <Dashboard /> : <section id="center">
+      {showDashboard ? <StudentDashboard /> : <section id="center">
         <div className="hero">
           <img src={SPJCLogo} className="base" width="170" height="179" alt="SPJC logo" />
         </div>

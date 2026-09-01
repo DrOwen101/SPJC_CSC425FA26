@@ -1,11 +1,11 @@
-function Dashboardstudent() {
+function Dashboardadmin() {
   return (
     <>
       <header>
-        <h1>Student Dashboard</h1> 
-        <p>University Student Portal</p>
+        <h1>Admin Dashboard</h1>
+        <p>University Admin Portal</p>
 
-        <nav aria-label="Student navigation">
+        <nav aria-label="Admin navigation">
           <a href="#gpa">GPA</a>
           <a href="#attendance">Attendance</a>
           <a href="#transcript">Transcript</a>
@@ -44,4 +44,4 @@ function Dashboardstudent() {
   )
 }
 
-export default Dashboardstudent
+export default Dashboardadmin
