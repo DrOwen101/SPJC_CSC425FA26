@@ -1,3 +1,5 @@
+import SPJCLogo from './assets/SPJCLogo.jpg'
+
 function Dashboardadmin() {
   return (
     <>
@@ -40,6 +42,19 @@ function Dashboardadmin() {
           <p>View system status and outages here.</p>
           <p>System is functional</p>
         </section>
+
+        {/*company logo section*/}
+        {<section id="right"> 
+        <div className="hero">
+          <img src={SPJCLogo} className="base" width="170" height="179" alt="SPJC logo" />
+        </div>
+        <div>
+          <p></p> {/*use for extra information!*/}
+        </div>
+        {/* <button type="button" className="counter" onClick={() => setCount((count) => count + 1)}>
+          Count is {count}
+        </button> */}
+      </section>}
         
       </main>
     </>

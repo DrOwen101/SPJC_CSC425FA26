@@ -1,3 +1,6 @@
+import SPJCLogo from './assets/SPJCLogo.jpg'
+
+
 function Dashboardstudent() {
   return (
     <>
@@ -6,11 +9,11 @@ function Dashboardstudent() {
         <p>University Student Portal</p>
 
         <nav aria-label="Student navigation">
-          <a href="#gpa">GPA </a>
-          <a href="#attendance">Attendance </a>
-          <a href="#transcript">Transcript </a>
-          <a href="#alerts">Alerts </a>
-          <a href="#courses">Upcoming Courses </a>
+          <a href="#gpa">GPA | </a>
+          <a href="#attendance">Attendance | </a>
+          <a href="#transcript">Transcript | </a>
+          <a href="#alerts">Alerts | </a>
+          <a href="#courses">Upcoming Courses | </a>
         </nav>
       </header>
 
@@ -39,6 +42,20 @@ function Dashboardstudent() {
           <h2>Upcoming Courses</h2>
           <p>View your upcoming and registered courses.</p>
         </section>
+
+        {/*company logo section*/}
+        {<section id="right"> 
+        <div className="hero">
+          <img src={SPJCLogo} className="base" width="170" height="179" alt="SPJC logo" />
+        </div>
+        <div>
+          <p></p> {/*use for extra information!*/}
+        </div>
+        {/* <button type="button" className="counter" onClick={() => setCount((count) => count + 1)}>
+          Count is {count}
+        </button> */}
+      </section>}
+
       </main>
     </>
   )
