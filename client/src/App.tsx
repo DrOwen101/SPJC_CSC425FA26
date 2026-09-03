@@ -1,32 +1,33 @@
 import { useState } from 'react'
 import SPJCLogo from './assets/SPJCLogo.jpg'
-import Dashboardfaculty from './Dashboardfaculty'
-import Dashboardstudent from '../Dashboardstudent'
+import FacultyDashboard from './FacultyDashboard'
+import AdminDashboard from './AdminDashboard'
 import './App.css'
+import StudentDashboard from './StudentDashboard'
 
 type DashboardRole = 'student' | 'faculty' | 'admin'
 
 function getDashboard(activeDashboard: DashboardRole | null) {
   switch (activeDashboard) {
     case 'student':
-      return <Dashboardstudent />
+      return <StudentDashboard />
     case 'faculty':
-      return <Dashboardfaculty />
+      return <FacultyDashboard />
     case 'admin':
-      return <Dashboardadmin />
+      return <AdminDashboard />
     default:
       return null
   }
 }
 
 function App() {
-  const [count, setCount] = useState(0)
   const [activeDashboard, setActiveDashboard] = useState<DashboardRole | null>(null)
   const dashboard = getDashboard(activeDashboard)
 
   return (
     <>
       <nav className="navbar" aria-label="Main navigation">
+        <img src={SPJCLogo} className="base" width="50" height="50" alt="SPJC logo" />
         <a className="navbar-brand" href="#center">My Website</a>
         <ul className="navbar-links">
           <li><a href="#center" onClick={() => setActiveDashboard(null)}>Home</a></li>
@@ -57,9 +58,6 @@ function App() {
           <h1>SPJC</h1> {/* Change to College Name */}
           <p>Edit <code>src/App.tsx</code> and save to test <code>HMR</code></p>
         </div>
-        {/* <button type="button" className="counter" onClick={() => setCount((count) => count + 1)}>
-          Count is {count}
-        </button> */}
       </section>}
       <section id="spacer">
         
