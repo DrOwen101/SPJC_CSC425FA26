@@ -14,7 +14,7 @@ function StudentDashboard() {
         </nav>
       </header>
 
-      <main>
+      <main id="student-dashboard">
         <section id="gpa">
           <h2>GPA</h2>
           <p>Current GPA: 3.75</p>
