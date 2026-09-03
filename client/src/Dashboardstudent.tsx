@@ -6,11 +6,13 @@ function Dashboardstudent() {
         <p>University Student Portal</p>
 
         <nav aria-label="Student navigation">
-          <a href="#gpa">GPA</a>
-          <a href="#attendance">Attendance</a>
-          <a href="#transcript">Transcript</a>
-          <a href="#alerts">Alerts</a>
-          <a href="#courses">Upcoming Courses</a>
+          <ol>
+            <li><a href="#gpa">GPA</a></li>
+            <li><a href="#attendance">Attendance</a></li>
+            <li><a href="#transcript">Transcript</a></li>
+            <li><a href="#alerts">Alerts</a></li>
+            <li><a href="#courses">Upcoming Courses</a></li>
+          </ol>
         </nav>
       </header>
 
