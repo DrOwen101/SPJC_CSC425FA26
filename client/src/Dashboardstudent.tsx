@@ -11,6 +11,7 @@ function Dashboardstudent() {
           <a href="#transcript">Transcript</a>
           <a href="#alerts">Alerts</a>
           <a href="#courses">Upcoming Courses</a>
+          <a href="#courses">Balance</a>
         </nav>
       </header>
 
@@ -30,9 +31,19 @@ function Dashboardstudent() {
           <p>View your completed courses and grades.</p>
         </section>
 
+        <section id="Balance">
+          <h2>Balance</h2>
+          <p>Your balance is $10.00</p>
+        </section>
+
         <section id="alerts">
           <h2>Alerts</h2>
           <p>No new academic alerts.</p>
+        </section>
+
+        <section id="resources">
+          <h2>Resources</h2>
+          <p>College Resources are found here.</p>
         </section>
 
         <section id="courses">
