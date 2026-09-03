@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 function DashboardFaculty() {
+=======
+function Dashboardfaculty() {
+>>>>>>> main
   return (
     <>
       <header>
@@ -6,6 +10,7 @@ function DashboardFaculty() {
         <p>University Faculty Portal</p>
 
         <nav aria-label="Faculty navigation">
+<<<<<<< HEAD
           <a href="#sections">My Sections</a>
           <a href="#roster">Class Roster</a>
           <a href="#attendance">Attendance</a>
@@ -39,9 +44,25 @@ function DashboardFaculty() {
           <h2>Student Alerts</h2>
           <p>Identify students with excessive absences or academic concerns.</p>
         </section>
+=======
+          <a href="#faculty-courses">Courses</a>
+          <a href="#class-rosters">Class Rosters</a>
+          <a href="#grading">Grading</a>
+          <a href="#faculty-alerts">Alerts</a>
+          <a href="#teaching-schedule">Teaching Schedule</a>
+        </nav>
+      </header>
+
+      <main id="faculty-dashboard">
+        
+>>>>>>> main
       </main>
     </>
   )
 }
 
+<<<<<<< HEAD
 export default DashboardFaculty
+=======
+export default Dashboardfaculty
+>>>>>>> main
