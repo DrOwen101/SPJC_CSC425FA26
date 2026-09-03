@@ -15,30 +15,7 @@ function Dashboardfaculty() {
       </header>
 
       <main id="faculty-dashboard">
-        <section id="faculty-courses">
-          <h2>Courses</h2>
-          <p>View your current courses.</p>
-        </section>
-
-        <section id="class-rosters">
-          <h2>Class Rosters</h2>
-          <p>View students enrolled in your courses.</p>
-        </section>
-
-        <section id="grading">
-          <h2>Grading</h2>
-          <p>Review assignments and submit grades.</p>
-        </section>
-
-        <section id="faculty-alerts">
-          <h2>Alerts</h2>
-          <p>No new faculty alerts.</p>
-        </section>
-
-        <section id="teaching-schedule">
-          <h2>Teaching Schedule</h2>
-          <p>View your upcoming classes and office hours.</p>
-        </section>
+        
       </main>
     </>
   )
