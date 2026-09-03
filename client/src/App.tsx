@@ -1,7 +1,5 @@
 import { useState } from 'react'
 import SPJCLogo from './assets/SPJCLogo.jpg'
-//import Dashboard from './StudentDashboard'
-//import studentDashHTML from './studentdash.html?url'
 import FacultyDashboard from './FacultyDashboard'
 import AdminDashboard from './AdminDashboard'
 import './App.css'
@@ -23,7 +21,6 @@ function getDashboard(activeDashboard: DashboardRole | null) {
 }
 
 function App() {
-  const [count, setCount] = useState(0)
   const [activeDashboard, setActiveDashboard] = useState<DashboardRole | null>(null)
   const dashboard = getDashboard(activeDashboard)
 
@@ -61,9 +58,6 @@ function App() {
           <h1>SPJC</h1> {/* Change to College Name */}
           <p>Edit <code>src/App.tsx</code> and save to test <code>HMR</code></p>
         </div>
-        <button type="button" className="counter" onClick={() => setCount((count) => count + 1)}>
-          Count is {count}
-        </button>
       </section>}
       <section id="spacer">
         
