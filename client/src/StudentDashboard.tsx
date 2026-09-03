@@ -1,40 +1,53 @@
-import React from 'react';
+import SPJCLogo from './assets/SPJCLogo.jpg'
 
-export const StudentDashboard: React.FC = () => {
+function StudentDashboard() {
   return (
-    <div className="student-dashboard">
+    <>
       <header>
-        <div className="logo">SPJC Student Portal</div>
+        <img
+          src={SPJCLogo}
+          width="100"
+          alt="SPJC logo"
+        />
         <h1>Student Dashboard</h1>
       </header>
 
       <main>
-        <section id="student-overview">
-          <h2>Academic Overview</h2>
+        <section>
+          <h2>Courses</h2>
+
           <article>
-            <h3>Current GPA</h3>
-            <p>3.85 Cumulative</p>
-          </article>
-          <article>
-            <h3>Attendance Record</h3>
-            <p>96% Present</p>
+            <h3>Upcoming Courses</h3>
+            <p>Course information will appear here.</p>
           </article>
         </section>
 
-        <section id="student-courses">
-          <h2>Enrolled Courses</h2>
+        <section>
+          <h2>Student Information</h2>
+
           <article>
-            <h3>CSC 425 - Web App & Services Dev</h3>
-            <p>Instructor: Dr. Jason Owen</p>
+            <h3>GPA</h3>
+            <p>GPA information will appear here.</p>
           </article>
+
           <article>
-            <h3>CSC 310 - Database Management Systems</h3>
-            <p>Status: In Progress</p>
+            <h3>Attendance</h3>
+            <p>Attendance information will appear here.</p>
+          </article>
+
+          <article>
+            <h3>Transcript</h3>
+            <p>Transcript information will appear here.</p>
+          </article>
+
+          <article>
+            <h3>Alerts</h3>
+            <p>Student alerts will appear here.</p>
           </article>
         </section>
       </main>
-    </div>
-  );
-};
+    </>
+  )
+}
 
-export default StudentDashboard;
+export default StudentDashboard

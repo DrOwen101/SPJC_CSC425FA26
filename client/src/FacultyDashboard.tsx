@@ -1,36 +1,40 @@
-import React from 'react';
+import SPJCLogo from './assets/SPJCLogo.jpg'
 
-export const FacultyDashboard: React.FC = () => {
+function FacultyDashboard() {
   return (
-    <div className="faculty-dashboard">
+    <>
       <header>
-        <div className="logo">SPJC Faculty Portal</div>
+        <img
+          src={SPJCLogo}
+          width="100"
+          alt="SPJC logo"
+        />
+
         <h1>Faculty Dashboard</h1>
       </header>
 
       <main>
-        <section id="faculty-courses">
-          <h2>Assigned Courses</h2>
-          <article>
-            <h3>CSC 425 - Web App & Services Dev</h3>
-            <p>Enrolled: 28 Students</p>
-          </article>
-        </section>
+        <section>
+          <h2>Courses</h2>
 
-        <section id="faculty-actions">
-          <h2>Grading & Submissions</h2>
           <article>
-            <h3>Pending Lab Submissions</h3>
-            <p>12 Assignments awaiting review</p>
+            <h3>Class Rosters</h3>
+            <p>Faculty class rosters will appear here.</p>
           </article>
+
           <article>
-            <h3>Class Roster</h3>
-            <p>View and manage active student enrollments</p>
+            <h3>Grading</h3>
+            <p>Student grading information will appear here.</p>
+          </article>
+
+          <article>
+            <h3>Submissions</h3>
+            <p>Student submissions will appear here.</p>
           </article>
         </section>
       </main>
-    </div>
-  );
-};
+    </>
+  )
+}
 
-export default FacultyDashboard;
+export default FacultyDashboard
