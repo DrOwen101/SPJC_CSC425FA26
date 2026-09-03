@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import SPJCLogo from './assets/SPJCLogo.jpg'
 import Dashboardfaculty from './Dashboardfaculty'
-import Dashboardstudent from '../Dashboardstudent'
+import Dashboardstudent from './Dashboardstudent'
+import Dashboardadmin from './Dashboardadmin'
 import './App.css'
 
 type DashboardRole = 'student' | 'faculty' | 'admin'
@@ -20,7 +21,6 @@ function getDashboard(activeDashboard: DashboardRole | null) {
 }
 
 function App() {
-  const [count, setCount] = useState(0)
   const [activeDashboard, setActiveDashboard] = useState<DashboardRole | null>(null)
   const dashboard = getDashboard(activeDashboard)
 
