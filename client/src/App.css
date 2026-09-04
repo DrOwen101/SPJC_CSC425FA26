@@ -26,5 +26,7 @@ code { padding: .15rem .35rem; border-radius: .3rem; background: #e0f2e7; }
 #next-steps a { display: flex; align-items: center; gap: .75rem; padding: .8rem 1rem; border-radius: 10px; background: #edf8f1; font-weight: 700; text-decoration: none; }
 #next-steps a:hover { color: white; background: #16814d; }
 .logo, .button-icon { width: 1.5rem; height: 1.5rem; object-fit: contain; fill: currentColor; }
+.dashboard-title { display: flex; align-items: center; gap: 1rem; }
+.dashboard-logo { width: 72px; height: 72px; object-fit: contain; }
 #spacer { height: 8rem; }
 @media (max-width: 650px) { .navbar { align-items: flex-start; gap: 1rem; } .navbar-links { gap: .8rem; font-size: .9rem; } #next-steps { grid-template-columns: 1fr; } }

@@ -1,8 +1,13 @@
+import SPJCLogo from './assets/SPJCLogo.jpg'
+
 function Dashboardstudent() {
   return (
     <>
       <header>
-        <h1>Student Dashboard</h1>
+        <div className="dashboard-title">
+          <h1>Student Dashboard</h1>
+          <img className="dashboard-logo" src={SPJCLogo} alt="SPJC logo" />
+        </div>
         <p>University Student Portal</p>
 
         <nav aria-label="Student navigation">
@@ -15,30 +20,30 @@ function Dashboardstudent() {
       </header>
 
       <main>
-        <section id="gpa">
+        <article id="gpa">
           <h2>GPA</h2>
           <p>Current GPA: 3.75</p>
-        </section>
+        </article>
 
-        <section id="attendance">
+        <article id="attendance">
           <h2>Attendance</h2>
           <p>Current attendance: 94%</p>
-        </section>
+        </article>
 
-        <section id="transcript">
+        <article id="transcript">
           <h2>Transcript</h2>
           <p>View your completed courses and grades.</p>
-        </section>
+        </article>
 
-        <section id="alerts">
+        <article id="alerts">
           <h2>Alerts</h2>
           <p>No new academic alerts.</p>
-        </section>
+        </article>
 
-        <section id="courses">
+        <article id="courses">
           <h2>Upcoming Courses</h2>
           <p>View your upcoming and registered courses.</p>
-        </section>
+        </article>
       </main>
     </>
   )
