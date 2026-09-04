@@ -1,35 +1,54 @@
 import { useState } from 'react'
 import SPJCLogo from './assets/SPJCLogo.jpg'
-import Dashboard from './Dashboardstudent'
-import studentDashHTML from './studentdash.html?url'
+import SDashboard from './studentDashboard'
+import FDashboard from './assets/FacultyDashboard'
+import ADashboard from './assets/adminDashboard'
 import './App.css'
 
+type DashboardRole = 'student' | 'faculty' | 'admin'
+
+function getDashboard(activeDashboard: DashboardRole | null) {
+  switch (activeDashboard) {
+    case 'student': 
+      return <SDashboard />
+    case 'faculty':
+      return <FDashboard />
+    case 'admin':
+      return <ADashboard />
+  }
+}
+
 function App() {
-  const [count, setCount] = useState(0)
-  const [showDashboard, setShowDashboard] = useState(false)
+  const [activeDashboard, setActiveDashboard] = useState<DashboardRole | null>(null)
+  const dashboard = getDashboard(activeDashboard)
 
   return (
     <>
       <nav className="navbar" aria-label="Main navigation">
         <a className="navbar-brand" href="#center">My Website</a>
         <ul className="navbar-links">
-          <li><a href="#center" onClick={() => setShowDashboard(false)}>Home</a></li>
+          <li><a href="#center" onClick={() => setActiveDashboard(null)}>Home</a></li>
           <li><a href="#next-steps">About</a></li>
           <li><a href="#social">Contact</a></li>
           <li>
-            <button type="button" onClick={() => { window.location.href = studentDashHTML }}>
-              StudentDashHTML
-            </button>
+            <a href="#" onClick={() => setActiveDashboard('student')}>
+                Student
+            </a>
           </li>
           <li>
-            <button type="button" onClick={() => setShowDashboard(true)}>
-              Dashboard
-            </button>
+            <a href="#" onClick={() => setActiveDashboard('faculty')}>
+                Faculty
+            </a>
+          </li>
+          <li>
+            <a href="#" onClick={() => setActiveDashboard('admin')}>
+                Admin
+            </a>
           </li>
         </ul>
       </nav>
 
-      {showDashboard ? <Dashboard /> : <section id="center">
+      {dashboard || <section id="center">
         <div className="hero">
           <img src={SPJCLogo} className="base" width="170" height="179" alt="SPJC logo" />
         </div>
@@ -38,12 +57,8 @@ function App() {
           <h1>SPJC</h1> {/* Change to College Name */}
           <p>Edit <code>src/App.tsx</code> and save to test <code>HMR</code></p>
         </div>
-        <button type="button" className="counter" onClick={() => setCount((count) => count + 1)}>
-          Count is {count}
-        </button>
       </section>}
       <section id="spacer">
-        
       </section>
     </>
   )
