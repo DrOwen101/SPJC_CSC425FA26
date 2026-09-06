@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import SPJCLogo from './assets/SPJCLogo.jpg'
 import Dashboardfaculty from './Dashboardfaculty'
-import Dashboardstudent from '../Dashboardstudent'
+import Dashboardstudent from './Dashboardstudent'
+import Dashboardadmin from './Dashboardadmin'
 import './App.css'
 
 type DashboardRole = 'student' | 'faculty' | 'admin'
@@ -27,7 +28,10 @@ function App() {
   return (
     <>
       <nav className="navbar" aria-label="Main navigation">
-        <a className="navbar-brand" href="#center">My Website</a>
+        <img src={SPJCLogo} className="base"
+          width="100" height="80" alt="SPJC logo"/>
+        
+        <a className="navbar-brand" href="#center">San Pedro Junior College</a>
         <ul className="navbar-links">
           <li><a href="#center" onClick={() => setActiveDashboard(null)}>Home</a></li>
           <li>

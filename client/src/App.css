@@ -3,11 +3,13 @@
 html { scroll-behavior: smooth; }
 body { margin: 0; min-width: 320px; min-height: 100vh; }
 a { color: inherit; }
-.navbar { position: sticky; top: 0; z-index: 10; display: flex; align-items: center; justify-content: space-between; padding: 1rem clamp(1.25rem, 5vw, 5rem); color: white; background: #075c35; }
+.navbar { position: sticky; top: 0; z-index: 10; display: flex; align-items: center; justify-content: space-between; padding: 1rem clamp(1.25rem, 5vw, 5rem); color: white; background: #027005; }
 .navbar-brand { font-size: 1.15rem; font-weight: 800; text-decoration: none; }
 .navbar-links { display: flex; gap: 1.5rem; margin: 0; padding: 0; list-style: none; }
 .navbar-links a { text-decoration: none; }
 .navbar-links a:hover, .navbar-links a:focus-visible { color: #b9f6d2; }
+.dashboard-nav { display: flex; flex-wrap: wrap; gap: 1.5rem; margin-top: 1rem; padding: 0; } /* Copilot --- I typed this comment to cite the use 
+.dashboard-nav li { list-style: none; } /* Copilot --- I typed this comment to cite the use */
 #center { min-height: 78vh; display: grid; place-items: center; align-content: center; gap: 1.5rem; padding: 4rem 1.5rem; text-align: center; background: radial-gradient(circle at top, #dff5e7, #ffffff 62%); }
 .hero { width: 190px; height: 190px; display: grid; place-items: center; border-radius: 50%; background: white; box-shadow: 0 16px 45px rgb(7 92 53 / 16%); }
 .base { max-width: 170px; max-height: 179px; object-fit: contain; }
