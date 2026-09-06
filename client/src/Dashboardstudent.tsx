@@ -1,10 +1,11 @@
+import SPJCLogo from './assets/SPJCLogo.jpg'
 function Dashboardstudent() {
   return (
     <>
       <header>
         <h1>Student Dashboard</h1>
         <p>University Student Portal</p>
-
+        <img src={SPJCLogo} alt="SPJC Logo" style={{ width: '100px', height: 'auto' }} />
         <nav aria-label="Student navigation">
           <a href="#gpa">GPA</a>
           <a href="#attendance">Attendance</a>
@@ -14,7 +15,7 @@ function Dashboardstudent() {
         </nav>
       </header>
 
-      <main id="student-dashboard">
+      <main style={{ textAlign: 'center', fontSize: '1.2em' }} id="student-dashboard">
         <section id="gpa">
           <h2>GPA</h2>
           <p>Current GPA: 3.75</p>
