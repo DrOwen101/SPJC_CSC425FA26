@@ -1,35 +1,51 @@
 import { useState } from 'react'
 import SPJCLogo from './assets/SPJCLogo.jpg'
-import Dashboard from './Dashboardstudent'
-import studentDashHTML from './studentdash.html?url'
+import Dashboardstudent from './Dashboardstudent'
+import Dashboardfaculty from './Dashboardfaculty'
+import Dashboardadmin from './Dashboardadmin'
+//import studentDashHTML from './studentdash.html?url'
 import './App.css'
 
 function App() {
   const [count, setCount] = useState(0)
-  const [showDashboard, setShowDashboard] = useState(false)
 
+  type DashboardRole = 'student' | 'faculty' | 'admin';
+
+  function getDashboard(activeDashboard: DashboardRole | null) {
+    switch (activeDashboard) {
+      case 'student':
+        return <Dashboardstudent />;
+      case 'faculty':
+        return <Dashboardfaculty />;
+      case 'admin':
+        return <Dashboardadmin />;
+      default:
+        return null;
+    }
+  }
+
+  const [activeDashboard, setActiveDashboard] = useState<DashboardRole | null>(null);
   return (
     <>
       <nav className="navbar" aria-label="Main navigation">
         <a className="navbar-brand" href="#center">My Website</a>
         <ul className="navbar-links">
-          <li><a href="#center" onClick={() => setShowDashboard(false)}>Home</a></li>
+          <li><a href="#center" onClick={() => setActiveDashboard(null)}>Home</a></li>
           <li><a href="#next-steps">About</a></li>
           <li><a href="#social">Contact</a></li>
           <li>
-            <button type="button" onClick={() => { window.location.href = studentDashHTML }}>
-              StudentDashHTML
-            </button>
+            <a href="#student-dashboard" onClick={() => setActiveDashboard('student')}>Student</a>
           </li>
           <li>
-            <button type="button" onClick={() => setShowDashboard(true)}>
-              Dashboard
-            </button>
+            <a href="#faculty-dashboard" onClick={() => setActiveDashboard('faculty')}>Faculty</a>
+          </li>
+          <li>
+            <a href="#admin-dashboard" onClick={() => setActiveDashboard('admin')}>Admin</a>
           </li>
         </ul>
       </nav>
 
-      {showDashboard ? <Dashboard /> : <section id="center">
+      {activeDashboard ? getDashboard(activeDashboard) : <section id="center">
         <div className="hero">
           <img src={SPJCLogo} className="base" width="170" height="179" alt="SPJC logo" />
         </div>
