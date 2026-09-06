@@ -3,9 +3,8 @@ function Dashboardstudent() {
     <>
       <header>
         <h1>Student Dashboard</h1>
-        <p>University Student Portal</p>
 
-        <nav aria-label="Student navigation">
+        <nav className="dashboard-nav" aria-label="Student navigation">
           <a href="#gpa">GPA</a>
           <a href="#attendance">Attendance</a>
           <a href="#transcript">Transcript</a>
