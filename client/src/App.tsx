@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import SPJCLogo from './assets/SPJCLogo.jpg'
-import Dashboardfaculty from './Dashboardfaculty'
-import Dashboardstudent from './Dashboardstudent'
-import Dashboardadmin from './Dashboardadmin'
+import FacultyDashboard from './FacultyDashboard'
+import StudentDashboard from './StudentDashboard'
+import AdminDashboard from './AdminDashboard'
 import './App.css'
 
 type DashboardRole = 'student' | 'faculty' | 'admin'
@@ -10,11 +10,11 @@ type DashboardRole = 'student' | 'faculty' | 'admin'
 function getDashboard(activeDashboard: DashboardRole | null) {
   switch (activeDashboard) {
     case 'student':
-      return <Dashboardstudent />
+      return <StudentDashboard />
     case 'faculty':
-      return <Dashboardfaculty />
+      return <FacultyDashboard />
     case 'admin':
-      return <Dashboardadmin />
+      return <AdminDashboard />
     default:
       return null
   }

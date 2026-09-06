@@ -28,3 +28,7 @@ code { padding: .15rem .35rem; border-radius: .3rem; background: #e0f2e7; }
 .logo, .button-icon { width: 1.5rem; height: 1.5rem; object-fit: contain; fill: currentColor; }
 #spacer { height: 8rem; }
 @media (max-width: 650px) { .navbar { align-items: flex-start; gap: 1rem; } .navbar-links { gap: .8rem; font-size: .9rem; } #next-steps { grid-template-columns: 1fr; } }
+.dashboard-page {
+  padding: 2rem 1.5rem;
+  scroll-margin-top: 5rem;
+}
