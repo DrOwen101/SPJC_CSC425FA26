@@ -1,4 +1,4 @@
-function Dashboardstudent() {
+function StudentDashboard() {
   return (
     <>
       <header>
@@ -44,4 +44,4 @@ function Dashboardstudent() {
   )
 }
 
-export default Dashboardstudent
+export default StudentDashboard
