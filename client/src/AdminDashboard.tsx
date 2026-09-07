@@ -3,7 +3,7 @@ function AdminDashboard() {
     <>
       <header>
         <h1>Admin Dashboard</h1>
-        <p>University Student Portal</p>
+        <p>University Admin Portal</p>
 
         <nav aria-label="Student navigation">
           <a href="#dashboards">Dashboards</a>
@@ -15,19 +15,14 @@ function AdminDashboard() {
       </header>
 
       <main>
-        <section id="gpa">
-          <h2>GPA</h2>
-          <p>Current GPA: 3.75</p>
+        <section id="dashboards">
+          <h2>Dashboards</h2>
+          <p>View information such as enrollment trends, attendance concerns, student success indicators, and financial summaries.</p>
         </section>
 
-        <section id="attendance">
-          <h2>Attendance</h2>
-          <p>Current attendance: 94%</p>
-        </section>
-
-        <section id="transcript">
-          <h2>Transcript</h2>
-          <p>View your completed courses and grades.</p>
+        <section id="courses">
+          <h2>Courses</h2>
+          <p>View Courses List.</p>
         </section>
 
         <section id="alerts">
@@ -35,9 +30,14 @@ function AdminDashboard() {
           <p>No new academic alerts.</p>
         </section>
 
-        <section id="courses">
-          <h2>Upcoming Courses</h2>
-          <p>View your upcoming and registered courses.</p>
+        <section id="reports">
+          <h2>Reports</h2>
+          <p>View Reports.</p>
+        </section>
+
+        <section id="system-status">
+          <h2>System Status</h2>
+          <p>System is up to date.</p>
         </section>
       </main>
     </>

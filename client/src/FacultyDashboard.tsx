@@ -3,7 +3,7 @@ function FacultyDashboard() {
     <>
       <header>
         <h1>Faculty Dashboard</h1>
-        <p>University Student Portal</p>
+        <p>University Faculty Portal</p>
 
         <nav aria-label="Student navigation">
           <a href="#courses">Courses</a>
@@ -16,14 +16,19 @@ function FacultyDashboard() {
 
       <main>
 
-        <section id="attendance">
-          <h2>Attendance</h2>
-          <p>Current attendance: 94%</p>
+        <section id="courses">
+          <h2>Courses</h2>
+          <p>View your courses list.</p>
         </section>
 
-        <section id="transcript">
-          <h2>Transcript</h2>
-          <p>View your completed courses and grades.</p>
+        <section id="class-rosters">
+          <h2>Class Rosters</h2>
+          <p>No students in your class at this time.</p>
+        </section>
+
+        <section id="grades">
+          <h2>Grades</h2>
+          <p>View and input grades.</p>
         </section>
 
         <section id="alerts">
@@ -31,9 +36,9 @@ function FacultyDashboard() {
           <p>No new academic alerts.</p>
         </section>
 
-        <section id="courses">
-          <h2>Upcoming Courses</h2>
-          <p>View your upcoming and registered courses.</p>
+        <section id="teaching-schedule">
+          <h2>Teaching Schedule</h2>
+          <p>View your schedule.</p>
         </section>
       </main>
     </>
