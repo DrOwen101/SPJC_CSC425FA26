@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import SPJCLogo from './assets/SPJCLogo.jpg'
-import Dashboardfaculty from './Dashboardfaculty'
-import Dashboardstudent from '../Dashboardstudent'
+import Dashboardfaculty from './Dashboardfaculty.tsx'
+import Dashboardstudent from './Dashboardstudent.tsx'
+import Dashboardadmin from './Dashboardadmin.tsx'
 import './App.css'
 
 type DashboardRole = 'student' | 'faculty' | 'admin'
@@ -20,7 +21,7 @@ function getDashboard(activeDashboard: DashboardRole | null) {
 }
 
 function App() {
-  const [count, setCount] = useState(0)
+  //const [count, setCount] = useState(0) // unused. dunno why.
   const [activeDashboard, setActiveDashboard] = useState<DashboardRole | null>(null)
   const dashboard = getDashboard(activeDashboard)
 
@@ -31,17 +32,26 @@ function App() {
         <ul className="navbar-links">
           <li><a href="#center" onClick={() => setActiveDashboard(null)}>Home</a></li>
           <li>
-            <a href="#student-dashboard" onClick={() => setActiveDashboard('student')}>
+            <a href="#student-dashboard" onClick={(event) => {
+              event.preventDefault()
+              setActiveDashboard('student')
+            }}>
               Student
             </a>
           </li>
           <li>
-            <a href="#facultydashboard" onClick={() => setActiveDashboard('faculty')}>
+            <a href="#faculty-dashboard" onClick={(event) => {
+              event.preventDefault()
+              setActiveDashboard('faculty')
+            }}>
               Faculty
             </a>
           </li>
           <li>
-            <a href="#admin-dashboard" onClick={() => setActiveDashboard('admin')}>
+            <a href="#admin-dashboard" onClick={(event) => {
+              event.preventDefault()
+              setActiveDashboard('admin')
+            }}>
               Admin
             </a>
           </li>
