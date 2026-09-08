@@ -1,30 +1,308 @@
-:root { font-family: Inter, ui-sans-serif, system-ui, sans-serif; color: #123524; background: #f3faf5; font-synthesis: none; text-rendering: optimizeLegibility; }
-* { box-sizing: border-box; }
-html { scroll-behavior: smooth; }
-body { margin: 0; min-width: 320px; min-height: 100vh; }
-a { color: inherit; }
-.navbar { position: sticky; top: 0; z-index: 10; display: flex; align-items: center; justify-content: space-between; padding: 1rem clamp(1.25rem, 5vw, 5rem); color: white; background: #075c35; }
-.navbar-brand { font-size: 1.15rem; font-weight: 800; text-decoration: none; }
-.navbar-links { display: flex; gap: 1.5rem; margin: 0; padding: 0; list-style: none; }
-.navbar-links a { text-decoration: none; }
-.navbar-links a:hover, .navbar-links a:focus-visible { color: #b9f6d2; }
-#center { min-height: 78vh; display: grid; place-items: center; align-content: center; gap: 1.5rem; padding: 4rem 1.5rem; text-align: center; background: radial-gradient(circle at top, #dff5e7, #ffffff 62%); }
-.hero { width: 190px; height: 190px; display: grid; place-items: center; border-radius: 50%; background: white; box-shadow: 0 16px 45px rgb(7 92 53 / 16%); }
-.base { max-width: 170px; max-height: 179px; object-fit: contain; }
-h1 { margin: .2rem 0; font-size: clamp(2.25rem, 6vw, 4rem); line-height: 1; letter-spacing: -.04em; }
-code { padding: .15rem .35rem; border-radius: .3rem; background: #e0f2e7; }
-.counter { border: 0; border-radius: 999px; padding: .85rem 1.35rem; color: white; background: #16814d; font: inherit; font-weight: 750; cursor: pointer; box-shadow: 0 8px 20px rgb(22 129 77 / 25%); }
-.counter:hover { background: #075c35; }
-.counter:focus-visible { outline: 3px solid #123524; outline-offset: 3px; }
-.ticks { height: 12px; background: repeating-linear-gradient(90deg, #62a77d 0 2px, transparent 2px 18px); opacity: .5; }
-#next-steps { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2rem; max-width: 1000px; margin: 0 auto; padding: 6rem 1.5rem; }
-#next-steps > div { padding: 2rem; border: 1px solid #cfe7d8; border-radius: 20px; background: white; box-shadow: 0 14px 40px rgb(7 92 53 / 9%); }
-.icon { width: 3rem; height: 3rem; color: #16814d; }
-#next-steps h2 { margin: 1rem 0 .25rem; font-size: 1.75rem; }
-#next-steps p { margin-top: 0; color: #4d6f5c; }
-#next-steps ul { display: grid; gap: .75rem; margin: 1.5rem 0 0; padding: 0; list-style: none; }
-#next-steps a { display: flex; align-items: center; gap: .75rem; padding: .8rem 1rem; border-radius: 10px; background: #edf8f1; font-weight: 700; text-decoration: none; }
-#next-steps a:hover { color: white; background: #16814d; }
-.logo, .button-icon { width: 1.5rem; height: 1.5rem; object-fit: contain; fill: currentColor; }
-#spacer { height: 8rem; }
-@media (max-width: 650px) { .navbar { align-items: flex-start; gap: 1rem; } .navbar-links { gap: .8rem; font-size: .9rem; } #next-steps { grid-template-columns: 1fr; } }
+/*
+  CSS describes how HTML elements look. A rule is written as:
+
+  selector {
+    property: value;
+  }
+
+  The selector chooses elements. Braces contain declarations; each declaration
+  uses a colon between its property and value and ends with a semicolon.
+  Comments like this one explain the code and do not change the page.
+
+  Connecting CSS to HTML and React:
+  - .navbar selects class="navbar" in HTML or className="navbar" in React.
+  - Class names are chosen by the developer. Use descriptive names, such as
+    navbar-brand. The hyphen joins words in ONE name; it does not nest elements.
+  - Classes are reusable. className="logo button-icon" gives an element TWO
+    classes, separated by a space. Do not include the CSS dot in className.
+  - #center selects id="center". An ID should be unique within the page.
+  - h1 selects every <h1> element; no class name is needed.
+  - A space between selectors means "inside"; > means "direct child".
+  - A comma lets multiple selectors share the same declarations.
+
+  Common values:
+  px = CSS pixels; rem = root font-size units; em = the element's font-size
+  units (when used for letter spacing); vw/vh = 1% of viewport width/height.
+  #075c35 is a hexadecimal color. rgb(... / 16%) includes an alpha value
+  that makes the color partly transparent. A leading .5 is the same as 0.5.
+  margin adds space outside a border; padding adds space inside it.
+  Two spacing values mean top/bottom, then left/right. Three mean top,
+  left/right, then bottom. Four mean top, right, bottom, left.
+
+  CSS uses the cascade to resolve competing declarations. For the normal
+  rules here, more specific selectors win (IDs over classes over tags).
+  When specificity ties, the later rule wins. Some properties, such as color
+  and font-family, inherit from a parent unless another rule overrides them.
+*/
+
+/* The :root pseudo-class selects the HTML root. Set the default text color,
+  background, and font stack; the browser uses the first available font.
+  font-synthesis disables simulated font styles; text-rendering is a rendering hint. */
+:root {
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  color: #123524;
+  background: #f3faf5;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+/* The universal selector (*) selects every element. border-box makes declared
+  widths and heights include padding and borders. */
+* {
+  box-sizing: border-box;
+}
+
+/* This tag selector makes scrolling to page anchors smooth. */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Remove the browser's default body margin. Keep the page at least 320px wide
+  and at least as tall as the viewport (100vh). */
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+/* All links inherit their parent's text color unless a more specific rule wins. */
+a {
+  color: inherit;
+}
+
+/* A reusable navigation class. Sticky positioning keeps it at the top while
+  scrolling within its container; z-index controls stacking. Flexbox lays out
+  its children in a row, centers them vertically, and puts space between them.
+  clamp(minimum, preferred, maximum) lets horizontal padding scale with width. */
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem clamp(1.25rem, 5vw, 5rem);
+  color: white;
+  background: #075c35;
+}
+
+/* The navigation brand link: larger, bold text without an underline.
+  .navbar-brand is a separate class, not a child selector for .navbar. */
+.navbar-brand {
+  font-size: 1.15rem;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+/* The navigation list: flex arranges items in a row, gap spaces them apart,
+  and list-style: none removes bullets. Zero margin/padding resets list spacing. */
+.navbar-links {
+  display: flex;
+  gap: 1.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* The space means any <a> inside an element with class="navbar-links".
+  Remove those links' default underlines. */
+.navbar-links a {
+  text-decoration: none;
+}
+
+/* Pseudo-classes select states. :hover matches a pointer over a link;
+  :focus-visible matches focus when the browser decides to show an indicator,
+  commonly during keyboard navigation. The comma applies one rule to both. */
+.navbar-links a:hover, .navbar-links a:focus-visible {
+  color: #b9f6d2;
+}
+
+/* The section with id="center" uses Grid to center its contents. gap separates
+  grid items; text-align centers text. The radial gradient fades outward
+  from the top of the section. */
+#center {
+  min-height: 78vh;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 1.5rem;
+  padding: 4rem 1.5rem;
+  text-align: center;
+  background: radial-gradient(circle at top, #dff5e7, #ffffff 62%);
+}
+
+/* The hero class creates a circular logo container: equal width/height plus
+  a 50% border radius. box-shadow uses x-offset, y-offset, blur, and color. */
+.hero {
+  width: 190px;
+  height: 190px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: white;
+  box-shadow: 0 16px 45px rgb(7 92 53 / 16%);
+}
+
+/* The base class limits the image size. object-fit: contain preserves the
+  image's proportions while fitting the whole image inside its box. */
+.base {
+  max-width: 170px;
+  max-height: 179px;
+  object-fit: contain;
+}
+
+/* Style all top-level headings. clamp makes the font responsive within limits;
+  line-height: 1 uses the font size as line height, and negative letter-spacing
+  brings letters closer together. */
+h1 {
+  margin: .2rem 0;
+  font-size: clamp(2.25rem, 6vw, 4rem);
+  line-height: 1;
+  letter-spacing: -.04em;
+}
+
+/* Style <code> text with a padded background and slightly rounded corners. */
+code {
+  padding: .15rem .35rem;
+  border-radius: .3rem;
+  background: #e0f2e7;
+}
+
+/* The counter button class uses a large radius for a pill shape. font: inherit
+  uses the parent font; cursor: pointer shows a hand pointer. Its button is
+  currently commented out in App.tsx, so this rule has no visible target there. */
+.counter {
+  border: 0;
+  border-radius: 999px;
+  padding: .85rem 1.35rem;
+  color: white;
+  background: #16814d;
+  font: inherit;
+  font-weight: 750;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgb(22 129 77 / 25%);
+}
+
+/* Darken the counter button when the pointer is over it. */
+.counter:hover {
+  background: #075c35;
+}
+
+/* Give keyboard focus a visible outline. outline-offset leaves a gap between
+  the button and its focus ring. */
+.counter:focus-visible {
+  outline: 3px solid #123524;
+  outline-offset: 3px;
+}
+
+/* This decorative class draws repeated vertical tick marks with a gradient.
+  opacity: .5 makes the entire element half opaque. */
+.ticks {
+  height: 12px;
+  background: repeating-linear-gradient(90deg, #62a77d 0 2px, transparent 2px 18px);
+  opacity: .5;
+}
+
+/* The next-steps section uses two equal grid columns. Each 1fr gets one share
+  of available space; minmax(0, 1fr) allows the column to shrink. max-width
+  caps the section width, and margin: 0 auto centers it horizontally.
+  App.tsx currently has no next-steps section; these rules apply if one is added. */
+#next-steps {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 2rem;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 6rem 1.5rem;
+}
+
+/* The > selects only <div> elements directly inside #next-steps, creating
+  cards with padding, a border (width, style, color), rounded corners, and a shadow. */
+#next-steps > div {
+  padding: 2rem;
+  border: 1px solid #cfe7d8;
+  border-radius: 20px;
+  background: white;
+  box-shadow: 0 14px 40px rgb(7 92 53 / 9%);
+}
+
+/* A reusable class for larger icons. The color property sets their text color;
+  SVG artwork can use that color through currentColor. */
+.icon {
+  width: 3rem;
+  height: 3rem;
+  color: #16814d;
+}
+
+/* Style only <h2> headings inside #next-steps, at any nesting depth. */
+#next-steps h2 {
+  margin: 1rem 0 .25rem;
+  font-size: 1.75rem;
+}
+
+/* Style paragraphs inside #next-steps with no top margin and a muted text color. */
+#next-steps p {
+  margin-top: 0;
+  color: #4d6f5c;
+}
+
+/* Lay out list items with Grid and a gap, removing default bullets and padding. */
+#next-steps ul {
+  display: grid;
+  gap: .75rem;
+  margin: 1.5rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Make each link inside #next-steps a padded row. Flexbox aligns its icon
+  and text, and gap adds space between them. */
+#next-steps a {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  padding: .8rem 1rem;
+  border-radius: 10px;
+  background: #edf8f1;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+/* Change both text and background colors when a next-steps link is hovered. */
+#next-steps a:hover {
+  color: white;
+  background: #16814d;
+}
+
+/* The comma shares this rule between two independent classes: logo and
+  button-icon. currentColor lets SVG fill follow the element's color property. */
+.logo, .button-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  object-fit: contain;
+  fill: currentColor;
+}
+
+/* The element with id="spacer" adds a fixed-height area of empty space. */
+#spacer {
+  height: 8rem;
+}
+
+/* A media query applies these overrides only when the viewport is 650px
+  wide or narrower. The repeated class names target the same elements above.
+  These later rules adjust navigation spacing and switch the cards to one column. */
+@media (max-width: 650px) {
+  .navbar {
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .navbar-links {
+    gap: .8rem;
+    font-size: .9rem;
+  }
+
+  #next-steps {
+    grid-template-columns: 1fr;
+  }
+}
