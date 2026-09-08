@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import SPJCLogo from './assets/SPJCLogo.jpg'
-import Dashboardadmin from './Dashboardadmin'
-import Dashboardfaculty from './Dashboardfaculty'
+import Dashboardadmin from './DashboardAdmin'
+import Dashboardfaculty from './DashboardFaculty'
 import Dashboardstudent from './Dashboardstudent'
 import './App.css'
 
