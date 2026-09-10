@@ -30,7 +30,7 @@ function App() {
   return (
     <>
       <nav className="navbar" aria-label="Main navigation">
-        <a className="navbar-brand" href="#center">My Website</a>
+        <a className="navbar-brand" href="#center">SPJC</a>
         <ul className="navbar-links">
           <li><a href="#center" onClick={() => setActiveDashboard(null)}>Home</a></li>
           <li>
@@ -57,7 +57,7 @@ function App() {
         </div>
         <div>
           <h1>CSC425FA26 Course Project</h1>
-          <h1>SPJC</h1> {/* Change to College Name */}
+          <h1>SPJC</h1> {/*SPJC*/}
           <p>Edit <code>src/App.tsx</code> and save to test <code>HMR</code></p>
         </div>
         {/* <button type="button" className="counter" onClick={() => setCount((count) => count + 1)}>
