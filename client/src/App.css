@@ -135,15 +135,6 @@ a {
   color: white;
 }
 
-.topicContent p {
-  display: flex;
-  justify-content: left;
-  align-items: center;
-  background-color: #e0f2e7;
-  border-radius: 5px;
-  border-color: black;
-}
-
 /* The space means any <a> inside an element with class="navbar-links".
   Remove those links' default underlines. */
 .navbar-links a {
