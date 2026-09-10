@@ -86,6 +86,29 @@ a {
   background: #075c35;
 }
 
+/* A reusable navigation link class. Remove the default underline, set the text
+  color to white, and make it bold. */
+.navbarDash {
+  position: sticky;
+  z-index: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem clamp(1.25rem, 5vw, 5rem);
+}
+
+/* A reusable navigation link class. Remove the default underline, set the text
+  color to white, and make it bold. */
+.navbar-Dashlink {
+  text-decoration: none;
+  color: white;
+  font-weight: 600;
+  font-size: 1.2rem;
+  border: #075c35 20px solid;
+  background-color: #075c35;
+  border-radius: 5px;
+}
+
 /* The navigation brand link: larger, bold text without an underline.
   .navbar-brand is a separate class, not a child selector for .navbar. */
 .navbar-brand {
@@ -102,6 +125,23 @@ a {
   margin: 0;
   padding: 0;
   list-style: none;
+}
+
+.topicHeader h2 {
+  display: flex;
+  justify-content: left;
+  align-items: center;
+  background-color: #075c35;
+  color: white;
+}
+
+.topicContent p {
+  display: flex;
+  justify-content: left;
+  align-items: center;
+  background-color: #e0f2e7;
+  border-radius: 5px;
+  border-color: black;
 }
 
 /* The space means any <a> inside an element with class="navbar-links".

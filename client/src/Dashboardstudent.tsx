@@ -5,16 +5,16 @@ function Dashboardstudent() {
         <h1>Student Dashboard</h1>
         <p>University Student Portal</p>
 
-        <nav aria-label="Student navigation">
-          <a href="#gpa">GPA</a>
-          <a href="#attendance">Attendance</a>
-          <a href="#transcript">Transcript</a>
-          <a href="#alerts">Alerts</a>
-          <a href="#courses">Upcoming Courses</a>
+        <nav className ="navbarDash" aria-label="Student navigation">
+          <a className = "navbar-Dashlink" href="#gpa">GPA</a>
+          <a className = "navbar-Dashlink" href="#attendance">Attendance</a>
+          <a className = "navbar-Dashlink" href="#transcript">Transcript</a>
+          <a className = "navbar-Dashlink" href="#alerts">Alerts</a>
+          <a className = "navbar-Dashlink" href="#courses">Upcoming Courses</a>
         </nav>
       </header>
 
-      <main id="student-dashboard">
+      <main className="topicHeader" id="student-dashboard">
         <section id="gpa">
           <h2>GPA</h2>
           <p>Current GPA: 3.75</p>
