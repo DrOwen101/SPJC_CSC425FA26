@@ -26,7 +26,7 @@ function Dashboardadmin() {
       {/* className="dashboard-grid" connects to .dashboard-grid in App.css.
           Each named section is a card. tabIndex=-1 permits anchor focus without
           adding every card to the Tab sequence; links remain the normal stops. */}
-      <div className="dashboard-grid">
+      <div className="dashboard-grid ">
         <section id="user-management" className="dashboard-card" aria-labelledby="user-management-heading" tabIndex={-1}>
           <h2 id="user-management-heading">User Management</h2>
           <p className="status-label">Not connected</p>

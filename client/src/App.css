@@ -192,6 +192,7 @@ p {
   text-decoration: underline;
 }
 
+
 /* Grid controls the layout; each .dashboard-card is a semantic <section>.
    minmax(0, 1fr) allows long content to shrink within two equal columns.
    DOM order is also the reading order: no CSS reordering is needed. */
@@ -211,6 +212,15 @@ p {
 }
 .dashboard-card > :last-child {
   margin-bottom: 0;
+}
+.dashboard-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgb(7 92 53 / 12%);
+}
+.dashboard-card h2 {
+  color: #075c35;
+  border-bottom: 2px solid #b2ccbd;
+  padding-bottom: .5rem;
 }
 
 /* Focusable anchor destinations have breathing room when scrolled into view.
