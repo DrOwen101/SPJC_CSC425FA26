@@ -35,91 +35,212 @@
   and font-family, inherit from a parent unless another rule overrides them.
 */
 
-/* The :root pseudo-class selects the HTML root. Set the default text color,
-  background, and font stack; the browser uses the first available font.
-  font-synthesis disables simulated font styles; text-rendering is a rendering hint. */
+/* Shared defaults inherit into all three dashboards. Dark green text on light
+   surfaces preserves the existing identity with strong text contrast. */
 :root {
   font-family: Inter, ui-sans-serif, system-ui, sans-serif;
   color: #123524;
-  background: #f3faf5;
+  background: white;
   font-synthesis: none;
-  text-rendering: optimizeLegibility;
+  line-height: 1.6;
 }
 
-/* The universal selector (*) selects every element. border-box makes declared
-  widths and heights include padding and borders. */
+/* Include borders and padding in widths so cards fit their grid columns. */
 * {
   box-sizing: border-box;
 }
-
-/* This tag selector makes scrolling to page anchors smooth. */
-html {
-  scroll-behavior: smooth;
-}
-
-/* Remove the browser's default body margin. Keep the page at least 320px wide
-  and at least as tall as the viewport (100vh). */
 body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
 }
-
-/* All links inherit their parent's text color unless a more specific rule wins. */
 a {
   color: inherit;
+  text-underline-offset: .25em;
+}
+h1, h2, p {
+  overflow-wrap: anywhere;
+}
+h1 {
+  margin: 0;
+  font-size: clamp(2rem, 5vw, 3rem);
+  line-height: 1.2;
+}
+h2 {
+  margin: 0 0 .75rem;
+  font-size: 1.35rem;
+  line-height: 1.3;
+}
+p {
+  margin: .5rem 0 1rem;
 }
 
-/* A reusable navigation class. Sticky positioning keeps it at the top while
-  scrolling within its container; z-index controls stacking. Flexbox lays out
-  its children in a row, centers them vertically, and puts space between them.
-  clamp(minimum, preferred, maximum) lets horizontal padding scale with width. */
+/* A two-color focus ring stays visible on both dark and light surfaces.
+   Never remove focus outlines without supplying a visible replacement. */
+:focus-visible {
+  outline: 3px solid #123524;
+  outline-offset: 3px;
+  box-shadow: 0 0 0 3px white;
+}
+
+/* The first link in App.tsx is visually offscreen until keyboard-focused.
+   Fixed positioning brings it into view even after scrolling. */
+.skip-link {
+  position: fixed;
+  top: .5rem;
+  left: .5rem;
+  z-index: 20;
+  transform: translateY(-200%);
+  padding: .75rem 1rem;
+  background: white;
+  font-weight: 700;
+}
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+/* Normal document flow prevents a tall mobile navbar from covering focused
+   content. Flex-wrap lets items move to another line instead of overflowing. */
 .navbar {
-  position: sticky;
-  top: 0;
-  z-index: 10;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  padding: 1rem clamp(1.25rem, 5vw, 5rem);
+  gap: 1rem;
+  padding: 1rem clamp(1rem, 4vw, 4rem);
   color: white;
   background: #075c35;
 }
-
-/* The navigation brand link: larger, bold text without an underline.
-  .navbar-brand is a separate class, not a child selector for .navbar. */
 .navbar-brand {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
   font-size: 1.15rem;
   font-weight: 800;
   text-decoration: none;
 }
-
-/* The navigation list: flex arranges items in a row, gap spaces them apart,
-  and list-style: none removes bullets. Zero margin/padding resets list spacing. */
-.navbar-links {
+.navbar-links, .dashboard-nav ul {
   display: flex;
-  gap: 1.5rem;
+  flex-wrap: wrap;
+  gap: .5rem;
+  list-style: none;
   margin: 0;
   padding: 0;
-  list-style: none;
 }
 
-/* The space means any <a> inside an element with class="navbar-links".
-  Remove those links' default underlines. */
-.navbar-links a {
+/* Padding plus minimum dimensions give every navigation link a 44px target.
+   The attribute selector matches React's aria-current="page" in App.tsx. */
+.navbar-links a, .dashboard-nav a {
+  display: flex;
+  align-items: center;
+  min-width: 44px;
+  min-height: 44px;
+  padding: .6rem 1rem;
+  border: 2px solid transparent;
+  border-radius: .5rem;
+  font-weight: 650;
   text-decoration: none;
 }
-
-/* Pseudo-classes select states. :hover matches a pointer over a link;
-  :focus-visible matches focus when the browser decides to show an indicator,
-  commonly during keyboard navigation. The comma applies one rule to both. */
-.navbar-links a:hover, .navbar-links a:focus-visible {
-  color: #b9f6d2;
+.navbar-links a:hover {
+  text-decoration: underline;
+  background: #06472a;
+}
+.navbar-links a[aria-current="page"] {
+  border-color: white;
+  text-decoration: underline;
+  background: #06472a;
 }
 
-/* The section with id="center" uses Grid to center its contents. gap separates
-  grid items; text-align centers text. The radial gradient fades outward
-  from the top of the section. */
+/* .dashboard is shared by each role's <main>. A capped width keeps text
+   readable; auto margins center the content on wide screens. */
+.dashboard {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 2rem clamp(1rem, 4vw, 2rem) 4rem;
+}
+.dashboard-header {
+  margin-bottom: 1.5rem;
+}
+.dashboard-header > p {
+  max-width: 70ch;
+}
+.eyebrow {
+  color: #075c35;
+  font-size: .9rem;
+  font-weight: 750;
+  letter-spacing: .04em;
+}
+.demo-note {
+  padding: .75rem 1rem;
+  border-left: 4px solid #075c35;
+  background: #e0f2e7;
+  border-radius: .25rem;
+}
+
+/* The secondary navigation jumps to each card's ID. Separate named nav
+   landmarks in TSX let screen-reader users distinguish page and section links. */
+.dashboard-nav {
+  margin-bottom: 1.5rem;
+}
+.dashboard-nav a {
+  color: #075c35;
+  background: white;
+  border-color: #568069;
+}
+.dashboard-nav a:hover {
+  background: #e0f2e7;
+  text-decoration: underline;
+}
+
+/* Grid controls the layout; each .dashboard-card is a semantic <section>.
+   minmax(0, 1fr) allows long content to shrink within two equal columns.
+   DOM order is also the reading order: no CSS reordering is needed. */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.25rem;
+}
+.dashboard-card {
+  min-width: 0;
+  padding: 1.5rem;
+  border: 1px solid #b2ccbd;
+  border-radius: .85rem;
+  /* Move the light green surface onto the cards against the white page. */
+  background: #f3faf5;
+  box-shadow: 0 4px 14px rgb(7 92 53 / 5%);
+}
+.dashboard-card > :last-child {
+  margin-bottom: 0;
+}
+
+/* Focusable anchor destinations have breathing room when scrolled into view.
+   Status always uses words, so color is never the only source of meaning. */
+main, .dashboard-card {
+  scroll-margin-top: 1rem;
+}
+.metric {
+  margin: 0;
+  color: #075c35;
+  font-size: 2.75rem;
+  line-height: 1.2;
+  font-weight: 750;
+}
+.status-label {
+  display: inline-block;
+  margin-top: 0;
+  padding: .25rem .6rem;
+  border-radius: .3rem;
+  background: #edf3ef;
+  font-weight: 650;
+}
+.detail-list {
+  padding-left: 1.25rem;
+}
+.detail-list li + li {
+  margin-top: .4rem;
+}
+
+/* Home keeps the original logo and green/white presentation. */
 #center {
   min-height: 78vh;
   display: grid;
@@ -128,181 +249,62 @@ a {
   gap: 1.5rem;
   padding: 4rem 1.5rem;
   text-align: center;
-  background: radial-gradient(circle at top, #dff5e7, #ffffff 62%);
+  /* Match the dashboards: white page with light green content surfaces. */
+  background: white;
 }
-
-/* The hero class creates a circular logo container: equal width/height plus
-  a 50% border radius. box-shadow uses x-offset, y-offset, blur, and color. */
 .hero {
   width: 190px;
   height: 190px;
   display: grid;
   place-items: center;
   border-radius: 50%;
-  background: white;
+  background: #f3faf5;
   box-shadow: 0 16px 45px rgb(7 92 53 / 16%);
 }
-
-/* The base class limits the image size. object-fit: contain preserves the
-  image's proportions while fitting the whole image inside its box. */
 .base {
   max-width: 170px;
   max-height: 179px;
   object-fit: contain;
 }
 
-/* Style all top-level headings. clamp makes the font responsive within limits;
-  line-height: 1 uses the font size as line height, and negative letter-spacing
-  brings letters closer together. */
-h1 {
-  margin: .2rem 0;
-  font-size: clamp(2.25rem, 6vw, 4rem);
-  line-height: 1;
-  letter-spacing: -.04em;
-}
-
-/* Style <code> text with a padded background and slightly rounded corners. */
-code {
-  padding: .15rem .35rem;
-  border-radius: .3rem;
-  background: #e0f2e7;
-}
-
-/* The counter button class uses a large radius for a pill shape. font: inherit
-  uses the parent font; cursor: pointer shows a hand pointer. Its button is
-  currently commented out in App.tsx, so this rule has no visible target there. */
-.counter {
-  border: 0;
-  border-radius: 999px;
-  padding: .85rem 1.35rem;
-  color: white;
-  background: #16814d;
-  font: inherit;
-  font-weight: 750;
-  cursor: pointer;
-  box-shadow: 0 8px 20px rgb(22 129 77 / 25%);
-}
-
-/* Darken the counter button when the pointer is over it. */
-.counter:hover {
-  background: #075c35;
-}
-
-/* Give keyboard focus a visible outline. outline-offset leaves a gap between
-  the button and its focus ring. */
-.counter:focus-visible {
-  outline: 3px solid #123524;
-  outline-offset: 3px;
-}
-
-/* This decorative class draws repeated vertical tick marks with a gradient.
-  opacity: .5 makes the entire element half opaque. */
-.ticks {
-  height: 12px;
-  background: repeating-linear-gradient(90deg, #62a77d 0 2px, transparent 2px 18px);
-  opacity: .5;
-}
-
-/* The next-steps section uses two equal grid columns. Each 1fr gets one share
-  of available space; minmax(0, 1fr) allows the column to shrink. max-width
-  caps the section width, and margin: 0 auto centers it horizontally.
-  App.tsx currently has no next-steps section; these rules apply if one is added. */
-#next-steps {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 2rem;
-  max-width: 1000px;
-  margin: 0 auto;
-  padding: 6rem 1.5rem;
-}
-
-/* The > selects only <div> elements directly inside #next-steps, creating
-  cards with padding, a border (width, style, color), rounded corners, and a shadow. */
-#next-steps > div {
-  padding: 2rem;
-  border: 1px solid #cfe7d8;
-  border-radius: 20px;
-  background: white;
-  box-shadow: 0 14px 40px rgb(7 92 53 / 9%);
-}
-
-/* A reusable class for larger icons. The color property sets their text color;
-  SVG artwork can use that color through currentColor. */
-.icon {
-  width: 3rem;
-  height: 3rem;
-  color: #16814d;
-}
-
-/* Style only <h2> headings inside #next-steps, at any nesting depth. */
-#next-steps h2 {
-  margin: 1rem 0 .25rem;
-  font-size: 1.75rem;
-}
-
-/* Style paragraphs inside #next-steps with no top margin and a muted text color. */
-#next-steps p {
-  margin-top: 0;
-  color: #4d6f5c;
-}
-
-/* Lay out list items with Grid and a gap, removing default bullets and padding. */
-#next-steps ul {
-  display: grid;
-  gap: .75rem;
-  margin: 1.5rem 0 0;
-  padding: 0;
-  list-style: none;
-}
-
-/* Make each link inside #next-steps a padded row. Flexbox aligns its icon
-  and text, and gap adds space between them. */
-#next-steps a {
-  display: flex;
-  align-items: center;
-  gap: .75rem;
-  padding: .8rem 1rem;
-  border-radius: 10px;
-  background: #edf8f1;
-  font-weight: 700;
-  text-decoration: none;
-}
-
-/* Change both text and background colors when a next-steps link is hovered. */
-#next-steps a:hover {
-  color: white;
-  background: #16814d;
-}
-
-/* The comma shares this rule between two independent classes: logo and
-  button-icon. currentColor lets SVG fill follow the element's color property. */
-.logo, .button-icon {
-  width: 1.5rem;
-  height: 1.5rem;
-  object-fit: contain;
-  fill: currentColor;
-}
-
-/* The element with id="spacer" adds a fixed-height area of empty space. */
-#spacer {
-  height: 8rem;
-}
-
-/* A media query applies these overrides only when the viewport is 650px
-  wide or narrower. The repeated class names target the same elements above.
-  These later rules adjust navigation spacing and switch the cards to one column. */
+/* At narrow widths (including desktop zoom), stack cards and allow links to
+   wrap. No fixed card heights means enlarged text stays visible. */
 @media (max-width: 650px) {
   .navbar {
     align-items: flex-start;
-    gap: 1rem;
+    flex-direction: column;
   }
-
   .navbar-links {
-    gap: .8rem;
-    font-size: .9rem;
+    gap: .25rem;
   }
-
-  #next-steps {
+  .navbar-links a {
+    padding-inline: .65rem;
+  }
+  .dashboard-grid {
     grid-template-columns: 1fr;
+  }
+  .dashboard-card {
+    padding: 1.25rem;
+  }
+}
+
+/* Only enable animated anchor scrolling if the user allows motion.
+   With reduced motion enabled, the browser's default instant scroll remains. */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* System colors keep focus and card boundaries visible in high-contrast mode. */
+@media (forced-colors: active) {
+  :focus-visible {
+    outline-color: Highlight;
+  }
+  .navbar-links a[aria-current="page"] {
+    border-color: LinkText;
+  }
+  .dashboard-card, .status-label {
+    border: 1px solid CanvasText;
   }
 }
