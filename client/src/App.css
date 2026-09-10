@@ -39,8 +39,8 @@
    surfaces preserves the existing identity with strong text contrast. */
 :root {
   font-family: Inter, ui-sans-serif, system-ui, sans-serif;
-  color: #123524;
-  background: white;
+  color: #2F3C7E;
+  background: #FBEAEB;
   font-synthesis: none;
   line-height: 1.6;
 }
@@ -78,7 +78,7 @@ p {
 /* A two-color focus ring stays visible on both dark and light surfaces.
    Never remove focus outlines without supplying a visible replacement. */
 :focus-visible {
-  outline: 3px solid #123524;
+  outline: 3px solid #2F3C7E;
   outline-offset: 3px;
   box-shadow: 0 0 0 3px white;
 }
@@ -109,7 +109,7 @@ p {
   gap: 1rem;
   padding: 1rem clamp(1rem, 4vw, 4rem);
   color: white;
-  background: #075c35;
+  background: #2F3C7E;
 }
 .navbar-brand {
   display: inline-flex;
@@ -203,10 +203,10 @@ p {
 .dashboard-card {
   min-width: 0;
   padding: 1.5rem;
-  border: 1px solid #b2ccbd;
+  border: 1px solid black;
   border-radius: .85rem;
   /* Move the light green surface onto the cards against the white page. */
-  background: #f3faf5;
+  background: #CADCFC;
   box-shadow: 0 4px 14px rgb(7 92 53 / 5%);
 }
 .dashboard-card > :last-child {
@@ -250,7 +250,7 @@ main, .dashboard-card {
   padding: 4rem 1.5rem;
   text-align: center;
   /* Match the dashboards: white page with light green content surfaces. */
-  background: white;
+  background: #FBEAEB;
 }
 .hero {
   width: 190px;

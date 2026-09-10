@@ -52,6 +52,11 @@ function Dashboardstudent() {
           <p className="status-label">Not connected</p>
           <p>Your registered courses, meeting times, and locations will appear here when registration data is connected.</p>
         </section>
+        <section id="progress" className="dashboard-card" aria-labelledby="progress-heading" tabIndex={-1}>
+          <h2 id="progress-heading">Degree Progress</h2>
+          <p className="status-label">Not connected</p>
+          <p>Track your degree progress, and estimated time until graduation!</p>
+        </section>
       </div>
     </main>
   )
