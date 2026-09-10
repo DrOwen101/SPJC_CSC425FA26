@@ -1,37 +1,310 @@
-:root { font-family: Inter, ui-sans-serif, system-ui, sans-serif; color: #123524; background: #f3faf5; font-synthesis: none; text-rendering: optimizeLegibility; }
-* { box-sizing: border-box; }
-html { scroll-behavior: smooth; }
-body { margin: 0; min-width: 320px; min-height: 100vh; }
-a { color: inherit; }
-.navbar { position: sticky; top: 0; z-index: 10; display: flex; align-items: center; justify-content: space-between; padding: 1rem clamp(1.25rem, 5vw, 5rem); color: white; background: #075c35; }
-.navbar-brand { font-size: 1.15rem; font-weight: 800; text-decoration: none; }
-.navbar-links { display: flex; gap: 1.5rem; margin: 0; padding: 0; list-style: none; }
-.navbar-links a { text-decoration: none; }
-.navbar-links a:hover, .navbar-links a:focus-visible { color: #b9f6d2; }
-.navbar-dashboard-menu { position: relative; }
-.navbar-dashboard-menu summary { cursor: pointer; }
-.navbar-dashboard-menu summary:hover, .navbar-dashboard-menu summary:focus-visible { color: #b9f6d2; }
-.navbar-dashboard-menu summary:focus-visible { outline: 2px solid #b9f6d2; outline-offset: 3px; }
-.navbar-dashboard-menu div { position: absolute; top: calc(100% + .5rem); right: 0; display: grid; min-width: 11rem; padding: .35rem 0; color: #123524; background: white; box-shadow: 0 8px 24px rgb(0 0 0 / 20%); }
-.navbar-dashboard-menu button { padding: .55rem .85rem; border: 0; color: inherit; background: transparent; font: inherit; text-align: left; cursor: pointer; white-space: nowrap; }
-.navbar-dashboard-menu button:hover, .navbar-dashboard-menu button:focus-visible { color: white; background: #16814d; }
-#center { min-height: 78vh; display: grid; place-items: center; align-content: center; gap: 1.5rem; padding: 4rem 1.5rem; text-align: center; background: radial-gradient(circle at top, #dff5e7, #ffffff 62%); }
-.hero { width: 190px; height: 190px; display: grid; place-items: center; border-radius: 50%; background: white; box-shadow: 0 16px 45px rgb(7 92 53 / 16%); }
-.base { max-width: 170px; max-height: 179px; object-fit: contain; }
-h1 { margin: .2rem 0; font-size: clamp(2.25rem, 6vw, 4rem); line-height: 1; letter-spacing: -.04em; }
-code { padding: .15rem .35rem; border-radius: .3rem; background: #e0f2e7; }
-.counter { border: 0; border-radius: 999px; padding: .85rem 1.35rem; color: white; background: #16814d; font: inherit; font-weight: 750; cursor: pointer; box-shadow: 0 8px 20px rgb(22 129 77 / 25%); }
-.counter:hover { background: #075c35; }
-.counter:focus-visible { outline: 3px solid #123524; outline-offset: 3px; }
-.ticks { height: 12px; background: repeating-linear-gradient(90deg, #62a77d 0 2px, transparent 2px 18px); opacity: .5; }
-#next-steps { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2rem; max-width: 1000px; margin: 0 auto; padding: 6rem 1.5rem; }
-#next-steps > div { padding: 2rem; border: 1px solid #cfe7d8; border-radius: 20px; background: white; box-shadow: 0 14px 40px rgb(7 92 53 / 9%); }
-.icon { width: 3rem; height: 3rem; color: #16814d; }
-#next-steps h2 { margin: 1rem 0 .25rem; font-size: 1.75rem; }
-#next-steps p { margin-top: 0; color: #4d6f5c; }
-#next-steps ul { display: grid; gap: .75rem; margin: 1.5rem 0 0; padding: 0; list-style: none; }
-#next-steps a { display: flex; align-items: center; gap: .75rem; padding: .8rem 1rem; border-radius: 10px; background: #edf8f1; font-weight: 700; text-decoration: none; }
-#next-steps a:hover { color: white; background: #16814d; }
-.logo, .button-icon { width: 1.5rem; height: 1.5rem; object-fit: contain; fill: currentColor; }
-#spacer { height: 8rem; }
-@media (max-width: 650px) { .navbar { align-items: flex-start; gap: 1rem; } .navbar-links { gap: .8rem; font-size: .9rem; } #next-steps { grid-template-columns: 1fr; } }
+/*
+  CSS describes how HTML elements look. A rule is written as:
+
+  selector {
+    property: value;
+  }
+
+  The selector chooses elements. Braces contain declarations; each declaration
+  uses a colon between its property and value and ends with a semicolon.
+  Comments like this one explain the code and do not change the page.
+
+  Connecting CSS to HTML and React:
+  - .navbar selects class="navbar" in HTML or className="navbar" in React.
+  - Class names are chosen by the developer. Use descriptive names, such as
+    navbar-brand. The hyphen joins words in ONE name; it does not nest elements.
+  - Classes are reusable. className="logo button-icon" gives an element TWO
+    classes, separated by a space. Do not include the CSS dot in className.
+  - #center selects id="center". An ID should be unique within the page.
+  - h1 selects every <h1> element; no class name is needed.
+  - A space between selectors means "inside"; > means "direct child".
+  - A comma lets multiple selectors share the same declarations.
+
+  Common values:
+  px = CSS pixels; rem = root font-size units; em = the element's font-size
+  units (when used for letter spacing); vw/vh = 1% of viewport width/height.
+  #075c35 is a hexadecimal color. rgb(... / 16%) includes an alpha value
+  that makes the color partly transparent. A leading .5 is the same as 0.5.
+  margin adds space outside a border; padding adds space inside it.
+  Two spacing values mean top/bottom, then left/right. Three mean top,
+  left/right, then bottom. Four mean top, right, bottom, left.
+
+  CSS uses the cascade to resolve competing declarations. For the normal
+  rules here, more specific selectors win (IDs over classes over tags).
+  When specificity ties, the later rule wins. Some properties, such as color
+  and font-family, inherit from a parent unless another rule overrides them.
+*/
+
+/* Shared defaults inherit into all three dashboards. Dark green text on light
+   surfaces preserves the existing identity with strong text contrast. */
+:root {
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  color: #123524;
+  background: white;
+  font-synthesis: none;
+  line-height: 1.6;
+}
+
+/* Include borders and padding in widths so cards fit their grid columns. */
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+a {
+  color: inherit;
+  text-underline-offset: .25em;
+}
+h1, h2, p {
+  overflow-wrap: anywhere;
+}
+h1 {
+  margin: 0;
+  font-size: clamp(2rem, 5vw, 3rem);
+  line-height: 1.2;
+}
+h2 {
+  margin: 0 0 .75rem;
+  font-size: 1.35rem;
+  line-height: 1.3;
+}
+p {
+  margin: .5rem 0 1rem;
+}
+
+/* A two-color focus ring stays visible on both dark and light surfaces.
+   Never remove focus outlines without supplying a visible replacement. */
+:focus-visible {
+  outline: 3px solid #123524;
+  outline-offset: 3px;
+  box-shadow: 0 0 0 3px white;
+}
+
+/* The first link in App.tsx is visually offscreen until keyboard-focused.
+   Fixed positioning brings it into view even after scrolling. */
+.skip-link {
+  position: fixed;
+  top: .5rem;
+  left: .5rem;
+  z-index: 20;
+  transform: translateY(-200%);
+  padding: .75rem 1rem;
+  background: white;
+  font-weight: 700;
+}
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+/* Normal document flow prevents a tall mobile navbar from covering focused
+   content. Flex-wrap lets items move to another line instead of overflowing. */
+.navbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem clamp(1rem, 4vw, 4rem);
+  color: white;
+  background: #075c35;
+}
+.navbar-brand {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-size: 1.15rem;
+  font-weight: 800;
+  text-decoration: none;
+}
+.navbar-links, .dashboard-nav ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* Padding plus minimum dimensions give every navigation link a 44px target.
+   The attribute selector matches React's aria-current="page" in App.tsx. */
+.navbar-links a, .dashboard-nav a {
+  display: flex;
+  align-items: center;
+  min-width: 44px;
+  min-height: 44px;
+  padding: .6rem 1rem;
+  border: 2px solid transparent;
+  border-radius: .5rem;
+  font-weight: 650;
+  text-decoration: none;
+}
+.navbar-links a:hover {
+  text-decoration: underline;
+  background: #06472a;
+}
+.navbar-links a[aria-current="page"] {
+  border-color: white;
+  text-decoration: underline;
+  background: #06472a;
+}
+
+/* .dashboard is shared by each role's <main>. A capped width keeps text
+   readable; auto margins center the content on wide screens. */
+.dashboard {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 2rem clamp(1rem, 4vw, 2rem) 4rem;
+}
+.dashboard-header {
+  margin-bottom: 1.5rem;
+}
+.dashboard-header > p {
+  max-width: 70ch;
+}
+.eyebrow {
+  color: #075c35;
+  font-size: .9rem;
+  font-weight: 750;
+  letter-spacing: .04em;
+}
+.demo-note {
+  padding: .75rem 1rem;
+  border-left: 4px solid #075c35;
+  background: #e0f2e7;
+  border-radius: .25rem;
+}
+
+/* The secondary navigation jumps to each card's ID. Separate named nav
+   landmarks in TSX let screen-reader users distinguish page and section links. */
+.dashboard-nav {
+  margin-bottom: 1.5rem;
+}
+.dashboard-nav a {
+  color: #075c35;
+  background: white;
+  border-color: #568069;
+}
+.dashboard-nav a:hover {
+  background: #e0f2e7;
+  text-decoration: underline;
+}
+
+/* Grid controls the layout; each .dashboard-card is a semantic <section>.
+   minmax(0, 1fr) allows long content to shrink within two equal columns.
+   DOM order is also the reading order: no CSS reordering is needed. */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.25rem;
+}
+.dashboard-card {
+  min-width: 0;
+  padding: 1.5rem;
+  border: 1px solid #b2ccbd;
+  border-radius: .85rem;
+  /* Move the light green surface onto the cards against the white page. */
+  background: #f3faf5;
+  box-shadow: 0 4px 14px rgb(7 92 53 / 5%);
+}
+.dashboard-card > :last-child {
+  margin-bottom: 0;
+}
+
+/* Focusable anchor destinations have breathing room when scrolled into view.
+   Status always uses words, so color is never the only source of meaning. */
+main, .dashboard-card {
+  scroll-margin-top: 1rem;
+}
+.metric {
+  margin: 0;
+  color: #075c35;
+  font-size: 2.75rem;
+  line-height: 1.2;
+  font-weight: 750;
+}
+.status-label {
+  display: inline-block;
+  margin-top: 0;
+  padding: .25rem .6rem;
+  border-radius: .3rem;
+  background: #edf3ef;
+  font-weight: 650;
+}
+.detail-list {
+  padding-left: 1.25rem;
+}
+.detail-list li + li {
+  margin-top: .4rem;
+}
+
+/* Home keeps the original logo and green/white presentation. */
+#center {
+  min-height: 78vh;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 1.5rem;
+  padding: 4rem 1.5rem;
+  text-align: center;
+  /* Match the dashboards: white page with light green content surfaces. */
+  background: white;
+}
+.hero {
+  width: 190px;
+  height: 190px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #f3faf5;
+  box-shadow: 0 16px 45px rgb(7 92 53 / 16%);
+}
+.base {
+  max-width: 170px;
+  max-height: 179px;
+  object-fit: contain;
+}
+
+/* At narrow widths (including desktop zoom), stack cards and allow links to
+   wrap. No fixed card heights means enlarged text stays visible. */
+@media (max-width: 650px) {
+  .navbar {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .navbar-links {
+    gap: .25rem;
+  }
+  .navbar-links a {
+    padding-inline: .65rem;
+  }
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+  .dashboard-card {
+    padding: 1.25rem;
+  }
+}
+
+/* Only enable animated anchor scrolling if the user allows motion.
+   With reduced motion enabled, the browser's default instant scroll remains. */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* System colors keep focus and card boundaries visible in high-contrast mode. */
+@media (forced-colors: active) {
+  :focus-visible {
+    outline-color: Highlight;
+  }
+  .navbar-links a[aria-current="page"] {
+    border-color: LinkText;
+  }
+  .dashboard-card, .status-label {
+    border: 1px solid CanvasText;
+  }
+}
