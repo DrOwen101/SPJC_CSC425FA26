@@ -4,6 +4,9 @@ import Dashboardadmin from './Dashboardadmin'
 import Dashboardfaculty from './Dashboardfaculty'
 import Dashboardstudent from './Dashboardstudent'
 import './App.css'
+import AdminIcon from './assets/Adminicon.png'
+import FacultyIcon from './assets/Facultyicon.png'
+import StudentIcon from './assets/Studenticon.png'
 
 // A union type restricts role values to these three strings.
 type DashboardRole = 'student' | 'faculty' | 'admin'
@@ -67,9 +70,27 @@ function App() {
             and border, so selection is communicated by more than color alone. */}
         <ul className="navbar-links">
           <li><a href="#center" aria-current={activeDashboard === null ? 'page' : undefined}>Home</a></li>
-          <li><a href="#student-dashboard" aria-current={activeDashboard === 'student' ? 'page' : undefined}>Student</a></li>
-          <li><a href="#faculty-dashboard" aria-current={activeDashboard === 'faculty' ? 'page' : undefined}>Faculty</a></li>
-          <li><a href="#admin-dashboard" aria-current={activeDashboard === 'admin' ? 'page' : undefined}>Admin</a></li>
+          <li>
+            <a className="role-button role-student" href="#student-dashboard"
+              aria-current={activeDashboard === 'student' ? 'page' : undefined}>
+              <span>Student</span>
+              <span className="role-icon"><img src={StudentIcon} alt="" /></span>
+            </a>
+          </li>
+          <li>
+            <a className="role-button role-faculty" href="#faculty-dashboard"
+              aria-current={activeDashboard === 'faculty' ? 'page' : undefined}>
+              <span>Faculty</span>
+              <span className="role-icon"><img src={FacultyIcon} alt="" /></span>
+            </a>
+          </li>
+          <li>
+            <a className="role-button role-admin" href="#admin-dashboard"
+              aria-current={activeDashboard === 'admin' ? 'page' : undefined}>
+              <span>Admin</span>
+              <span className="role-icon"><img src={AdminIcon} alt="" /></span>
+            </a>
+          </li>
         </ul>
       </nav>
 

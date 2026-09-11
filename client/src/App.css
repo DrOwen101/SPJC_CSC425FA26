@@ -39,8 +39,8 @@
    surfaces preserves the existing identity with strong text contrast. */
 :root {
   font-family: Inter, ui-sans-serif, system-ui, sans-serif;
-  color: #123524;
-  background: white;
+  color: #073d20;
+  background: #d0f5c5;
   font-synthesis: none;
   line-height: 1.6;
 }
@@ -109,7 +109,7 @@ p {
   gap: 1rem;
   padding: 1rem clamp(1rem, 4vw, 4rem);
   color: white;
-  background: #075c35;
+  background: #004b1a;
 }
 .navbar-brand {
   display: inline-flex;
@@ -140,6 +140,14 @@ p {
   border-radius: .5rem;
   font-weight: 650;
   text-decoration: none;
+}
+
+.navbar-links a {
+  width: 170px;
+  height: 56px;
+  min-width: 170px;
+  min-height: 56px;
+  padding: 0 0 0 1.25rem !important;
 }
 .navbar-links a:hover {
   text-decoration: underline;
@@ -183,12 +191,12 @@ p {
   margin-bottom: 1.5rem;
 }
 .dashboard-nav a {
-  color: #075c35;
-  background: white;
-  border-color: #568069;
+  color: #073d20;
+  border-color: #75b866;
+  background: #f7fbf3;
 }
 .dashboard-nav a:hover {
-  background: #e0f2e7;
+  background: #dff1d5;
   text-decoration: underline;
 }
 
@@ -220,7 +228,7 @@ main, .dashboard-card {
 }
 .metric {
   margin: 0;
-  color: #075c35;
+  color: #126400;
   font-size: 2.75rem;
   line-height: 1.2;
   font-weight: 750;
@@ -230,7 +238,7 @@ main, .dashboard-card {
   margin-top: 0;
   padding: .25rem .6rem;
   border-radius: .3rem;
-  background: #edf3ef;
+  background: #e5f3db;
   font-weight: 650;
 }
 .detail-list {
@@ -307,4 +315,279 @@ main, .dashboard-card {
   .dashboard-card, .status-label {
     border: 1px solid CanvasText;
   }
+}
+
+.navbar-links li:nth-child(1) a {
+  background: #087908;
+}
+
+.navbar-links li:nth-child(2) a {
+  background: #4de254;
+}
+
+.navbar-links li:nth-child(3) a {
+  background: #1ea125;
+}
+
+.navbar-links li:nth-child(4) a {
+  background: #109670;
+}
+.navbar-links li {
+  width: 170px;
+}
+
+.role-button {
+  width: 170px;
+  justify-content: space-between;
+  padding: 0 0 0 1.25rem !important;
+  overflow: hidden;
+  border: 0 !important;
+  border-radius: 12px !important;
+  color: white;
+  font-size: 1.05rem;
+  font-weight: 750;
+  box-shadow: 0 8px 16px rgb(0 0 0 / 18%);
+}
+
+.role-button > span:first-child {
+  flex: 1;
+  text-align: left;
+}
+
+.role-icon {
+  width: 56px;
+  height: 56px;
+  display: grid;
+  place-items: center;
+  background: rgb(0 65 25 / 30%);
+}
+
+.role-icon img {
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+}
+
+.role-student { background: #2f83bd; }
+.role-faculty { background: #a653bd; }
+.role-admin { background: #299879; }
+
+.role-button:hover {
+  filter: brightness(1.1);
+  text-decoration: none !important;
+  transform: translateY(-2px);
+}
+
+.role-button[aria-current="page"] {
+  outline: 3px solid white;
+  outline-offset: 2px;
+}
+
+#student-dashboard .dashboard-header {
+  padding: 1.75rem 2rem;
+  border: 1px solid #a7d78e;
+  border-radius: 12px;
+  background: #fbfdf9;
+  text-align: center;
+}
+
+#student-dashboard .dashboard-header .eyebrow {
+  margin-bottom: .25rem;
+}
+
+#student-dashboard .dashboard-header > p:not(.eyebrow):not(.demo-note) {
+  margin-bottom: 0;
+}
+
+#student-dashboard .dashboard-nav {
+  margin: 1.25rem 0;
+}
+
+#student-dashboard .dashboard-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+#student-dashboard #gpa,
+#student-dashboard #attendance,
+#student-dashboard #transcript,
+#student-dashboard #alerts {
+  grid-column: span 2;
+}
+
+#student-dashboard #gpa,
+#student-dashboard #attendance {
+  min-height: 150px;
+  text-align: center;
+}
+
+#student-dashboard #courses {
+  grid-column: 1 / -1;
+  min-height: 190px;
+}
+
+#student-dashboard .metric {
+  font-size: 2.5rem;
+}
+
+#student-dashboard #transcript,
+#student-dashboard #alerts {
+  min-height: 145px;
+}
+
+@media (max-width: 650px) {
+  #student-dashboard .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  #student-dashboard #gpa,
+  #student-dashboard #attendance,
+  #student-dashboard #transcript,
+  #student-dashboard #alerts,
+  #student-dashboard #courses {
+    grid-column: auto;
+  }
+}
+
+/* Faculty dashboard: teaching priorities first */
+#faculty-dashboard .dashboard-header {
+  border-left: 8px solid #4de254;
+  padding: 1.5rem 2rem;
+  background: #fbfdf9;
+}
+
+#faculty-dashboard .dashboard-grid {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+#faculty-dashboard #faculty-courses {
+  grid-column: 1 / 5;
+  grid-row: 1;
+}
+
+#faculty-dashboard #teaching-schedule {
+  grid-column: 5 / 7;
+  grid-row: 1;
+}
+
+#faculty-dashboard #class-rosters {
+  grid-column: 1 / 4;
+  grid-row: 2;
+}
+
+#faculty-dashboard #grading {
+  grid-column: 4 / 7;
+  grid-row: 2;
+}
+
+#faculty-dashboard #faculty-alerts {
+  grid-column: 1 / -1;
+  grid-row: 3;
+  min-height: 130px;
+}
+
+
+/* Admin dashboard: management tools in a wider control layout */
+#admin-dashboard .dashboard-header {
+  border-top: 8px solid #8dca67;
+  padding: 1.5rem 2rem;
+  background: #fbfdf9;
+}
+
+#admin-dashboard .dashboard-grid {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+#admin-dashboard #user-management {
+  grid-column: 1 / 4;
+  grid-row: 1;
+}
+
+#admin-dashboard #course-management {
+  grid-column: 4 / 7;
+  grid-row: 1;
+}
+
+#admin-dashboard #reports {
+  grid-column: 1 / 5;
+  grid-row: 2;
+}
+
+#admin-dashboard #admin-alerts {
+  grid-column: 5 / 7;
+  grid-row: 2;
+}
+
+#admin-dashboard #system-status {
+  grid-column: 1 / -1;
+  grid-row: 3;
+  min-height: 130px;
+}
+
+
+/* Keep all dashboard layouts readable on smaller screens */
+@media (max-width: 650px) {
+  #faculty-dashboard .dashboard-grid,
+  #admin-dashboard .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  #faculty-dashboard .dashboard-card,
+  #admin-dashboard .dashboard-card {
+    grid-column: auto !important;
+    grid-row: auto !important;
+  }
+}
+
+#student-dashboard .dashboard-header,
+#faculty-dashboard .dashboard-header,
+#admin-dashboard .dashboard-header {
+  margin-bottom: 1.5rem;
+  padding: 1.75rem 2rem;
+  border: 1px solid #a7d78e;
+  border-left: 1px solid #a7d78e;
+  border-radius: 12px;
+  background: #fbfdf9;
+  text-align: center;
+}
+
+@media (max-width: 650px) {
+  #student-dashboard .dashboard-header,
+  #faculty-dashboard .dashboard-header,
+  #admin-dashboard .dashboard-header {
+    padding: 1.25rem;
+  }
+}
+
+.navbar-links li:first-child a {
+  transition: transform .2s ease, filter .2s ease, box-shadow .2s ease;
+}
+
+.navbar-links li:first-child a:hover,
+.navbar-links li:first-child a:focus-visible {
+  filter: brightness(1.12);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgb(0 48 20 / 28%);
+  text-decoration: none;
+}
+
+
+#student-dashboard .dashboard-header > p,
+#faculty-dashboard .dashboard-header > p,
+#admin-dashboard .dashboard-header > p {
+  max-width: 70ch;
+  margin-right: auto;
+  margin-left: auto;
+  text-align: center;
+}
+
+#student-dashboard .dashboard-header .demo-note,
+#faculty-dashboard .dashboard-header .demo-note,
+#admin-dashboard .dashboard-header .demo-note {
+  width: 100%;
+  border-left: 0;
+  border-top: 4px solid #46ad68;
+  border-radius: 8px;
 }
