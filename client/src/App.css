@@ -106,11 +106,16 @@ p {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
+  justify-content: center; /* Moved navbar buttons to the center.*/
+  gap: 2rem; /* Created bigger gaps between the buttons.*/
   padding: 1rem clamp(1rem, 4vw, 4rem);
   color: white;
   background: #075c35;
+  /* Keep the navbar completely visible while scrolling*/
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  box-shadow: 0 2px 10px rgb(0 0 0 / 15%);
 }
 .navbar-brand {
   display: inline-flex;
@@ -138,7 +143,7 @@ p {
   min-height: 44px;
   padding: .6rem 1rem;
   border: 2px solid transparent;
-  border-radius: .5rem;
+  border-radius: 999px; /* Made the navbar and dashbaord buttons rounded*/
   font-weight: 650;
   text-decoration: none;
 }
@@ -157,7 +162,7 @@ p {
 .dashboard {
   max-width: 1120px;
   margin: 0 auto;
-  padding: 2rem clamp(1rem, 4vw, 2rem) 4rem;
+  padding: 2.5rem clamp(1rem, 4vw, 2rem) 4rem; /*Increased the top padding from 2 to 2.5*/
 }
 .dashboard-header {
   margin-bottom: 1.5rem;
@@ -208,7 +213,13 @@ p {
   border-radius: .85rem;
   /* Move the light green surface onto the cards against the white page. */
   background: #f3faf5;
-  box-shadow: 0 4px 14px rgb(7 92 53 / 5%);
+  box-shadow: 0 4px 14px rgb(7 92 53 / 5%); /*Creates a shadow to lift navbar above content*/
+  transition: transform .15s ease, box-shadow .15s ease; /* Create hover effect on the dashboard cards. */
+}
+/* Class used to create hover effect*/
+.dashboard-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgb(7 92 53 / 12%);
 }
 .dashboard-card > :last-child {
   margin-bottom: 0;
