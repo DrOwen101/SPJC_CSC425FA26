@@ -110,6 +110,8 @@ p {
   padding: 1rem clamp(1rem, 4vw, 4rem);
   color: white;
   background: #075c35;
+  container-type: inline-size;
+  width: 100%;
 }
 .navbar-brand {
   display: inline-flex;
@@ -133,13 +135,15 @@ p {
 .navbar-links a, .dashboard-nav a {
   display: flex;
   align-items: center;
-  min-width: 44px;
-  min-height: 44px;
   padding: .6rem 1rem;
   border: 2px solid transparent;
   border-radius: .5rem;
   font-weight: 650;
+  width: clamp(44px, 23cqi, 100px);
+  min-height: 44px;
+  font-size: clamp(.8rem, 4vw, 1rem);
   text-decoration: none;
+  padding-inline: .75rem;
 }
 .navbar-links a:hover {
   text-decoration: underline;
@@ -181,11 +185,15 @@ p {
    landmarks in TSX let screen-reader users distinguish page and section links. */
 .dashboard-nav {
   margin-bottom: 1.5rem;
+  container-type: inline-size;
 }
 .dashboard-nav a {
   color: #075c35;
   background: white;
   border-color: #568069;
+  font-size: clamp(.5rem, 2.5vw, 0.8rem);
+  padding: .4rem 0.5rem;
+  font-weight: 700;
 }
 .dashboard-nav a:hover {
   background: #e0f2e7;
