@@ -151,6 +151,34 @@ p {
   background: #06472a;
 }
 
+.menu-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: 2px solid transparent;
+  border-radius: .5rem;
+  color:#f3faf5;
+  background: transparent;
+}
+.menu-toggle:hover,
+.menu-toggle[aria-expanded="true"] {
+  border-color: white;
+  background: #06472a;
+}
+.waffle-icon {
+  display: grid;
+  grid-template-columns: repeat(3, 4px);
+  gap: 3px;
+}
+.waffle-icon span {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
 /* .dashboard is shared by each role's <main>. A capped width keeps text
    readable; auto margins center the content on wide screens. */
 .dashboard {
@@ -271,11 +299,24 @@ main, .dashboard-card {
    wrap. No fixed card heights means enlarged text stays visible. */
 @media (max-width: 650px) {
   .navbar {
-    align-items: flex-start;
-    flex-direction: column;
+    align-items: center;
+  }
+  .menu-toggle {
+    display: inline-flex;
+    margin-left: auto;
   }
   .navbar-links {
+    display: none;
+    width: 100%;
+    flex-direction: column;
     gap: .25rem;
+    padding-top: .5rem;
+  }
+  .navbar-links.is-open {
+    display: flex;
+  }
+  .navbar-links {
+    align-items: stretch;
   }
   .navbar-links a {
     padding-inline: .65rem;
