@@ -30,6 +30,7 @@ function getDashboard(activeDashboard: DashboardRole | null) {
 
 function App() {
   const [hash, setHash] = useState(() => window.location.hash)
+  const [menuOpen, setMenuOpen] = useState(false)
   const activeDashboard = getRole(hash)
   const dashboard = getDashboard(activeDashboard)
   const contentId = activeDashboard ? `${activeDashboard}-dashboard` : 'center'
@@ -38,6 +39,7 @@ function App() {
   useEffect(() => {
     function handleHashChange() {
       setHash(window.location.hash)
+      setMenuOpen(false)
     }
     window.addEventListener('hashchange', handleHashChange)
     return () => window.removeEventListener('hashchange', handleHashChange)
@@ -63,9 +65,22 @@ function App() {
       <a className="skip-link" href={`#${contentId}`}>Skip to main content</a>
       <nav className="navbar" aria-label="Main navigation">
         <a className="navbar-brand" href="#center">SPJC</a>
+        <button
+          className="menu-toggle"
+          type="button"
+          aria-controls="primary-navigation"
+          aria-expanded={menuOpen}
+          aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+          onClick={() => setMenuOpen((open) => !open)}
+        >
+          <span className="waffle-icon" aria-hidden="true">
+            {Array.from({ length: 9 }, (_, index) => <span key={index} />)}
+          </span>
+          <span className="navbar-toggle-icon"></span>
+        </button>
         {/* aria-current announces the selected page. CSS also adds an underline
             and border, so selection is communicated by more than color alone. */}
-        <ul className="navbar-links">
+        <ul className={`navbar-links${menuOpen ? ' is-open' : ''}`}>
           <li><a href="#center" aria-current={activeDashboard === null ? 'page' : undefined}>Home</a></li>
           <li><a href="#student-dashboard" aria-current={activeDashboard === 'student' ? 'page' : undefined}>Student</a></li>
           <li><a href="#faculty-dashboard" aria-current={activeDashboard === 'faculty' ? 'page' : undefined}>Faculty</a></li>
