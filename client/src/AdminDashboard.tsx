@@ -2,16 +2,25 @@ import SPJCLogo from './assets/SPJCLogo.jpg'
 
 function AdminDashboard() {
   return (
-    <>
-      <header>
-        <section aria-label="SPJC branding">
-          <img src={SPJCLogo} width="100" alt="SPJC logo" />
-        </section>
+    <div id="admin-dashboard" className="dashboard-page">
+      <header className="dashboard-header">
+        <div className="dashboard-brand">
+          <img
+            src={SPJCLogo}
+            className="dashboard-logo"
+            width="80"
+            alt="SPJC logo"
+          />
 
-        <h1>Admin Dashboard</h1>
-        <p>University Administration Portal</p>
+          <div>
+            <h1>Admin Dashboard</h1>
+            <p className="dashboard-subtitle">
+              University Administration Portal
+            </p>
+          </div>
+        </div>
 
-        <nav aria-label="Admin navigation">
+        <nav className="dashboard-nav" aria-label="Admin navigation">
           <a href="#user-management">User Management</a>
           <a href="#course-management">Course Management</a>
           <a href="#reports">Reports</a>
@@ -20,33 +29,39 @@ function AdminDashboard() {
         </nav>
       </header>
 
-      <main id="admin-dashboard">
-        <article id="user-management">
-          <h2>User Management</h2>
-          <p>Manage student and faculty accounts.</p>
-        </article>
+      <main className="dashboard-content">
+        <section className="dashboard-section">
+          <h2>Administration Overview</h2>
 
-        <section id="course-management">
-          <h2>Course Management</h2>
-          <p>Manage available courses.</p>
+          <div className="dashboard-grid">
+            <article id="user-management" className="dashboard-card">
+              <h3>User Management</h3>
+              <p>Manage student and faculty accounts.</p>
+            </article>
+
+            <article id="course-management" className="dashboard-card">
+              <h3>Course Management</h3>
+              <p>Manage available courses.</p>
+            </article>
+
+            <article id="reports" className="dashboard-card">
+              <h3>Reports</h3>
+              <p>View system reports.</p>
+            </article>
+
+            <article id="admin-alerts" className="dashboard-card">
+              <h3>Alerts</h3>
+              <p>View administrative alerts.</p>
+            </article>
+
+            <article id="system-status" className="dashboard-card">
+              <h3>System Status</h3>
+              <p className="status-online">All systems operational</p>
+            </article>
+          </div>
         </section>
-
-        <article id="reports">
-          <h2>Reports</h2>
-          <p>View system reports.</p>
-        </article>
-
-        <article id="admin-alerts">
-          <h2>Alerts</h2>
-          <p>View administrative alerts.</p>
-        </article>
-
-        <article id="system-status">
-          <h2>System Status</h2>
-          <p>Check the application status.</p>
-        </article>
       </main>
-    </>
+    </div>
   )
 }
 
