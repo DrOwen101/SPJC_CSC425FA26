@@ -4,7 +4,6 @@ function Dashboardfaculty() {
       <header>
         <h1>Faculty Dashboard</h1>
         <p>University Faculty Portal</p>
-
         <nav className="navbarDash" aria-label="Faculty navigation">
           <a className="navbar-Dashlink" href="#faculty-courses">Courses</a>
           <a className="navbar-Dashlink" href="#class-rosters">Class Rosters</a>
@@ -15,27 +14,27 @@ function Dashboardfaculty() {
       </header>
 
       <main className="topicHeader" id="faculty-dashboard">
-        <section id="Courses">
+        <section id="faculty-courses">
           <h2>Courses</h2>
           <p>Courses you are teaching.</p>
         </section>
 
-        <section id="Class Rosters">
+        <section id="class-rosters">
           <h2>Class Rosters</h2>
           <p>View your class rosters.</p>
         </section>
 
-        <section id="Grading">
+        <section id="grading">
           <h2>Grading</h2>
           <p>Manage and view your students' grades.</p>
         </section>
 
-        <section id="alerts">
+        <section id="faculty-alerts">
           <h2>Alerts</h2>
           <p>No new academic alerts.</p>
         </section>
 
-        <section id="Teaching Schedule">
+        <section id="teaching-schedule">
           <h2>Teaching Schedule</h2>
           <p>View your teaching schedule and class times.</p>
         </section>

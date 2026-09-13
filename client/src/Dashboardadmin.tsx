@@ -15,27 +15,27 @@ function Dashboardadmin() {
       </header>
 
       <main className="topicHeader" id="admin-dashboard">
-        <section id="User Management">
+        <section id="user-management">
           <h2>User Management</h2>
           <p>Manage and view user accounts.</p>
         </section>
 
-        <section id="Course Management">
+        <section id="course-management">
           <h2>Course Management</h2>
           <p>Manage and view course information.</p>
         </section>
 
-        <section id="Reports">
+        <section id="reports">
           <h2>Reports</h2>
           <p>View and generate reports.</p>
         </section>
 
-        <section id="alerts">
+        <section id="admin-alerts">
           <h2>System Alerts</h2>
           <p>Create or manage system alerts.</p>
         </section>
 
-        <section id="System Status">
+        <section id="system-status">
           <h2>System Status</h2>
           <p>View the current status of the system.</p>
         </section>

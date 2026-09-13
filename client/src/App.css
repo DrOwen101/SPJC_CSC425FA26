@@ -70,6 +70,19 @@ a {
   color: inherit;
 }
 
+#container {
+  display: flex;
+  flex-direction: column;
+  align-items: left;
+}
+
+nav a {
+  display: flex;
+  text-align: left;
+  align-items: left;
+  justify-content: left;
+}
+
 /* A reusable navigation class. Sticky positioning keeps it at the top while
   scrolling within its container; z-index controls stacking. Flexbox lays out
   its children in a row, centers them vertically, and puts space between them.
@@ -89,24 +102,19 @@ a {
 /* A reusable navigation link class. Remove the default underline, set the text
   color to white, and make it bold. */
 .navbarDash {
-  position: sticky;
   z-index: 0;
-  display: flex;
-  align-items: center;
+  align-items: left;
   justify-content: space-between;
-  padding: 1rem clamp(1.25rem, 5vw, 5rem);
+  flex-grow: 1;
+  padding: .5rem clamp(1.25rem, 5vw, 5rem);
 }
 
 /* A reusable navigation link class. Remove the default underline, set the text
   color to white, and make it bold. */
 .navbar-Dashlink {
-  text-decoration: none;
-  color: white;
-  font-weight: 600;
-  font-size: 1.2rem;
-  border: #075c35 20px solid;
-  background-color: #075c35;
-  border-radius: 5px;
+  color: #075c35;
+  font-weight: 500;
+  font-size: 1.125rem;
 }
 
 /* The navigation brand link: larger, bold text without an underline.
@@ -123,7 +131,7 @@ a {
   display: flex;
   gap: 1.5rem;
   margin: 0;
-  padding: 0;
+  padding: 5px;
   list-style: none;
 }
 
