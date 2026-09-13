@@ -154,9 +154,9 @@ p {
 /* .dashboard is shared by each role's <main>. A capped width keeps text
    readable; auto margins center the content on wide screens. */
 .dashboard {
-  max-width: 1120px;
+  max-width: 1100px;
   margin: 0 auto;
-  padding: 2rem clamp(1rem, 4vw, 2rem) 4rem;
+  padding: 1.5rem clamp(1rem, 4vw, 2rem) 3rem;
 }
 .dashboard-header {
   margin-bottom: 1.5rem;
@@ -197,7 +197,7 @@ p {
    DOM order is also the reading order: no CSS reordering is needed. */
 .dashboard-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1.25rem;
 }
 .dashboard-card {
@@ -207,6 +207,11 @@ p {
   border-radius: .85rem;
   /* Move the light green surface onto the cards against the white page. */
   background: #f3faf5;
+  box-shadow: 0 4px 14px rgb(7 92 53 / 5%);
+}
+.dashboard-card:target { /* Highlight selected dashboard-card */
+  border-color: #075c35;
+  background: #e8f5ec;
   box-shadow: 0 4px 14px rgb(7 92 53 / 5%);
 }
 .dashboard-card > :last-child {
