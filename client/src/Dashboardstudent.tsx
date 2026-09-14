@@ -4,7 +4,8 @@ import SPJCLogo from './assets/SPJCLogo.jpg'
 function Dashboardstudent() {
   return (
     <>
-      <header>
+    <div className="dashboard">
+      <header className="dashboard-header">
         <h1>Student Dashboard</h1> 
         <p>University Student Portal</p>
 
@@ -17,34 +18,34 @@ function Dashboardstudent() {
         </nav>
       </header>
 
-      <main id="student-dashboard">
-        <section id="gpa">
+      <main id="student-dashboard" className="dashboard-main">
+        <section id="gpa" className="dashboard-card">
           <h2>GPA</h2>
           <p>Current GPA: 3.75</p>
         </section>
 
-        <section id="attendance">
+        <section id="attendance" className="dashboard-card">
           <h2>Attendance</h2>
           <p>Current attendance: 94%</p>
         </section>
 
-        <section id="transcript">
+        <section id="transcript" className="dashboard-card">
           <h2>Transcript</h2>
           <p>View your completed courses and grades.</p>
         </section>
 
-        <section id="alerts">
+        <section id="alerts" className="dashboard-card">
           <h2>Alerts</h2>
           <p>No new academic alerts.</p>
         </section>
 
-        <section id="courses">
+        <section id="courses" className="dashboard-card">
           <h2>Upcoming Courses</h2>
           <p>View your upcoming and registered courses.</p>
         </section>
 
         {/*company logo section*/}
-        {<section id="right"> 
+        {<section id="right" className="dashboard-card"> 
         <div className="hero">
           <img src={SPJCLogo} className="base" width="170" height="179" alt="SPJC logo" />
         </div>
@@ -57,6 +58,7 @@ function Dashboardstudent() {
       </section>}
 
       </main>
+    </div>
     </>
   )
 }

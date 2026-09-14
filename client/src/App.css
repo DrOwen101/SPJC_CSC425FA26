@@ -28,3 +28,36 @@ code { padding: .15rem .35rem; border-radius: .3rem; background: #e0f2e7; }
 .logo, .button-icon { width: 1.5rem; height: 1.5rem; object-fit: contain; fill: currentColor; }
 #spacer { height: 8rem; }
 @media (max-width: 650px) { .navbar { align-items: flex-start; gap: 1rem; } .navbar-links { gap: .8rem; font-size: .9rem; } #next-steps { grid-template-columns: 1fr; } }
+
+
+
+/* DT WORK */
+
+.dashboard {
+    --dash-color: green;
+    --dash-dark: darkgreen;
+    --dash-subtle: lightgreen;
+}
+
+.dashboard-header {
+    padding: 2.5rem clamp(1.25rem, 5vw, 5rem) 2.5rem;
+    color: white;
+    background: var(--dash-color); /* try gradient next */
+    text-align: center;
+}
+
+.dashboard-main {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    padding: 2rem;
+    margin: 0 auto;
+}
+
+.dashboard-card {
+    padding: 2rem;
+    border: 1px solid var(--dash-subtle);
+    border-radius: 15px;
+    background: white;
+    box-shadow: 0 10px 30px rgb(7 92 53 / 10%);
+}
