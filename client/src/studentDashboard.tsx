@@ -1,12 +1,12 @@
 function Dashboardstudent() {
   return (
     <>
-      <header>
+      <header className="section">
         <h1>Student Dashboard</h1>
         <p>University Student Portal</p>
 
         <nav aria-label="Student navigation">
-          <ul>
+          <ul className="section-sub">
             <li><a href="#gpa">GPA</a></li>
             <li><a href="#attendance">Attendance</a></li>
             <li><a href="#transcript">Transcript</a></li>
@@ -17,29 +17,39 @@ function Dashboardstudent() {
       </header>
 
       <main>
-        <section id="gpa">
-          <h2>GPA</h2>
-          <p>Current GPA: 3.75</p>
+        <section className="section" id="gpa">
+          <h2 className="section-title">GPA</h2>
+          <ul className="section-sub">
+            <li><p>Current GPA: 3.75</p></li>
+          </ul>
         </section>
 
-        <section id="attendance">
-          <h2>Attendance</h2>
-          <p>Current attendance: 94%</p>
+        <section className="section" id="attendance">
+          <h2 className="section-title">Attendance</h2>
+          <ul className="section-sub">
+            <li><p>Current attendance: 94%</p></li>
+          </ul>
         </section>
 
-        <section id="transcript">
-          <h2>Transcript</h2>
-          <p>View your completed courses and grades.</p>
+        <section className="section" id="transcript">
+          <h2 className="section-title">Transcript</h2>
+          <ul className="section-sub">
+            <li><p>View your completed courses and grades.</p></li>
+          </ul>
         </section>
 
-        <section id="alerts">
-          <h2>Alerts</h2>
-          <p>No new academic alerts.</p>
+        <section className="section" id="alerts">
+          <h2 className="section-title">Alerts</h2>
+          <ul className="section-sub">
+            <li><p>No new academic alerts.</p></li>
+          </ul>
         </section>
 
-        <section id="courses">
-          <h2>Upcoming Courses</h2>
-          <p>View your upcoming and registered courses.</p>
+        <section className="section" id="courses">
+          <h2 className="section-title">Upcoming Courses</h2>
+          <ul className="section-sub">
+            <li><p>View your upcoming and registered courses.</p></li>
+          </ul>
         </section>
       </main>
     </>

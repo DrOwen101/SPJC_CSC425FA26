@@ -1,12 +1,12 @@
 function FDashboard() {
   return (
     <>
-      <header>
+      <header className="section">
         <h1>Faculty Dashboard</h1>
         <p>University Faculty Portal</p>
 
         <nav aria-label="Faculty navigation">
-          <ul>
+          <ul className="section-sub">
             <li><a href="#EnterGrade">Enter Grade</a></li>
             <li><a href="#EnterGrade">Change Grade</a></li>
             <li><a href="#EnterGrade">View Grade</a></li>
@@ -15,9 +15,9 @@ function FDashboard() {
       </header>
 
       <main>
-        <section id="EnterGrade">
-          <h2>Enter Grade</h2>
-        <form> 
+        <section className="section" id="EnterGrade">
+          <h2 className="section-title">Enter Grade</h2>
+        <form className="section-sub"> 
           <input name="Assignment" /> Assignment Name <br />
           <input max="199" min="1" name="Grade" step="1" type="number" value="100" /> Grade for Assignment <br />
           <label><input name="terms" type="checkbox" value="tandc" /> Finalize</label> <br />
@@ -25,9 +25,9 @@ function FDashboard() {
         </form>
         </section>
 
-        <section>
-          <h2>Change Grade</h2>
-          <form>
+        <section className="section">
+          <h2 className="section-title">Change Grade</h2>
+          <form className="section-sub">
             <select name='Assignment' defaultValue='none'>
               <option value="none">Assignments</option>
               <option value="assninment1"> Assignment1</option>
@@ -40,9 +40,9 @@ function FDashboard() {
           </form>
         </section>
 
-        <section>
-          <h2>View Grades</h2>
-          <form>
+        <section className="section">
+          <h2 className="section-title">View Grades</h2>
+          <form className="section-sub">
             <select name='Assignment' defaultValue='none'>
               <option value="none">Assignments</option>
               <option value="assninment1"> Assignment1</option>
