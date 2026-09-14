@@ -1,57 +1,67 @@
 function Dashboardstudent() {
   return (
-    <>
-      <header>
+    <main id="student-dashboard" className="dashboard" aria-labelledby="student-title" tabIndex={-1}>
+      <header className="dashboard-header">
         <h1>Student Dashboard</h1>
         <p>University Student Portal</p>
-
-        <nav aria-label="Student navigation">
-          <a href="#gpa">GPA</a>
-          <a href="#attendance">Attendance</a>
-          <a href="#transcript">Transcript</a>
-          <a href="#alerts">Alerts</a>
-          <a href="#courses">Upcoming Courses</a>
-          <a href="#courses">Balance</a>
-        </nav>
       </header>
+        <nav className="dashboard-nav" aria-label="Student sections">
+        <ul>
+            <li><a href="#gpa">GPA</a></li>
+            <li><a href="#attendance">Attendance</a></li>
+            <li><a href="#balance">Account Balance</a></li>
+            <li><a href="#transcript">Transcript</a></li>
+            <li><a href="#alerts">Alerts</a></li>
+            <li><a href="#resources">Resources</a></li>
+            <li><a href="#courses">Upcoming Courses</a></li>
+        </ul>
+      </nav>
+      
 
-      <main>
-        <section id="gpa">
-          <h2>GPA</h2>
-          <p>Current GPA: 3.75</p>
+      <div className="dashboard-grid">
+        <section id="gpa" className="dashboard-card" aria-labelledby="gpa-heading" tabIndex={-1}>
+          <h2 id="gpa-heading">GPA</h2>
+          <p className="metric">3.75</p>
+          <p>Current GPA · sample value</p>
         </section>
 
-        <section id="attendance">
-          <h2>Attendance</h2>
-          <p>Current attendance: 94%</p>
+        <section id="attendance" className="dashboard-card" aria-labelledby="attendance-heading" tabIndex={-1}>
+          <h2 id="attendance-heading">Attendance</h2>
+          <p className="metric">94%</p>
+          <p>Current attendance · sample value</p>
         </section>
 
-        <section id="transcript">
-          <h2>Transcript</h2>
-          <p>View your completed courses and grades.</p>
+        <section id="balance" className="dashboard-card" aria-labelledby="courses-heading" tabIndex={-1}>
+          <h2 id="courses-heading">Account Balance</h2>
+          <p className="metric">$100</p>
+          <p>Your account balacne overview is shown. You can see your bill, make a payment, and such under this tab.</p>
         </section>
 
-        <section id="Balance">
-          <h2>Balance</h2>
-          <p>Your balance is $10.00</p>
+        <section id="transcript" className="dashboard-card" aria-labelledby="transcript-heading" tabIndex={-1}>
+          <h2 id="transcript-heading">Transcript</h2>
+          <p className="status-label">Not connected</p>
+          <p>Completed courses, credit hours, and final grades will appear here when academic records are connected.</p>
         </section>
 
-        <section id="alerts">
-          <h2>Alerts</h2>
-          <p>No new academic alerts.</p>
+        <section id="alerts" className="dashboard-card" aria-labelledby="alerts-heading" tabIndex={-1}>
+          <h2 id="alerts-heading">Alerts</h2>
+          <p className="status-label">Sample status: no new academic alerts</p>
+          <p>Check here for academic reminders and notices. Live alerts are not connected.</p>
         </section>
 
-        <section id="resources">
-          <h2>Resources</h2>
-          <p>College Resources are found here.</p>
+        <section id="resources" className="dashboard-card" aria-labelledby="courses-heading" tabIndex={-1}>
+          <h2 id="courses-heading">University Resources</h2>
+          <p className="status-label">Not connected</p>
+          <p>Tutoring schedules, mental health resources, and other resources can be found here.</p>
         </section>
 
-        <section id="courses">
-          <h2>Upcoming Courses</h2>
-          <p>View your upcoming and registered courses.</p>
+        <section id="courses" className="dashboard-card" aria-labelledby="courses-heading" tabIndex={-1}>
+          <h2 id="courses-heading">Upcoming Courses</h2>
+          <p className="status-label">Not connected</p>
+          <p>Your registered courses, meeting times, and locations will appear here when registration data is connected.</p>
         </section>
-      </main>
-    </>
+      </div>
+    </main>
   )
 }
 
