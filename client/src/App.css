@@ -173,6 +173,7 @@ p {
 .demo-note {
   padding: .75rem 1rem;
   border-left: 4px solid #075c35;
+  border-right: 4px solid #075c35;
   background: #e0f2e7;
   border-radius: .25rem;
 }
@@ -204,10 +205,10 @@ p {
   min-width: 0;
   padding: 1.5rem;
   border: 1px solid #b2ccbd;
-  border-radius: .85rem;
+  border-radius: .25rem;
   /* Move the light green surface onto the cards against the white page. */
   background: #f3faf5;
-  box-shadow: 0 4px 14px rgb(7 92 53 / 5%);
+  box-shadow: 0 8px 28px rgb(7 92 53 / 5%);
 }
 .dashboard-card > :last-child {
   margin-bottom: 0;
