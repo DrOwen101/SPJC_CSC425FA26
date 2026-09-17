@@ -1,6 +1,20 @@
 // This role component supplies content; App.css supplies the shared layout.
+
+import { useState } from "react"
+
 // Keep these examples separate from live records until a data source is connected.
 function Dashboardstudent() {
+  const [gpa, setGpa] = useState("")
+
+  function handleChange(e) {
+    setGpa(e.target.value);
+  }
+
+  function handleSubmit(e) {
+    e.preventDefault();
+    alert(gpa);
+  }
+
   return (
     <main id="student-dashboard" className="dashboard" aria-labelledby="student-title" tabIndex={-1}>
       {/* One h1 names the page. Each card below has an h2 for heading navigation. */}
@@ -29,7 +43,18 @@ function Dashboardstudent() {
       <div className="dashboard-grid">
         <section id="gpa" className="dashboard-card" aria-labelledby="gpa-heading" tabIndex={-1}>
           <h2 id="gpa-heading">GPA</h2>
-          <p className="metric">3.75</p>
+          <form onSubmit={handleSubmit}>
+            <label>Enter grades:
+              <input
+                type="number"
+                value={gpa}
+                onChange={handleChange}
+                placeholder="Enter course grade"
+              />
+            </label>
+            <p>Current entries: {gpa}</p>
+            <input type="submit" />
+          </form>
           <p>Current GPA · sample value</p>
         </section>
         <section id="attendance" className="dashboard-card" aria-labelledby="attendance-heading" tabIndex={-1}>
