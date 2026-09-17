@@ -129,6 +129,7 @@ nav a {
   and list-style: none removes bullets. Zero margin/padding resets list spacing. */
 .navbar-links {
   display: flex;
+  flex-wrap: wrap;
   gap: 1.5rem;
   margin: 0;
   padding: 5px;

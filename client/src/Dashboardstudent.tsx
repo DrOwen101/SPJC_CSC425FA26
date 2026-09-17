@@ -16,8 +16,10 @@ function Dashboardstudent() {
 
       <main className="topicHeader" id="student-dashboard">
         <section id="gpa">
-          <h2>GPA</h2>
-          <p>Current GPA: 3.75</p>
+          <h2>GPA Calculator</h2>
+          <p>Calculate your GPA based on your grades.</p>
+          <button onClick={() => takeGrades([])}>Enter Grades</button>
+          <p id="gpa-result"></p>
         </section>
 
         <section id="attendance">
