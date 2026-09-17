@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Student GPA Calculator</title>
+
+    <style>
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: Inter, Arial, sans-serif;
+        color: #123524;
+        background: transparent;
+      }
+
+      input {
+        min-height: 44px;
+        padding: .65rem .75rem;
+        border: 1px solid #568069;
+        border-radius: .45rem;
+        color: #123524;
+        background: white;
+        font: inherit;
+        margin-bottom: .65rem;
+      }
+
+      button {
+        min-height: 44px;
+        padding: .65rem 1rem;
+        border: 2px solid #075c35;
+        border-radius: .45rem;
+        color: white;
+        background: #075c35;
+        font: inherit;
+        font-weight: 700;
+        cursor: pointer;
+        margin-left: .5rem;
+      }
+
+      button:hover {
+        background: #06472a;
+      }
+
+      #grade-list {
+        padding-left: 1.25rem;
+        margin-top: 1rem;
+      }
+
+      #grade-list li {
+        padding: .25rem 0;
+      }
+
+      .metric {
+        margin: 1rem 0 0;
+        color: #075c35;
+        font-size: 2rem;
+        font-weight: 750;
+      }
+
+      .warning {
+        color: #9b1c1c;
+        font-weight: 700;
+        margin-top: .5rem;
+      }
+    </style>
+  </head>
+
+  <body>
+    <input type="text" id="grade-entry" placeholder="e.g. B+">
+    <button onclick="addGrade()">Add Grade</button>
+
+    <ul id="grade-list"></ul>
+
+    <button onclick="calculateGPA()">Calculate GPA</button>
+    <button onclick="clearGrades()">Clear</button>
+
+    <p class="metric">GPA: <span id="gpa-value">--</span></p>
+    <p class="warning" id="gpa-warning"></p>
+
+    <script src="./script2.js" defer></script>
+  </body>
+</html>
