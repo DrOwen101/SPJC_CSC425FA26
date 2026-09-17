@@ -32,6 +32,14 @@ function Dashboardstudent() {
           <p className="metric">3.75</p>
           <p>Current GPA · sample value</p>
         </section>
+        <section id="gpa-calculator" className="dashboard-card">
+          <h2>GPA Calculator</h2>
+          <iframe
+            src="/gpa-calculator/index2.html"
+            title="GPA Calculator"
+            style={{ width: '100%', height: '320px', border: 'none', background: 'transparent' }}
+          />
+        </section>
         <section id="attendance" className="dashboard-card" aria-labelledby="attendance-heading" tabIndex={-1}>
           <h2 id="attendance-heading">Attendance</h2>
           <p className="metric">94%</p>
