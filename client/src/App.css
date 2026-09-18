@@ -591,3 +591,87 @@ main, .dashboard-card {
   border-top: 4px solid #46ad68;
   border-radius: 8px;
 }
+
+.gpa-calculator {
+  display: grid;
+  gap: .75rem;
+}
+
+.grade-buttons {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: .5rem;
+}
+
+.gpa-actions {
+  display: flex;
+  justify-content: center;
+  gap: .75rem;
+}
+
+.grade-buttons button,
+.gpa-actions button {
+  min-width: 44px;
+  min-height: 44px;
+  padding: .5rem .85rem;
+  border: 1px solid #075c35;
+  border-radius: .3rem;
+  color: white;
+  background: #075c35;
+  font: inherit;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.grade-buttons button:hover,
+.gpa-actions button:hover {
+  background: #06472a;
+}
+
+.grades-entered ul {
+  margin: 0;
+  padding-left: 1.25rem;
+}
+
+.grades-entered li + li {
+  margin-top: .25rem;
+}
+
+.gpa-result {
+  color: #126400;
+  font-size: 1.25rem;
+}
+
+.gpa-warning {
+  padding: .6rem .75rem;
+  border-left: 4px solid #ff0000;
+  color: #ff0000;
+  background: #fcd1d183;
+}
+
+.gpa-good-standing {
+  padding: .6rem .75rem;
+  border-left: 4px solid #087908;
+  color: #075c35;
+  background: #e0f2e7;
+}
+
+.current-gpa {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #b2ccbd;
+}
+
+.current-gpa-label,
+.current-gpa-note {
+  margin: 0;
+}
+
+.current-gpa-label {
+  font-weight: 650;
+}
+
+.current-gpa-note {
+  color: #4b6656;
+  font-size: .9rem;
+}

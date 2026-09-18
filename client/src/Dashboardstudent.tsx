@@ -1,6 +1,42 @@
 // This role component supplies content; App.css supplies the shared layout.
 // Keep these examples separate from live records until a data source is connected.
+import { useState } from 'react'
 function Dashboardstudent() {
+  const [grades, setGrades] = useState<string[]>([])
+  const [gpa, setGpa] = useState<number | null>(null)
+  const gradePoints: Record<string, number> = {
+    'A+': 4,
+    A: 4,
+    'A-': 3.7,
+    'B+': 3.3,
+    B: 3,
+    'B-': 2.7,
+    'C+': 2.3,
+    C: 2,
+    'C-': 1.7,
+    'D+': 1.3,
+    D: 1,
+    'D-': 0.7,
+    F: 0,
+  }
+
+  function addGrade(grade: string) {
+    setGrades([...grades, grade])
+    setGpa(null) // Reset GPA when a new grade is added
+  }
+
+  function calculateGPA() {
+    if (grades.length === 0) {
+      setGpa(null)
+      return
+    }
+
+    const total = grades.reduce((sum, currentGrade) => {
+      return sum + gradePoints[currentGrade]
+    }, 0)
+    setGpa(total / grades.length)
+  }
+
   return (
     <main id="student-dashboard" className="dashboard" aria-labelledby="student-title" tabIndex={-1}>
       {/* One h1 names the page. Each card below has an h2 for heading navigation. */}
@@ -29,8 +65,66 @@ function Dashboardstudent() {
       <div className="dashboard-grid">
         <section id="gpa" className="dashboard-card" aria-labelledby="gpa-heading" tabIndex={-1}>
           <h2 id="gpa-heading">GPA</h2>
-          <p className="metric">3.75</p>
-          <p>Current GPA · sample value</p>
+          <div className="current-gpa">
+            <p className="current-gpa-label">Current GPA</p>
+            <p className="metric">3.25</p>
+            <p className="current-gpa-note">Sample value</p>
+          </div>
+          <div className="gpa-calculator">
+            <div className="grade-buttons" aria-label="Select a grade">
+              {Object.keys(gradePoints).map((grade) => (
+                <button
+                  key={grade}
+                  type="button"
+                  onClick={() => addGrade(grade)}
+                  aria-label={`Add grade ${grade}`}
+                >
+                  {grade}
+                </button>
+              ))}
+            </div>
+            <div className="grades-entered">
+              <p>Grades entered:</p>
+              {grades.length === 0 ? (
+                <p>None</p>
+              ) : (
+                <ul>
+                  {grades.map((grade, index) => (
+                    <li key={`${grade}-${index}`}>
+                      {grade}: {gradePoints[grade]} points
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+            <div className="gpa-actions">
+              <button type="button" onClick={calculateGPA}>
+                Calculate GPA
+              </button>
+              <button type="button" onClick={() => {
+                setGrades([])
+                setGpa(null)
+              }}>
+                Reset
+              </button>
+            </div>
+            {gpa !== null && (
+              <p className="gpa-result">
+                Calculated GPA: <strong>{gpa.toFixed(2)}</strong>
+              </p>
+            )}
+            {gpa !== null && gpa < 2 && (
+              <p className="gpa-warning" role="alert">
+                <strong>WARNING: Your GPA is below 2.0.</strong>
+                <span> Please consult your academic advisor for support and guidance.</span>
+              </p>
+            )}
+            {gpa !== null && gpa >= 2.0 && (
+              <p className="gpa-good-standing" role="status">
+                <strong>GPA is in good standing.</strong>
+              </p>
+            )}
+          </div>
         </section>
         <section id="attendance" className="dashboard-card" aria-labelledby="attendance-heading" tabIndex={-1}>
           <h2 id="attendance-heading">Attendance</h2>

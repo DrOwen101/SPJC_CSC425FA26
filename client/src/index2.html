@@ -1,0 +1,32 @@
+<!--Unused version of gpa calculator. The react version is the current version being used.-->
+
+<body>
+  <main class="card">
+    <h1>Student Dashboard</h1>
+
+    <section id="gpa" aria-labelledby="gpa-heading">
+      <h2 id="gpa-heading">GPA Calculator</h2>
+
+      <label for="grades-input">Enter letter grade:</label>
+      <input
+        id="grades-input"
+        type="text"
+        maxlength="1"
+        placeholder="A"
+        autocomplete="off"
+      >
+
+      <button type="button" onclick="addGrade()">Add Grade</button>
+      <button type="button" onclick="calculateGPA()">Calculate GPA</button>
+      <button type="button" onclick="resetGrades()">Reset</button>
+
+      <h3>Grades Entered</h3>
+      <ul id="grade-list"></ul>
+
+      <p>Calculated GPA:</p>
+      <p id="gpa-result" aria-live="polite">Not calculated</p>
+    </section>
+  </main>
+
+  <script type="module" src="./script2.js"></script>
+</body>
