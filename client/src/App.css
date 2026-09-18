@@ -350,3 +350,111 @@ a:focus-visible {
     padding: 1.1rem;
   }
 }
+/* Module 5 GPA Calculator */
+
+.gpa-calculator {
+  background: #171b19;
+  border: 1px solid #245c3d;
+  border-radius: 18px;
+  padding: 28px;
+}
+
+.course-row {
+  display: grid;
+  grid-template-columns: 120px 1fr 1fr;
+  gap: 24px;
+  align-items: end;
+  padding: 18px 0;
+  border-bottom: 1px solid #315444;
+}
+
+.course-label {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.course-row label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-weight: 700;
+}
+
+.course-row select,
+.course-row input {
+  width: 100%;
+  padding: 12px;
+  color: #f4eee4;
+  background-color: #26342e;
+  border: 1px solid #56806a;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+.course-row select:focus,
+.course-row input:focus {
+  outline: 3px solid #9cc4aa;
+  outline-offset: 2px;
+}
+
+.calculator-buttons {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.calculator-buttons button {
+  padding: 12px 22px;
+  color: #ffffff;
+  background-color: #087443;
+  border: 1px solid #58a77d;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.calculator-buttons button:hover {
+  background-color: #0a8a50;
+}
+
+.calculator-buttons button:last-child {
+  background-color: #454c48;
+}
+
+.calculator-buttons button:last-child:hover {
+  background-color: #5b625e;
+}
+
+.gpa-result {
+  margin-top: 24px;
+  padding: 20px;
+  background-color: #0d3322;
+  border: 1px solid #3c8a61;
+  border-radius: 12px;
+}
+
+.gpa-result h3,
+.gpa-result p {
+  margin: 0;
+}
+
+.gpa-result p {
+  margin-top: 8px;
+}
+
+@media (max-width: 768px) {
+  .course-row {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .calculator-buttons {
+    flex-direction: column;
+  }
+
+  .calculator-buttons button {
+    width: 100%;
+  }
+}
