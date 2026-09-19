@@ -3,7 +3,7 @@ import { useState } from 'react'
 // This role component supplies content; App.css supplies the shared layout.
 // Keep these examples separate from live records until a data source is connected.
 function Dashboardstudent() {
-  const [grades, setGrades] = useState<number[]>([92, 88, 95])
+  const [grades, setGrades] = useState<number[]>([])
   const [inputValue, setInputValue] = useState('')
 
   const gpaValue = grades.length
