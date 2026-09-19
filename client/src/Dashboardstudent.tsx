@@ -1,6 +1,29 @@
+import { useState } from 'react'
+
 // This role component supplies content; App.css supplies the shared layout.
 // Keep these examples separate from live records until a data source is connected.
 function Dashboardstudent() {
+  const [grades, setGrades] = useState<number[]>([92, 88, 95])
+  const [inputValue, setInputValue] = useState('')
+
+  const gpaValue = grades.length
+    ? (grades.reduce((total, grade) => total + grade, 0) / grades.length / 25).toFixed(2)
+    : '0.00'
+
+  const handleAddGrade = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+
+    const grade = Number.parseInt(inputValue, 10)
+
+    if (!Number.isInteger(grade) || grade < 0 || grade > 100) {
+      setInputValue('')
+      return
+    }
+
+    setGrades((currentGrades) => [...currentGrades, grade])
+    setInputValue('')
+  }
+
   return (
     <main id="student-dashboard" className="dashboard" aria-labelledby="student-title" tabIndex={-1}>
       {/* One h1 names the page. Each card below has an h2 for heading navigation. */}
@@ -29,8 +52,36 @@ function Dashboardstudent() {
       <div className="dashboard-grid">
         <section id="gpa" className="dashboard-card" aria-labelledby="gpa-heading" tabIndex={-1}>
           <h2 id="gpa-heading">GPA</h2>
-          <p className="metric">3.75</p>
-          <p>Current GPA · sample value</p>
+          <p className="metric">{gpaValue}</p>
+          <p>Current GPA · calculated from recorded grades</p>
+
+          <form className="gpa-form" onSubmit={handleAddGrade}>
+            <label htmlFor="gpa-grade-input">Add course grade</label>
+            <div className="gpa-input-row">
+              {/* input grades */}
+              <input
+                id="gpa-grade-input"
+                type="number"
+                className="gpa-input"
+                min="0"
+                max="100"
+                step="1"
+                inputMode="numeric"
+                value={inputValue}
+                onChange={(event) => setInputValue(event.target.value)}
+                placeholder="Enter grade"
+                aria-label="Enter a grade. Grades must be whole numbers between 0 and 100."
+              />
+              <button type="submit" className="gpa-button">Add grade</button>
+            </div>
+          </form>
+
+          <p className="gpa-recorded-label">Recorded grades:</p>
+          <ul className="gpa-grade-list">
+            {grades.map((grade, index) => (
+              <li key={`${grade}-${index}`}>{grade}</li>
+            ))}
+          </ul>
         </section>
         <section id="attendance" className="dashboard-card" aria-labelledby="attendance-heading" tabIndex={-1}>
           <h2 id="attendance-heading">Attendance</h2>
