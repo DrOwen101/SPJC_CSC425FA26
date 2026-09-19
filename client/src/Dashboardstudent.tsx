@@ -31,6 +31,23 @@ function Dashboardstudent() {
           <h2 id="gpa-heading">GPA</h2>
           <p className="metric">3.75</p>
           <p>Current GPA · sample value</p>
+          <p style={{ fontWeight: 'bold' }}>Enter a letter Grade</p>
+          <input
+            id="username"
+            type="text"
+            // value={text}
+            // onChange={handleChange}
+            placeholder="Enter it here"
+          />
+          
+          <button >
+            Add Grade 
+         </button>
+
+         <p>Grades Entered</p>
+
+
+
         </section>
         <section id="attendance" className="dashboard-card" aria-labelledby="attendance-heading" tabIndex={-1}>
           <h2 id="attendance-heading">Attendance</h2>
@@ -54,7 +71,11 @@ function Dashboardstudent() {
         </section>
       </div>
     </main>
+    
   )
+  
 }
 
 export default Dashboardstudent
+
+
