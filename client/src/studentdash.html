@@ -22,7 +22,91 @@
   <main>
     <section id="gpa">
       <h2>GPA</h2>
-      <p>Current GPA: 3.75</p>
+      <p id="currentAVG">Current GPA: 0.0</p>
+      <button onClick="addGrade()">Add Grades:</button>
+      <input type="text" id="entryField">
+      <p id="currentGrades">Current Grades: N/A</p>
+      <p id="Alerts">Active alerts: N/A</p>
+      <script>
+        // Value of each grade
+        const checkValue = {
+          "A+": 4.0,
+          "A": 4.0,
+          "A-": 3.7,
+          "B+": 3.3,
+          "B": 3.0,
+          "B-": 2.7,
+          "C+": 2.3,
+          "C": 2.0,
+          "C-": 1.7,
+          "D+": 1.3,
+          "D": 1.0,
+          "D-": 0.7,
+          "F": 0.0
+        }
+        // Init an empty list to store grades
+        let allGrades = []
+
+        // Function to add grades
+        function addGrade() {
+          let grade = document.getElementById("entryField").value;
+          let alertNum = 2.0;
+          let valGrade = false;
+          grade = grade.trim().toUpperCase();
+
+          if (checkValue[grade] !== undefined) {
+            allGrades.push(grade);
+
+            // Calculate display values
+            let currentGrades = "Current Grades: ";
+            let gradeTotal = "Current GPA: ";
+            let numTotal = 0;
+            for (let i = 0; i < allGrades.length; i++) {
+
+              numTotal += checkValue[allGrades[i]];
+
+              if (i == 0) {
+                currentGrades += "[" + allGrades[0];
+              } else {
+                currentGrades += allGrades[i];
+              }
+              if (i + 1 != allGrades.length){
+                currentGrades += ", ";
+              } else {
+                currentGrades += "]";
+              }
+            }
+
+            // Update grade display
+            document.getElementById("currentGrades").innerHTML = currentGrades;
+
+            // Update number display
+            gradeTotal += numTotal / allGrades.length;
+            document.getElementById("currentAVG").innerHTML = gradeTotal;
+
+            // Clear display
+            document.getElementById("entryField").innerHTML = "";
+
+            //Update Alert values
+            alertNum = numTotal / allGrades.length;
+            valGrade = true;
+          
+          }
+          // Check for alerts and act accourdingly
+          document.getElementById("Alerts").innerHTML = checkAlerts(alertNum, valGrade);
+        }
+        function checkAlerts(gradeAVG, isGrade) {
+          let answer = "Active alerts: ";
+          if (isGrade !== true) {
+            answer += "!! NON-VALID GRADE WAS ENTERED, ENTER ONE OF THESE: [A+, A, A-, B+, B, B-, C+, C, C-, D+, D, D-, F] !!"
+          } else if (gradeAVG < 2.0) {
+            answer += "!! YOU REQUIRE AT-LEAST A GPA OF 2.0 TO GRADUATE !!";
+          } else {
+            answer += "N/A"
+          }
+          return answer;
+        }
+      </script>
     </section>
 
     <section id="attendance">
@@ -45,5 +129,6 @@
       <p>View your upcoming and registered courses.</p>
     </section>
   </main>
+  <script src="script.js"></script>
 </body>
 </html>
