@@ -1,3 +1,4 @@
+import { addGrade } from '../script.js'
 import SPJCLogo from './assets/SPJCLogo.jpg'
 
 
@@ -22,7 +23,7 @@ function Dashboardstudent() {
         <section id="gpa" className="dashboard-card">
           <h2>GPA</h2>
           <input type="text" id="grade-entry"></input>
-          <button onClick={addGrade()}>Add Grade</button>
+          <button onClick={addGrade}>Add Grade</button>
         </section>
 
         <section id="attendance" className="dashboard-card">
