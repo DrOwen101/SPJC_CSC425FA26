@@ -1,3 +1,10 @@
+declare global {
+  interface Window {
+    addGrade: () => void;
+    calculateGPA: () => void;
+  }
+}
+
 function FDashboard() {
   return (
     <>
@@ -15,14 +22,13 @@ function FDashboard() {
       </header>
 
       <main>
-        <section className="section" id="EnterGrade">
-          <h2 className="section-title">Enter Grade</h2>
-        <form className="section-sub"> 
-          <input name="Assignment" /> Assignment Name <br />
-          <input max="199" min="1" name="Grade" step="1" type="number" value="100" /> Grade for Assignment <br />
-          <label><input name="terms" type="checkbox" value="tandc" /> Finalize</label> <br />
-          <input type="submit" value="Submit" />
-        </form>
+        <section className="dashboard-card" aria-labelledby="gpa-heading">
+          <h2 id="gpa-heading">GPA Calculator</h2>
+          <input type="text" id="grade-entry" />
+          <button onClick={() => window.addGrade()}>Add Grade</button>
+          <ul id="grade-list"></ul>
+          <button onClick={() => window.calculateGPA()}>Calculate GPA</button>
+          <p>GPA: <span id="gpa-value">--</span></p>
         </section>
 
         <section className="section">
