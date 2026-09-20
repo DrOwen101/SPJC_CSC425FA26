@@ -21,7 +21,8 @@ function Dashboardstudent() {
       <main id="student-dashboard" className="dashboard-main">
         <section id="gpa" className="dashboard-card">
           <h2>GPA</h2>
-          <p>Current GPA: 3.75</p>
+          <input type="text" id="grade-entry"></input>
+          <button onClick={addGrade()}>Add Grade</button>
         </section>
 
         <section id="attendance" className="dashboard-card">
