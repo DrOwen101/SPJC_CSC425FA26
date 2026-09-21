@@ -1,4 +1,14 @@
+import { useState } from "react";
+import StudentGPACal from "./StudentGPACal";
+
 function Dashboardstudent() {
+  const [showGPACalculator, setShowGPACalculator] = useState(false);
+
+   if (showGPACalculator) {
+    return (
+      <StudentGPACal onBack={() => setShowGPACalculator(false)} />
+    );
+  }
   return (
     <>
       <header>
@@ -16,7 +26,11 @@ function Dashboardstudent() {
       <main id="student-dashboard">
         <section id="gpa">
           <h2>GPA</h2>
-          <p>Current GPA: 3.75</p>
+          <p id="gpa-value">Current GPA: 3.75</p>
+          <p id="gpa-letter-grade">View your GPA history and trends.</p>
+         <button onClick={() => setShowGPACalculator(true)}>
+          Use the GPA calculator to estimate your future GPA.
+        </button>
         </section>
 
         <section id="attendance">
