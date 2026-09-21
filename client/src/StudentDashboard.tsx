@@ -1,6 +1,50 @@
+import {useState} from "react"
+
 // This role component supplies content; App.css supplies the shared layout.
 // Keep these examples separate from live records until a data source is connected.
 function StudentDashboard() {
+
+  const gradePoints = {
+    "A+": 4.0,
+    "A": 4.0,
+    "A-": 3.7,
+    "B+": 3.3,
+    "B": 3.0,
+    "B-": 2.7,
+    "C+": 2.3,
+    "C": 2.0,
+    "C-": 1.7,
+    "D+": 1.3,
+    "D": 1.0,
+    "D-": 0.7,
+    "F": 0.0
+};
+  const [grades, setGrades] = useState([]);
+  const [gradeInput, setGradeInput] = useState("");
+  const [gpa, setGpa] = useState(null);
+
+  // Add grade
+  const addGrade = () => {
+    const cleaned = gradeInput.trim().toUpperCase();
+
+    if (gradePoints[cleaned] !== undefined) {
+      setGrades([...grades, cleaned]);
+      setGradeInput("");
+    } else {
+      alert("Please enter a valid letter grade.");
+    }
+  };
+
+  // Calculate GPA
+  const calculateGPA = () => {
+    if (grades.length === 0) return;
+
+    const total = grades.reduce((sum, g) => sum + gradePoints[g], 0);
+    const avg = total / grades.length;
+
+    setGpa(avg.toFixed(2));
+  };
+
   return (
     <main id="student-dashboard" className="dashboard" aria-labelledby="student-title" tabIndex={-1}>
       {/* One h1 names the page. Each card below has an h2 for heading navigation. */}
@@ -29,8 +73,34 @@ function StudentDashboard() {
       <div className="dashboard-grid">
         <section id="gpa" className="dashboard-card" aria-labelledby="gpa-heading" tabIndex={-1}>
           <h2 id="gpa-heading">GPA</h2>
-          <p className="metric">3.75</p>
-          <p>Current GPA · sample value</p>
+
+          <input
+            type="text"
+            value={gradeInput}
+            onChange={(e) => setGradeInput(e.target.value)}
+            placeholder="Enter a letter grade (A, B+, C-, etc.)"
+            className="grade-input"
+          />
+
+          <button onClick={addGrade}>Add Grade</button>
+
+          {/* Grade List */}
+          <ul id="grade-list">
+            {grades.map((g, index) => (
+              <li key={index}>
+                {g} = {gradePoints[g]} points
+              </li>
+            ))}
+          </ul>
+
+          <button onClick={calculateGPA} className="calculate-button">
+            Calculate GPA
+          </button>
+
+          <p>
+            GPA: <span id="gpa-value">{gpa ?? "--"}</span>
+          </p>
+          
         </section>
         <section id="attendance" className="dashboard-card" aria-labelledby="attendance-heading" tabIndex={-1}>
           <h2 id="attendance-heading">Attendance</h2>
