@@ -1,4 +1,4 @@
-import { addGrade } from '../script.js'
+import { addGrade, calculateGPA, clearList } from '../script.js'
 import SPJCLogo from './assets/SPJCLogo.jpg'
 
 
@@ -22,8 +22,19 @@ function Dashboardstudent() {
       <main id="student-dashboard" className="dashboard-main">
         <section id="gpa" className="dashboard-card">
           <h2>GPA</h2>
-          <input type="text" id="grade-entry"></input>
-          <button onClick={addGrade}>Add Grade</button>
+          <div>
+            <input type="text" id="grade-entry"></input>
+            <button onClick={addGrade}>Add Grade</button>
+          </div>
+
+          <ul id="grades-list"></ul>
+
+          <p id="gpa-result"></p>
+
+          <div>
+            <button onClick={calculateGPA}>Calculate GPA</button>
+            <button onClick={clearList}>Clear Grades </button>
+          </div>
         </section>
 
         <section id="attendance" className="dashboard-card">
