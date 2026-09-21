@@ -21,7 +21,9 @@ function getDashboard(activeDashboard: DashboardRole | null) {
 }
 
 function App() {
-  const [activeDashboard, setActiveDashboard] = useState<DashboardRole | null>(null)
+  const [activeDashboard, setActiveDashboard] = useState<DashboardRole | null>(() => (
+    window.location.hash === '#student-dashboard' ? 'student' : null
+  ))
   const dashboard = getDashboard(activeDashboard)
 
   useEffect(() => {

@@ -7,7 +7,7 @@ function Dashboardstudent() {
         <p>University Student Portal</p>
 
         <nav className="dashboard-nav" aria-label="Student navigation">
-          <a href="#gpa">GPA</a>
+          <a href="/src/index2.html">GPA</a>
           <a href="#attendance">Attendance</a>
           <a href="#transcript">Transcript</a>
           <a href="#alerts">Alerts</a>
@@ -19,6 +19,7 @@ function Dashboardstudent() {
         <section className="dashboard-section" id="gpa">
           <h2>GPA</h2>
           <p>Current GPA: 3.75</p>
+          <p><a href="/src/index2.html">Open GPA Calculator</a></p>
         </section>
 
         <section className="dashboard-section" id="attendance">

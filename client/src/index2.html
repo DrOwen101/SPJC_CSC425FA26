@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>GPA Calculator</title>
+		<style>
+			:root {
+				font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+				color: #123524;
+				background: #f3faf5;
+			}
+
+			* { box-sizing: border-box; }
+			body { margin: 0; min-width: 320px; min-height: 100vh; }
+			a { color: #075c35; }
+			main {
+				width: min(100% - 2rem, 700px);
+				margin: 0 auto;
+				padding: clamp(1.5rem, 5vw, 4rem) 0;
+			}
+			.back-link {
+				display: inline-block;
+				margin-bottom: 1rem;
+				font-weight: 700;
+			}
+			.calculator-card {
+				padding: clamp(1rem, 4vw, 1.5rem);
+				border: 1px solid #cfe7d8;
+				border-radius: .75rem;
+				background: white;
+				box-shadow: 0 8px 24px rgb(7 92 53 / 8%);
+			}
+			h1 { margin: 0 0 .5rem; color: #123524; }
+			.intro { margin: 0 0 1.5rem; color: #4d6f5c; }
+			.course-row {
+				display: grid;
+				grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+				align-items: end;
+				gap: .75rem;
+				margin-bottom: .75rem;
+			}
+			.field { display: grid; gap: .3rem; }
+			label { font-weight: 700; }
+			input {
+				width: 100%;
+				min-height: 2.5rem;
+				padding: .5rem;
+				border: 1px solid #a9cdb7;
+				border-radius: .4rem;
+				font: inherit;
+				color: #123524;
+			}
+			input:focus { outline: 3px solid #b9f6d2; border-color: #075c35; }
+			button {
+				min-height: 2.5rem;
+				padding: .5rem .75rem;
+				border: 0;
+				border-radius: .4rem;
+				font: inherit;
+				font-weight: 700;
+				cursor: pointer;
+			}
+			.primary-button { color: white; background: #075c35; }
+			.secondary-button { color: #075c35; background: #b9f6d2; }
+			.remove-button { color: #075c35; background: #edf8f1; }
+			.button-row { display: flex; flex-wrap: wrap; gap: .75rem; margin-top: 1rem; }
+			.message { margin: 1rem 0 0; }
+			.warning { color: #9b2c2c; }
+			.result { font-weight: 700; }
+
+			@media (max-width: 520px) {
+				.course-row { grid-template-columns: 1fr 1fr; }
+				.remove-button { grid-column: 1 / -1; justify-self: start; }
+			}
+
+			@media (max-width: 380px) {
+				main { width: min(100% - 1rem, 700px); }
+				.course-row { grid-template-columns: 1fr; }
+				.remove-button { grid-column: auto; }
+			}
+		</style>
+	</head>
+	<body>
+		<main>
+			<a class="back-link" href="/#student-dashboard">&larr; Back to Student Dashboard</a>
+			<section class="calculator-card">
+				<h1>GPA Calculator</h1>
+				<p class="intro">Enter a letter grade and credit hours for each course.</p>
+
+				<form id="gpa-form">
+					<div id="course-list">
+						<div class="course-row">
+							<div class="field">
+								<label for="grade-1">Course 1 grade:</label>
+								<input id="grade-1" class="grade" type="text" maxlength="1">
+							</div>
+							<div class="field">
+								<label for="credits-1">Credit hours:</label>
+								<input id="credits-1" class="credits" type="number" step="any" min="0">
+							</div>
+						</div>
+						<div class="course-row">
+							<div class="field">
+								<label for="grade-2">Course 2 grade:</label>
+								<input id="grade-2" class="grade" type="text" maxlength="1">
+							</div>
+							<div class="field">
+								<label for="credits-2">Credit hours:</label>
+								<input id="credits-2" class="credits" type="number" step="any" min="0">
+							</div>
+						</div>
+						<div class="course-row">
+							<div class="field">
+								<label for="grade-3">Course 3 grade:</label>
+								<input id="grade-3" class="grade" type="text" maxlength="1">
+							</div>
+							<div class="field">
+								<label for="credits-3">Credit hours:</label>
+								<input id="credits-3" class="credits" type="number" step="any" min="0">
+							</div>
+						</div>
+					</div>
+					<div class="button-row">
+						<button class="secondary-button" id="add-course" type="button">Add Course</button>
+						<button class="primary-button" type="submit">Calculate GPA</button>
+					</div>
+				</form>
+
+				<p class="message warning" id="warning" role="alert"></p>
+				<p class="message result" id="result"></p>
+				<p class="message" id="standing"></p>
+			</section>
+		</main>
+
+		<script>
+			const gradePoints = { A: 4, B: 3, C: 2, D: 1, F: 0 };
+			const form = document.getElementById('gpa-form');
+			const warning = document.getElementById('warning');
+			const result = document.getElementById('result');
+			const standing = document.getElementById('standing');
+			const courseList = document.getElementById('course-list');
+			const addCourseButton = document.getElementById('add-course');
+			let courseNumber = 3;
+
+			addCourseButton.addEventListener('click', function () {
+				courseNumber += 1;
+				const row = document.createElement('div');
+				row.className = 'course-row';
+				row.innerHTML = `
+					<div class="field">
+						<label for="grade-${courseNumber}">Course ${courseNumber} grade:</label>
+						<input id="grade-${courseNumber}" class="grade" type="text" maxlength="1">
+					</div>
+					<div class="field">
+						<label for="credits-${courseNumber}">Credit hours:</label>
+						<input id="credits-${courseNumber}" class="credits" type="number" step="any" min="0">
+					</div>
+					<button class="remove-button" type="button">Remove</button>
+				`;
+				row.querySelector('.remove-button').addEventListener('click', function () {
+					row.remove();
+				});
+				courseList.appendChild(row);
+			});
+
+			form.addEventListener('submit', function (event) {
+				event.preventDefault();
+
+				let totalPoints = 0;
+				let totalCredits = 0;
+				let courseCount = 0;
+				warning.textContent = '';
+				result.textContent = '';
+				standing.textContent = '';
+
+				const grades = document.querySelectorAll('.grade');
+				const credits = document.querySelectorAll('.credits');
+
+				for (let index = 0; index < grades.length; index += 1) {
+					const grade = grades[index].value.trim().toUpperCase();
+					const creditText = credits[index].value.trim();
+
+					if (grade === '' && creditText === '') {
+						continue;
+					}
+
+					courseCount += 1;
+
+					if (!Object.prototype.hasOwnProperty.call(gradePoints, grade)) {
+						warning.textContent = 'Please enter only A, B, C, D, or F for each grade.';
+						return;
+					}
+
+					const creditHours = Number(creditText);
+					if (creditText === '' || !Number.isFinite(creditHours) || creditHours <= 0) {
+						warning.textContent = 'Credit hours must be a positive number.';
+						return;
+					}
+
+					totalPoints += gradePoints[grade] * creditHours;
+					totalCredits += creditHours;
+				}
+
+				if (courseCount === 0) {
+					warning.textContent = 'Please enter at least one course.';
+					return;
+				}
+
+				const gpa = totalPoints / totalCredits;
+				result.textContent = `Your GPA is ${gpa.toFixed(2)}.`;
+
+				if (gpa >= 3) {
+					standing.textContent = 'Good job! Your GPA is in good standing.';
+				} else if (gpa >= 2) {
+					standing.textContent = 'Your GPA is okay, but you may want to improve it.';
+				} else {
+					standing.textContent = 'Warning: Your GPA is low.';
+				}
+			});
+		</script>
+	</body>
+</html>
