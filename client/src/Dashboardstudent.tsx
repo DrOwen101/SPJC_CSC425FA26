@@ -30,7 +30,8 @@ function Dashboardstudent() {
         <section id="gpa" className="dashboard-card" aria-labelledby="gpa-heading" tabIndex={-1}>
           <h2 id="gpa-heading">GPA</h2>
           <p className="metric">3.75</p>
-          <p>Current GPA · sample value</p>
+          <p>Current average GPA</p>
+          <a href="/src/GPAcalculator.html">View GPA Calculator</a>
         </section>
         <section id="attendance" className="dashboard-card" aria-labelledby="attendance-heading" tabIndex={-1}>
           <h2 id="attendance-heading">Attendance</h2>
