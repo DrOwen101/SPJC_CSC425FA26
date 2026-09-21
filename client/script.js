@@ -4,7 +4,8 @@ const grade_lookup = {
     'B': 3.0,
     'C': 2.0,
     'D': 1.0,
-    'F': 0.0
+    'F': 0.0,
+    'E': 0.0
 }
 
 
@@ -16,7 +17,7 @@ export function addGrade() {
     let get_input = gradeInput.value
 
     if (!get_input || !grade_lookup.hasOwnProperty(get_input)) {
-        alert('Please enter a valid grade (A, B, C, D, F).')
+        alert('Please enter a valid grade (A, B, C, D, F, E).')
         return
     }
 
