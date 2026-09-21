@@ -1,4 +1,5 @@
 import { addGrade, calculateGPA, clearList } from '../script.js'
+import type { KeyboardEvent } from 'react'
 import SPJCLogo from './assets/SPJCLogo.jpg'
 
 
@@ -23,7 +24,7 @@ function Dashboardstudent() {
         <section id="gpa" className="dashboard-card">
           <h2>GPA</h2>
           <div>
-            <input type="text" id="grade-entry"></input>
+            <input type="text" id="grade-entry" onKeyDown={handleKeyPress}></input>
             <button onClick={addGrade}>Add Grade</button>
           </div>
 
@@ -74,6 +75,12 @@ function Dashboardstudent() {
     </div>
     </>
   )
+}
+
+function handleKeyPress(event: KeyboardEvent<HTMLInputElement>) {
+  if (event.key === 'Enter') {
+    addGrade()
+  }
 }
 
 export default Dashboardstudent
