@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import SPJCLogo from './assets/SPJCLogo.jpg'
+import SPJCLogo from './assets/SPJCLogo_New.webp'
 import Dashboardadmin from './Dashboardadmin'
 import Dashboardfaculty from './Dashboardfaculty'
 import Dashboardstudent from './Dashboardstudent'

@@ -192,12 +192,11 @@ p {
   text-decoration: underline;
 }
 
-/* Grid controls the layout; each .dashboard-card is a semantic <section>.
-   minmax(0, 1fr) allows long content to shrink within two equal columns.
-   DOM order is also the reading order: no CSS reordering is needed. */
+/* Grid controls the layout; each dropdown spans the dashboard and follows the
+   DOM reading order. */
 .dashboard-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1fr);
   gap: 1.25rem;
 }
 .dashboard-card {
@@ -208,6 +207,19 @@ p {
   /* Move the light green surface onto the cards against the white page. */
   background: #f3faf5;
   box-shadow: 0 4px 14px rgb(7 92 53 / 5%);
+}
+.dashboard-card summary {
+  cursor: pointer;
+  color: #075c35;
+  font-size: 1.35rem;
+  font-weight: 750;
+  line-height: 1.3;
+}
+.dashboard-card summary::marker {
+  color: #568069;
+}
+.dashboard-card[open] summary {
+  margin-bottom: .75rem;
 }
 .dashboard-card > :last-child {
   margin-bottom: 0;
@@ -238,6 +250,77 @@ main, .dashboard-card {
 }
 .detail-list li + li {
   margin-top: .4rem;
+}
+
+/* Hides label text visually while keeping it available to screen readers. */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* GPA calculator: table of editable rows drives a live status alert below the metric. */
+.gpa-alert {
+  margin: 0 0 1rem;
+  padding: .6rem 1rem;
+  border-radius: .4rem;
+  font-weight: 650;
+}
+.gpa-alert-neutral {
+  background: #edf3ef;
+}
+.gpa-alert-danger {
+  background: #fbe4e4;
+  color: #7a1212;
+}
+.gpa-alert-ok {
+  background: #e0f2e7;
+  color: #075c35;
+}
+.gpa-alert-good {
+  background: #dff0ff;
+  color: #0b3d66;
+}
+.gpa-table {
+  width: 100%;
+  margin-bottom: 1rem;
+  border-collapse: collapse;
+}
+.gpa-table th, .gpa-table td {
+  padding: .4rem .5rem;
+  text-align: left;
+}
+.gpa-table select, .gpa-table input {
+  width: 100%;
+  min-height: 44px;
+  padding: .3rem .5rem;
+  border: 1px solid #568069;
+  border-radius: .3rem;
+  font: inherit;
+}
+.gpa-remove-btn, .gpa-add-btn {
+  min-width: 44px;
+  min-height: 44px;
+  padding: .4rem .8rem;
+  border: 1px solid #568069;
+  border-radius: .4rem;
+  background: white;
+  color: #075c35;
+  font-weight: 700;
+  cursor: pointer;
+}
+.gpa-remove-btn:hover, .gpa-add-btn:hover {
+  background: #e0f2e7;
+}
+.gpa-remove-btn:disabled {
+  opacity: .5;
+  cursor: not-allowed;
 }
 
 /* Home keeps the original logo and green/white presentation. */

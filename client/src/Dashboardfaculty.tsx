@@ -23,51 +23,49 @@ function Dashboardfaculty() {
         </ul>
       </nav>
 
-      {/* className="dashboard-grid" connects to .dashboard-grid in App.css.
-          Each named section is a card. tabIndex=-1 permits anchor focus without
-          adding every card to the Tab sequence; links remain the normal stops. */}
+      {/* Each subsection uses native details behavior for keyboard-accessible dropdowns. */}
       <div className="dashboard-grid">
-        <section id="faculty-courses" className="dashboard-card" aria-labelledby="faculty-courses-heading" tabIndex={-1}>
-          <h2 id="faculty-courses-heading">Courses</h2>
+        <details id="faculty-courses" className="dashboard-card">
+          <summary>Courses</summary>
           <p className="status-label">Not connected</p>
           <p>Your assigned courses and sections will appear here.</p>
           <ul className="detail-list">
             <li>Course name and section</li>
             <li>Enrollment and course materials</li>
           </ul>
-        </section>
-        <section id="class-rosters" className="dashboard-card" aria-labelledby="class-rosters-heading" tabIndex={-1}>
-          <h2 id="class-rosters-heading">Class Rosters</h2>
+        </details>
+        <details id="class-rosters" className="dashboard-card">
+          <summary>Class Rosters</summary>
           <p className="status-label">Not connected</p>
           <p>Student lists will appear here when enrollment records are available.</p>
           <ul className="detail-list">
             <li>Students organized by course and section</li>
             <li>Attendance records for each class</li>
           </ul>
-        </section>
-        <section id="grading" className="dashboard-card" aria-labelledby="grading-heading" tabIndex={-1}>
-          <h2 id="grading-heading">Grading</h2>
+        </details>
+        <details id="grading" className="dashboard-card">
+          <summary>Grading</summary>
           <p className="status-label">Not connected</p>
           <p>Assignments awaiting review and grade submission deadlines will appear here.</p>
           <ul className="detail-list">
             <li>Submissions to review</li>
             <li>Grades and student feedback</li>
           </ul>
-        </section>
-        <section id="faculty-alerts" className="dashboard-card" aria-labelledby="faculty-alerts-heading" tabIndex={-1}>
-          <h2 id="faculty-alerts-heading">Alerts</h2>
+        </details>
+        <details id="faculty-alerts" className="dashboard-card">
+          <summary>Alerts</summary>
           <p className="status-label">Live alerts unavailable</p>
           <p>Teaching reminders, schedule changes, and department announcements will appear here when notifications are connected.</p>
-        </section>
-        <section id="teaching-schedule" className="dashboard-card" aria-labelledby="teaching-schedule-heading" tabIndex={-1}>
-          <h2 id="teaching-schedule-heading">Teaching Schedule</h2>
+        </details>
+        <details id="teaching-schedule" className="dashboard-card">
+          <summary>Teaching Schedule</summary>
           <p className="status-label">Not connected</p>
           <p>Class meetings and office hours will appear here.</p>
           <ul className="detail-list">
             <li>Day, time, and room or online location</li>
             <li>Office hours and student appointments</li>
           </ul>
-        </section>
+        </details>
       </div>
     </main>
   )
