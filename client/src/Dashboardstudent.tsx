@@ -1,3 +1,5 @@
+import Calculator from './calculator.jsx'
+
 // This role component supplies content; App.css supplies the shared layout.
 // Keep these examples separate from live records until a data source is connected.
 function Dashboardstudent() {
@@ -29,8 +31,7 @@ function Dashboardstudent() {
       <div className="dashboard-grid">
         <section id="gpa" className="dashboard-card" aria-labelledby="gpa-heading" tabIndex={-1}>
           <h2 id="gpa-heading">GPA</h2>
-          <p className="metric">3.75</p>
-          <p>Current GPA · sample value</p>
+          <Calculator />
         </section>
         <section id="attendance" className="dashboard-card" aria-labelledby="attendance-heading" tabIndex={-1}>
           <h2 id="attendance-heading">Attendance</h2>
