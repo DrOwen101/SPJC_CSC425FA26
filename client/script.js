@@ -74,6 +74,6 @@ export function calculateGPA() {
     const gpa = total / grades.length
     const gpaResult = document.getElementById('gpa-result')
     if (gpaResult) {
-        gpaResult.textContent = `Your GPA is ${gpa.toFixed(2)}`
+        gpaResult.textContent = `Your unweighted GPA is ${gpa.toFixed(2)}`
     }
 }
