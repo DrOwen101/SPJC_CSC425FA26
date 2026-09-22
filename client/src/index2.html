@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Student GPA Calculator</title>
+  </head>
+  <style>
+    :root {
+        font-family: Inter, Arial, sans-serif;
+        color: #123524;
+        background: white;
+        line-height: 1.6;
+    }
+  </style>
+
+  <body>
+    <header class="pageHeader">
+      <h1>Student Dashboard</h1>
+      <p>Static Idea</p>
+    </header>
+
+    <main id="mainContent" class="dashboard">
+      <section>
+        <h2>GPA Calculator</h2>
+        <input type="text" id="gradeEntry">
+        <button onclick="addGrade(); calculateGPA()">Add Grade</button>
+        <ul id="gradeList"></ul>
+        <p>GPA: <span id="gpaValue">--</span></p>
+      </section>
+    </main>
+
+    <script src="./script2.js"></script>
+  </body>
+</html>

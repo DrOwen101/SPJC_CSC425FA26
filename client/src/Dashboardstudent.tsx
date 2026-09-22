@@ -1,5 +1,6 @@
 function Dashboardstudent() {
   return (
+  
     <main id="student-dashboard" className="dashboard" aria-labelledby="student-title" tabIndex={-1}>
       <header className="dashboard-header">
         <h1>Student Dashboard</h1>
@@ -16,13 +17,17 @@ function Dashboardstudent() {
             <li><a href="#courses">Upcoming Courses</a></li>
         </ul>
       </nav>
-      
-
+    
       <div className="dashboard-grid">
         <section id="gpa" className="dashboard-card" aria-labelledby="gpa-heading" tabIndex={-1}>
           <h2 id="gpa-heading">GPA</h2>
-          <p className="metric">3.75</p>
-          <p>Current GPA · sample value</p>
+          <p className="metric">GPA: </p> 
+          <p className="metric" id="gpaData">N/A</p>
+          <p> Enter a letter grade.</p>
+          <input id= "gradeText" type= "text"></input>
+          <button>Add Grade</button>
+          <p>Accepted grades: A+,A,A-,B+,B,B-,C+,C,C-,D+,D,D-,F</p>
+          <p id="gradeList">No grades listed.</p>
         </section>
 
         <section id="attendance" className="dashboard-card" aria-labelledby="attendance-heading" tabIndex={-1}>
@@ -62,6 +67,7 @@ function Dashboardstudent() {
         </section>
       </div>
     </main>
+    
   )
 }
 
