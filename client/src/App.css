@@ -71,6 +71,11 @@ h2 {
   font-size: 1.35rem;
   line-height: 1.3;
 }
+h3 {
+  margin: 0 0 .5rem;
+  font-size: 1.05rem;
+  line-height: 1.3;
+}
 p {
   margin: .5rem 0 1rem;
 }
@@ -252,74 +257,75 @@ main, .dashboard-card {
   margin-top: .4rem;
 }
 
-/* Hides label text visually while keeping it available to screen readers. */
-.visually-hidden {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  margin: -1px;
-  padding: 0;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
+/* The GPA form stays on the Student Dashboard. Its submit button supports both
+   Enter-key entry and a visible click/tap target for mouse and touch users. */
+.gpa-form {
+  margin-top: 1.25rem;
 }
-
-/* GPA calculator: table of editable rows drives a live status alert below the metric. */
-.gpa-alert {
-  margin: 0 0 1rem;
-  padding: .6rem 1rem;
-  border-radius: .4rem;
-  font-weight: 650;
+.gpa-form label {
+  display: block;
+  margin-bottom: .35rem;
+  font-weight: 700;
 }
-.gpa-alert-neutral {
-  background: #edf3ef;
+.gpa-entry-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .65rem;
 }
-.gpa-alert-danger {
-  background: #fbe4e4;
-  color: #7a1212;
-}
-.gpa-alert-ok {
-  background: #e0f2e7;
-  color: #075c35;
-}
-.gpa-alert-good {
-  background: #dff0ff;
-  color: #0b3d66;
-}
-.gpa-table {
-  width: 100%;
-  margin-bottom: 1rem;
-  border-collapse: collapse;
-}
-.gpa-table th, .gpa-table td {
-  padding: .4rem .5rem;
-  text-align: left;
-}
-.gpa-table select, .gpa-table input {
-  width: 100%;
+.gpa-entry-row input {
+  flex: 1 1 9rem;
+  min-width: 0;
   min-height: 44px;
-  padding: .3rem .5rem;
+  padding: .65rem .75rem;
   border: 1px solid #568069;
-  border-radius: .3rem;
+  border-radius: .45rem;
+  color: #123524;
+  background: white;
   font: inherit;
 }
-.gpa-remove-btn, .gpa-add-btn {
-  min-width: 44px;
+.gpa-entry-row button, .calculate-button {
   min-height: 44px;
-  padding: .4rem .8rem;
-  border: 1px solid #568069;
-  border-radius: .4rem;
-  background: white;
-  color: #075c35;
+  padding: .65rem 1rem;
+  border: 2px solid #075c35;
+  border-radius: .45rem;
+  color: white;
+  background: #075c35;
+  font: inherit;
   font-weight: 700;
   cursor: pointer;
 }
-.gpa-remove-btn:hover, .gpa-add-btn:hover {
-  background: #e0f2e7;
+.gpa-entry-row button:hover, .calculate-button:hover {
+  background: #06472a;
 }
-.gpa-remove-btn:disabled {
-  opacity: .5;
+.field-help, .field-error {
+  margin: .5rem 0 0;
+  font-size: .9rem;
+}
+.field-error {
+  color: #9b1c1c;
+  font-weight: 650;
+}
+.grade-list-area {
+  margin-top: 1.25rem;
+}
+.grade-list {
+  margin: 0;
+  padding-left: 1.5rem;
+}
+.grade-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: .3rem 0;
+  border-bottom: 1px solid #b2ccbd;
+}
+.calculate-button {
+  width: 100%;
+  margin-top: 1.25rem;
+}
+.calculate-button:disabled {
+  border-color: #718078;
+  background: #718078;
   cursor: not-allowed;
 }
 
@@ -343,6 +349,11 @@ main, .dashboard-card {
   border-radius: 50%;
   background: #f3faf5;
   box-shadow: 0 16px 45px rgb(7 92 53 / 16%);
+}
+.hero-logic {
+  font-size: 1.15rem;
+  font-weight: 800;
+  text-decoration: none;
 }
 .base {
   max-width: 170px;

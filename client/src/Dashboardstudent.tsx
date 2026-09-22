@@ -1,128 +1,53 @@
-import { useMemo, useState } from 'react'
+import { useState, type FormEvent } from 'react'
+import WeatherCard from './WeatherCard'
 
-const GRADE_POINTS: Record<string, number> = {
-  'A': 4.0, 'A-': 3.7,
-  'B+': 3.3, 'B': 3.0, 'B-': 2.7,
-  'C+': 2.3, 'C': 2.0, 'C-': 1.7,
-  'D+': 1.3, 'D': 1.0, 'D-': 0.7,
-  'F': 0.0,
-}
-
-type Course = { id: number; grade: string; credits: number }
-
-let nextCourseId = 1
-
-// Live GPA calculator
-function GpaCalculator() {
-  const [courses, setCourses] = useState<Course[]>([
-    { id: nextCourseId++, grade: 'A', credits: 3 },
-    { id: nextCourseId++, grade: 'B+', credits: 3 },
-  ])
-
-  function addCourse() {
-    setCourses(prev => [...prev, { id: nextCourseId++, grade: 'A', credits: 3 }])
-  }
-
-  function removeCourse(id: number) {
-    setCourses(prev => prev.filter(course => course.id !== id))
-  }
-
-  function updateCourse(id: number, field: 'grade' | 'credits', value: string) {
-    setCourses(prev => prev.map(course => {
-      if (course.id !== id) return course
-      return field === 'credits'
-        ? { ...course, credits: Math.max(0, Number(value) || 0) }
-        : { ...course, grade: value }
-    }))
-  }
-
-  const { gpa, totalCredits } = useMemo(() => {
-    const totalCredits = courses.reduce((sum, course) => sum + course.credits, 0)
-    const totalPoints = courses.reduce((sum, course) => sum + GRADE_POINTS[course.grade] * course.credits, 0)
-    return { gpa: totalCredits > 0 ? totalPoints / totalCredits : 0, totalCredits }
-  }, [courses])
-
-  let alertMessage = 'Add at least one course to calculate a GPA.'
-  let alertClass = 'gpa-alert gpa-alert-neutral'
-  if (totalCredits > 0) {
-    if (gpa < 2.0) {
-      alertMessage = 'Academic warning: GPA is below 2.0. Meet with an advisor.'
-      alertClass = 'gpa-alert gpa-alert-danger'
-    } else if (gpa < 3.5) {
-      alertMessage = 'Good standing: GPA meets progress requirements.'
-      alertClass = 'gpa-alert gpa-alert-ok'
-    } else {
-      alertMessage = "Dean's List eligible: GPA is 3.5 or higher!"
-      alertClass = 'gpa-alert gpa-alert-good'
-    }
-  }
-
-  return (
-    <div className="gpa-calculator">
-      <p className="metric">{gpa.toFixed(2)}</p>
-      <p>Live GPA · {totalCredits} credit{totalCredits === 1 ? '' : 's'} entered</p>
-      <div role="status" className={alertClass}>{alertMessage}</div>
-
-      <table className="gpa-table">
-        <thead>
-          <tr>
-            <th scope="col">Course grade</th>
-            <th scope="col">Credit hours</th>
-            <th scope="col"><span className="visually-hidden">Remove</span></th>
-          </tr>
-        </thead>
-        <tbody>
-          {courses.map(course => (
-            <tr key={course.id}>
-              <td>
-                <label>
-                  <span className="visually-hidden">Grade</span>
-                  <select
-                    value={course.grade}
-                    onChange={e => updateCourse(course.id, 'grade', e.target.value)}
-                  >
-                    {Object.keys(GRADE_POINTS).map(grade => (
-                      <option key={grade} value={grade}>{grade}</option>
-                    ))}
-                  </select>
-                </label>
-              </td>
-              <td>
-                <label>
-                  <span className="visually-hidden">Credit hours</span>
-                  <input
-                    type="number"
-                    min={0}
-                    max={6}
-                    value={course.credits}
-                    onChange={e => updateCourse(course.id, 'credits', e.target.value)}
-                  />
-                </label>
-              </td>
-              <td>
-                <button
-                  type="button"
-                  className="gpa-remove-btn"
-                  onClick={() => removeCourse(course.id)}
-                  disabled={courses.length === 1}
-                  aria-label="Remove course"
-                >
-                  ✕
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-
-      <button type="button" className="gpa-add-btn" onClick={addCourse}>+ Add course</button>
-    </div>
-  )
+// Each letter grade maps to its value on a standard 4.0 GPA scale.
+const gradePoints: Record<string, number> = {
+  'A+': 4.0,
+  A: 4.0,
+  'A-': 3.7,
+  'B+': 3.3,
+  B: 3.0,
+  'B-': 2.7,
+  'C+': 2.3,
+  C: 2.0,
+  'C-': 1.7,
+  'D+': 1.3,
+  D: 1.0,
+  'D-': 0.7,
+  F: 0,
 }
 
 // This role component supplies content; App.css supplies the shared layout.
 // Keep these examples separate from live records until a data source is connected.
 function Dashboardstudent() {
+  const [gradeEntry, setGradeEntry] = useState('')
+  const [grades, setGrades] = useState<string[]>([])
+  const [gpa, setGpa] = useState<number | null>(null)
+  const [gradeError, setGradeError] = useState('')
+
+  function addGrade(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+
+    // Removing spaces and capitalizing lets entries such as "b +" become "B+".
+    const newGrade = gradeEntry.trim().toUpperCase().replaceAll(' ', '')
+
+    if (!(newGrade in gradePoints)) {
+      setGradeError('Enter a valid letter grade from A+ through F.')
+      return
+    }
+
+    setGrades([...grades, newGrade])
+    setGradeEntry('')
+    setGradeError('')
+    setGpa(null)
+  }
+
+  function calculateGpa() {
+    const totalPoints = grades.reduce((total, grade) => total + gradePoints[grade], 0)
+    setGpa(totalPoints / grades.length)
+  }
+
   return (
     <main id="student-dashboard" className="dashboard" aria-labelledby="student-title" tabIndex={-1}>
       {/* One h1 names the page. Each card below has an h2 for heading navigation. */}
@@ -130,7 +55,7 @@ function Dashboardstudent() {
         <p className="eyebrow">Your academic overview</p>
         <h1 id="student-title">Student Dashboard</h1>
         <p>Review your progress and find your academic information.</p>
-        <p className="demo-note">Course project preview. GPA and attendance are sample values; other records are not connected.</p>
+        <p className="demo-note">Course project preview. The GPA calculator uses grades entered on this page; attendance is a sample value and other records are not connected.</p>
       </header>
 
       {/* Real anchor links work with keyboards and browser history.
@@ -147,12 +72,57 @@ function Dashboardstudent() {
 
       {/* Each subsection uses native details behavior for keyboard-accessible dropdowns. */}
       <div className="dashboard-grid">
-        <details id="gpa" className="dashboard-card" open>
-          <summary>GPA Calculator</summary>
-          <GpaCalculator />
-        </details>
-        <details id="attendance" className="dashboard-card">
-          <summary>Attendance</summary>
+        <WeatherCard />
+        <section id="gpa" className="dashboard-card" aria-labelledby="gpa-heading" tabIndex={-1}>
+          <h2 id="gpa-heading">GPA</h2>
+          <p id="gpa-value" className="metric" aria-live="polite">
+            {gpa === null ? '--' : gpa.toFixed(2)}
+          </p>
+          <p>Calculated GPA · equal weight per grade</p>
+
+          <form className="gpa-form" onSubmit={addGrade} noValidate>
+            <label htmlFor="grade-entry">Enter a letter grade</label>
+            <div className="gpa-entry-row">
+              <input
+                id="grade-entry"
+                name="grade"
+                type="text"
+                value={gradeEntry}
+                onChange={(event) => setGradeEntry(event.target.value)}
+                placeholder="A-"
+                maxLength={3}
+                autoComplete="off"
+                aria-describedby={gradeError ? 'grade-help grade-error' : 'grade-help'}
+                aria-invalid={gradeError ? true : undefined}
+              />
+              <button type="submit">Add Grade</button>
+            </div>
+            <p id="grade-help" className="field-help">Accepted grades: A+, A, A-, B+, B, B-, C+, C, C-, D+, D, D-, and F.</p>
+            {gradeError && <p id="grade-error" className="field-error" role="alert">{gradeError}</p>}
+          </form>
+
+          <div className="grade-list-area">
+            <h3>Grades entered</h3>
+            {grades.length === 0 ? (
+              <p>No grades entered yet.</p>
+            ) : (
+              <ol className="grade-list">
+                {grades.map((grade, index) => (
+                  <li key={`${grade}-${index}`}>
+                    <span>{grade}</span>
+                    <span>{gradePoints[grade].toFixed(1)} points</span>
+                  </li>
+                ))}
+              </ol>
+            )}
+          </div>
+
+          <button className="calculate-button" type="button" onClick={calculateGpa} disabled={grades.length === 0}>
+            Calculate GPA
+          </button>
+        </section>
+        <section id="attendance" className="dashboard-card" aria-labelledby="attendance-heading" tabIndex={-1}>
+          <h2 id="attendance-heading">Attendance</h2>
           <p className="metric">94%</p>
           <p>Current attendance · sample value</p>
         </details>

@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Standalone student GPA calculator teaching example" />
+    <title>Student GPA Calculator</title>
+
+    <style>
+      :root {
+        font-family: Inter, Arial, sans-serif;
+        color: #123524;
+        background: white;
+        line-height: 1.6;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        min-width: 320px;
+        min-height: 100vh;
+        margin: 0;
+      }
+
+      :focus-visible {
+        outline: 3px solid #123524;
+        outline-offset: 3px;
+        box-shadow: 0 0 0 3px white;
+      }
+
+      .skip-link {
+        position: fixed;
+        top: .5rem;
+        left: .5rem;
+        z-index: 10;
+        transform: translateY(-200%);
+        padding: .75rem 1rem;
+        color: #123524;
+        background: white;
+        font-weight: 700;
+      }
+
+      .skip-link:focus {
+        transform: translateY(0);
+      }
+
+      .page-header {
+        padding: 1.5rem clamp(1rem, 4vw, 4rem);
+        color: white;
+        background: #075c35;
+      }
+
+      .page-header h1 {
+        margin: 0;
+        line-height: 1.2;
+      }
+
+      .page-header p {
+        margin: .35rem 0 0;
+      }
+
+      .dashboard {
+        max-width: 760px;
+        margin: 0 auto;
+        padding: 2rem clamp(1rem, 4vw, 2rem) 4rem;
+      }
+
+      .dashboard-card {
+        padding: 1.5rem;
+        border: 1px solid #b2ccbd;
+        border-radius: .85rem;
+        background: #f3faf5;
+        box-shadow: 0 4px 14px rgb(7 92 53 / 5%);
+      }
+
+      .dashboard-card h2 {
+        margin: 0 0 .75rem;
+      }
+
+      .metric {
+        margin: 0;
+        color: #075c35;
+        font-size: 2.75rem;
+        line-height: 1.2;
+        font-weight: 750;
+      }
+
+      .gpa-form {
+        margin-top: 1.25rem;
+      }
+
+      .gpa-form label {
+        display: block;
+        margin-bottom: .35rem;
+        font-weight: 700;
+      }
+
+      .entry-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: .65rem;
+      }
+
+      .entry-row input {
+        flex: 1 1 10rem;
+        min-width: 0;
+        min-height: 44px;
+        padding: .65rem .75rem;
+        border: 1px solid #568069;
+        border-radius: .45rem;
+        color: #123524;
+        background: white;
+        font: inherit;
+      }
+
+      button {
+        min-height: 44px;
+        padding: .65rem 1rem;
+        border: 2px solid #075c35;
+        border-radius: .45rem;
+        color: white;
+        background: #075c35;
+        font: inherit;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      button:hover {
+        background: #06472a;
+      }
+
+      button:disabled {
+        border-color: #718078;
+        background: #718078;
+        cursor: not-allowed;
+      }
+
+      .field-help,
+      .field-error {
+        margin: .5rem 0 0;
+        font-size: .9rem;
+      }
+
+      .field-error {
+        color: #9b1c1c;
+        font-weight: 650;
+      }
+
+      .grade-list-area {
+        margin-top: 1.25rem;
+      }
+
+      .grade-list-area h3 {
+        margin: 0 0 .5rem;
+        font-size: 1.05rem;
+      }
+
+      .grade-list {
+        margin: 0;
+        padding-left: 1.5rem;
+      }
+
+      .grade-list li {
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: .3rem 0;
+        border-bottom: 1px solid #b2ccbd;
+      }
+
+      .calculate-button {
+        width: 100%;
+        margin-top: 1.25rem;
+      }
+
+      @media (max-width: 480px) {
+        .dashboard-card {
+          padding: 1.25rem;
+        }
+
+        .entry-row button {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+
+    <header class="page-header">
+      <h1>Student Dashboard</h1>
+      <p>Standalone HTML and JavaScript teaching example</p>
+    </header>
+
+    <main id="main-content" class="dashboard">
+      <section class="dashboard-card" aria-labelledby="gpa-heading">
+        <h2 id="gpa-heading">GPA Calculator</h2>
+
+        <input type="text" id="grade-entry">
+
+        <button onclick="addGrade()">Add Grade</button>
+
+        <ul id="grade-list"></ul>
+
+        <button onclick="calculateGPA()">Calculate GPA</button>
+
+        <p>GPA: <span id="gpa-value">--</span></p>
+      </section>
+    </main>
+
+    <!-- defer waits until the HTML is parsed before script2.js runs. -->
+    <script src="./script2.js" defer></script>
+  </body>
+</html>
