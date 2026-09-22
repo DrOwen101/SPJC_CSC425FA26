@@ -32,28 +32,28 @@ function Dashboardstudent() {
           Use the GPA calculator to estimate your future GPA.
         </button>
         </section>
-
-        <section id="attendance">
-          <h2>Attendance</h2>
-          <p>Current attendance: 94%</p>
+        <section id="attendance" className="dashboard-card" aria-labelledby="attendance-heading" tabIndex={-1}>
+          <h2 id="attendance-heading">Attendance</h2>
+          <p className="metric">94%</p>
+          <p>Current attendance · sample value</p>
         </section>
-
-        <section id="transcript">
-          <h2>Transcript</h2>
-          <p>View your completed courses and grades.</p>
+        <section id="transcript" className="dashboard-card" aria-labelledby="transcript-heading" tabIndex={-1}>
+          <h2 id="transcript-heading">Transcript</h2>
+          <p className="status-label">Not connected</p>
+          <p>Completed courses, credit hours, and final grades will appear here when academic records are connected.</p>
         </section>
-
-        <section id="alerts">
-          <h2>Alerts</h2>
-          <p>No new academic alerts.</p>
+        <section id="alerts" className="dashboard-card" aria-labelledby="alerts-heading" tabIndex={-1}>
+          <h2 id="alerts-heading">Alerts</h2>
+          <p className="status-label">Sample status: no new academic alerts</p>
+          <p>Check here for academic reminders and notices. Live alerts are not connected.</p>
         </section>
-
-        <section id="courses">
-          <h2>Upcoming Courses</h2>
-          <p>View your upcoming and registered courses.</p>
+        <section id="courses" className="dashboard-card" aria-labelledby="courses-heading" tabIndex={-1}>
+          <h2 id="courses-heading">Upcoming Courses</h2>
+          <p className="status-label">Not connected</p>
+          <p>Your registered courses, meeting times, and locations will appear here when registration data is connected.</p>
         </section>
-      </main>
-    </>
+      </div>
+    </main>
   )
 }
 
