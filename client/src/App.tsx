@@ -12,7 +12,7 @@ type DashboardRole = 'student' | 'faculty' | 'admin'
 // These IDs must match the id attributes in the three dashboard components.
 function getRole(hash: string): DashboardRole | null {
   const id = hash.slice(1)
-  if (['student-dashboard', 'gpa', 'attendance', 'transcript', 'alerts', 'courses'].includes(id)) return 'student'
+    if (['student-dashboard', 'grades', 'gpa', 'attendance', 'transcript', 'alerts', 'courses'].includes(id)) return 'student'
   if (['faculty-dashboard', 'faculty-courses', 'class-rosters', 'grading', 'faculty-alerts', 'teaching-schedule'].includes(id)) return 'faculty'
   if (['admin-dashboard', 'user-management', 'course-management', 'reports', 'admin-alerts', 'system-status'].includes(id)) return 'admin'
   return null
