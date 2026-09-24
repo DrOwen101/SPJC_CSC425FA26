@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import WeatherCard from './WeatherCard'
+import TranscriptCard from './TranscriptCard'
 
 // Each letter grade maps to its value on a standard 4.0 GPA scale.
 const gradePoints: Record<string, number> = {
@@ -55,7 +56,6 @@ function Dashboardstudent() {
         <p className="eyebrow">Your academic overview</p>
         <h1 id="student-title">Student Dashboard</h1>
         <p>Review your progress and find your academic information.</p>
-        <p className="demo-note">Course project preview. The GPA calculator uses grades entered on this page; attendance is a sample value and other records are not connected.</p>
       </header>
 
       {/* Real anchor links work with keyboards and browser history.
@@ -63,7 +63,7 @@ function Dashboardstudent() {
       <nav className="dashboard-nav" aria-label="Student sections">
         <ul>
             <li><a href="#gpa">GPA</a></li>
-            <li><a href="#attendance">Attendance</a></li>
+            {/* <li><a href="#attendance">Attendance</a></li> */}
             <li><a href="#transcript">Transcript</a></li>
             <li><a href="#alerts">Alerts</a></li>
             <li><a href="#courses">Upcoming Courses</a></li>
@@ -123,16 +123,12 @@ function Dashboardstudent() {
             Calculate GPA
           </button>
         </section>
-        <section id="attendance" className="dashboard-card" aria-labelledby="attendance-heading" tabIndex={-1}>
+        {/* <section id="attendance" className="dashboard-card" aria-labelledby="attendance-heading" tabIndex={-1}>
           <h2 id="attendance-heading">Attendance</h2>
           <p className="metric">94%</p>
           <p>Current attendance · sample value</p>
-        </section>
-        <section id="transcript" className="dashboard-card" aria-labelledby="transcript-heading" tabIndex={-1}>
-          <h2 id="transcript-heading">Transcript</h2>
-          <p className="status-label">Not connected</p>
-          <p>Completed courses, credit hours, and final grades will appear here when academic records are connected.</p>
-        </section>
+        </section> */}
+        <TranscriptCard id="transcript" />
         <section id="alerts" className="dashboard-card" aria-labelledby="alerts-heading" tabIndex={-1}>
           <h2 id="alerts-heading">Alerts</h2>
           <p className="status-label">Sample status: no new academic alerts</p>
