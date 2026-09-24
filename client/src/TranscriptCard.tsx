@@ -96,13 +96,56 @@ function TranscriptCard({ id, apiBaseUrl = defaultApiBaseUrl }: TranscriptCardPr
 
   return (
     <section id={id} className="transcript-card" aria-labelledby={`${labelId}-heading`} tabIndex={-1}>
+      <div className="transcript-card-header">
+        <h2 id={`${labelId}-heading`}>Transcript</h2>
+        <p className="transcript-card-status" role="status" aria-live="polite">{status}</p>
+      </div>
 
+      <form className="transcript-card-controls" onSubmit={handleSubmit}>
+        <label htmlFor="student-id" className="transcript-card-label">Student ID</label>
+        <div className="transcript-card-input-row">
+          <input
+            id="student-id"
+            type="text"
+            value={studentID}
+            onChange={(e) => setStudentID(e.target.value)}
+            placeholder="Enter student ID"
+            aria-label="Student ID"
+          />
+          <button type="submit" disabled={isLoading}>
+            {isLoading ? 'Loading…' : 'Load Transcript'}
+          </button>
+        </div>
+      </form>
 
+      {inputError && <p className="transcript-card-error" role="alert">{inputError}</p>}
+      {error && <p className="transcript-card-error" role="alert">{error}</p>}
 
-      {/* INSERT LAB 6 CODE HERE - GOOD LUCK :)  */}
-    
-    
-    
+      {transcript && (
+      <div className="transcript-card-record">
+        <h2>{transcript.firstName} {transcript.lastName} • ID: {transcript.studentID}</h2>
+          <div className="transcript-card-table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>Course</th>
+                  <th>Credits</th>
+                  <th>Grade</th>
+                </tr>
+              </thead>
+              <tbody>
+                {transcript.semesters[0]?.courses.map((course, index) => (
+                  <tr key={`${course.courseCode}-${index}`}>
+                    <td>{course.courseCode}</td>
+                    <td>{course.creditHours}</td>
+                    <td>{course.grade}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
     </section>
   )
 }
