@@ -99,6 +99,27 @@ try {
 
 Suggested practice: build a student ID form, a loading indicator, an error message, a table for each semester, and a cumulative GPA/credits summary. Use `/api/students` if you want a dropdown of available students.
 
+## Included React example
+
+The Student Dashboard now uses [`TranscriptCard.tsx`](../client/src/TranscriptCard.tsx), which owns its API request, state, and CSS, like `WeatherCard`:
+
+```tsx
+import TranscriptCard from './TranscriptCard'
+
+// Use inside a component's JSX:
+<TranscriptCard />
+```
+
+It loads student `1001` initially. Enter another ID and select **Load transcript** to request a different record. The example uses `fetch` with `async`/`await`, checks HTTP errors and JSON fields, and cancels requests on navigation or after a 15-second timeout.
+
+Run `npm run dev` from the repository root to start both applications. Open the frontend's Student tab. By default, the card calls port `3000` on the same hostname and protocol as the frontend. To connect to another API host, pass its base URL (without `/api`):
+
+```tsx
+<TranscriptCard apiBaseUrl="https://your-api.example.com" />
+```
+
+Alternatively, set `VITE_API_BASE_URL=https://your-api.example.com` in `client/.env.local` and restart Vite (or rebuild for production). The value is a public server address, not a secret. For an HTTPS frontend, use an HTTPS API. The optional `id` prop supports page anchors; the dashboard uses `<TranscriptCard id="transcript" />`.
+
 ## Let classmates connect
 
 **Same classroom network:** keep this server running and share `http://YOUR_COMPUTER_LAN_IP:3000/api/transcripts/1001`. Replace the placeholder with your computer's actual network address. On their computers, `localhost` means their own computer. Allow incoming connections to port 3000 if your firewall prompts. Campus Wi-Fi must permit connections between devices; being on the same Wi-Fi alone does not guarantee access.
