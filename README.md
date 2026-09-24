@@ -21,6 +21,8 @@ Use a personal email address for GitHub if you want your coursework to become pa
 
 ## Technology Overview
 
+For the database-free transcript frontend exercise, see the [Mock Student Transcript API guide](server/README.md). Run `npm start --prefix server` and request `http://localhost:3000/api/transcripts/1001`; five fictional students (`1001`–`1005`) are available.
+
 | Technology | Purpose |
 | --- | --- |
 | Node.js | Runs JavaScript outside the browser |

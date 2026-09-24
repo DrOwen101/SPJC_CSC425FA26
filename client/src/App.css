@@ -71,6 +71,11 @@ h2 {
   font-size: 1.35rem;
   line-height: 1.3;
 }
+h3 {
+  margin: 0 0 .5rem;
+  font-size: 1.05rem;
+  line-height: 1.3;
+}
 p {
   margin: .5rem 0 1rem;
 }
@@ -248,6 +253,78 @@ main, .dashboard-card {
   margin-top: .4rem;
 }
 
+/* The GPA form stays on the Student Dashboard. Its submit button supports both
+   Enter-key entry and a visible click/tap target for mouse and touch users. */
+.gpa-form {
+  margin-top: 1.25rem;
+}
+.gpa-form label {
+  display: block;
+  margin-bottom: .35rem;
+  font-weight: 700;
+}
+.gpa-entry-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .65rem;
+}
+.gpa-entry-row input {
+  flex: 1 1 9rem;
+  min-width: 0;
+  min-height: 44px;
+  padding: .65rem .75rem;
+  border: 1px solid #568069;
+  border-radius: .45rem;
+  color: #123524;
+  background: white;
+  font: inherit;
+}
+.gpa-entry-row button, .calculate-button {
+  min-height: 44px;
+  padding: .65rem 1rem;
+  border: 2px solid #075c35;
+  border-radius: .45rem;
+  color: white;
+  background: #075c35;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+.gpa-entry-row button:hover, .calculate-button:hover {
+  background: #06472a;
+}
+.field-help, .field-error {
+  margin: .5rem 0 0;
+  font-size: .9rem;
+}
+.field-error {
+  color: #9b1c1c;
+  font-weight: 650;
+}
+.grade-list-area {
+  margin-top: 1.25rem;
+}
+.grade-list {
+  margin: 0;
+  padding-left: 1.5rem;
+}
+.grade-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: .3rem 0;
+  border-bottom: 1px solid #b2ccbd;
+}
+.calculate-button {
+  width: 100%;
+  margin-top: 1.25rem;
+}
+.calculate-button:disabled {
+  border-color: #718078;
+  background: #718078;
+  cursor: not-allowed;
+}
+
 /* Home keeps the original logo and green/white presentation. */
 #center {
   min-height: 78vh;
@@ -268,6 +345,11 @@ main, .dashboard-card {
   border-radius: 50%;
   background: #f3faf5;
   box-shadow: 0 16px 45px rgb(7 92 53 / 16%);
+}
+.hero-logic {
+  font-size: 1.15rem;
+  font-weight: 800;
+  text-decoration: none;
 }
 .base {
   max-width: 170px;

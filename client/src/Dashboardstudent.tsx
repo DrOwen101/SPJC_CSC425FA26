@@ -1,28 +1,32 @@
+import { useState } from 'react'
+import WeatherCard from './WeatherCard'
+
+// Each letter grade maps to its value on a standard 4.0 GPA scale.
+const gradePoints: Record<string, number> = {
+  'A+': 4.0,
+  A: 4.0,
+  'A-': 3.7,
+  'B+': 3.3,
+  B: 3.0,
+  'B-': 2.7,
+  'C+': 2.3,
+  C: 2.0,
+  'C-': 1.7,
+  'D+': 1.3,
+  D: 1.0,
+  'D-': 0.7,
+  F: 0,
+}
+
 // This role component supplies content; App.css supplies the shared layout.
 // Keep these examples separate from live records until a data source is connected.
-import { useState } from 'react'
 function Dashboardstudent() {
   const [grades, setGrades] = useState<string[]>([])
   const [gpa, setGpa] = useState<number | null>(null)
-  const gradePoints: Record<string, number> = {
-    'A+': 4,
-    A: 4,
-    'A-': 3.7,
-    'B+': 3.3,
-    B: 3,
-    'B-': 2.7,
-    'C+': 2.3,
-    C: 2,
-    'C-': 1.7,
-    'D+': 1.3,
-    D: 1,
-    'D-': 0.7,
-    F: 0,
-  }
 
   function addGrade(grade: string) {
     setGrades([...grades, grade])
-    setGpa(null) // Reset GPA when a new grade is added
+    setGpa(null)
   }
 
   function calculateGPA() {
@@ -44,7 +48,7 @@ function Dashboardstudent() {
         <p className="eyebrow">Your academic overview</p>
         <h1 id="student-title">Student Dashboard</h1>
         <p>Review your progress and find your academic information.</p>
-        <p className="demo-note">Course project preview. GPA and attendance are sample values; other records are not connected.</p>
+        <p className="demo-note">Course project preview. The GPA calculator uses grades entered on this page; attendance is a sample value and other records are not connected.</p>
       </header>
 
       {/* Real anchor links work with keyboards and browser history.
@@ -63,6 +67,7 @@ function Dashboardstudent() {
           Each named section is a card. tabIndex=-1 permits anchor focus without
           adding every card to the Tab sequence; links remain the normal stops. */}
       <div className="dashboard-grid">
+        <WeatherCard />
         <section id="gpa" className="dashboard-card" aria-labelledby="gpa-heading" tabIndex={-1}>
           <h2 id="gpa-heading">GPA</h2>
           <div className="current-gpa">
