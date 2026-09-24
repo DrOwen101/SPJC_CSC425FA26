@@ -70,6 +70,7 @@ function Dashboardstudent() {
         <WeatherCard />
         <section id="gpa" className="dashboard-card" aria-labelledby="gpa-heading" tabIndex={-1}>
           <h2 id="gpa-heading">GPA</h2>
+          <p className="gpa-caption">Limitation: This calculator assumes all courses are equally weighted and will be fixed in future update.</p>
           <div className="current-gpa">
             <p className="current-gpa-label">Current GPA</p>
             <p className="metric">3.25</p>

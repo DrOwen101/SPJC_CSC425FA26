@@ -4,9 +4,9 @@ import Dashboardadmin from './Dashboardadmin'
 import Dashboardfaculty from './Dashboardfaculty'
 import Dashboardstudent from './Dashboardstudent'
 import './App.css'
-import AdminIcon from './assets/Adminicon.png'
-import FacultyIcon from './assets/Facultyicon.png'
-import StudentIcon from './assets/Studenticon.png'
+import AdminIcon from './assets/AdminIcon.png'
+import FacultyIcon from './assets/FacultyIcon.png'
+import StudentIcon from './assets/StudentIcon.png'
 
 // A union type restricts role values to these three strings.
 type DashboardRole = 'student' | 'faculty' | 'admin'

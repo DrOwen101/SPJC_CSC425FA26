@@ -698,6 +698,13 @@ main, .dashboard-card {
   gap: .75rem;
 }
 
+.gpa-caption {
+  margin: -0.5rem 0 1rem;
+  color: #4f6658;
+  font-size: 0.875rem;
+  font-style: italic;
+}
+
 .grade-buttons {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
