@@ -1,5 +1,4 @@
 import { useEffect, useId, useState } from 'react'
-import axios from 'axios'
 import './WeatherCard.css'
 
 // Open-Meteo is free for noncommercial teaching use and needs no API key.
@@ -11,14 +10,7 @@ type WeatherResponse = {
   current?: { temperature_2m?: number }
 }
 
-// Example 1: Axios returns a Promise. .then() runs when it resolves.
-// Axios parses JSON automatically and puts the body in response.data.
-function loadWithAxios(signal: AbortSignal): Promise<WeatherResponse> {
-  return axios.get<WeatherResponse>(weatherUrl, { signal })
-    .then((response) => response.data)
-}
-
-// Example 2: An async function also returns a Promise. await pauses this
+// An async function also returns a Promise. await pauses this
 // function until a Promise settles; it does not freeze the page.
 async function loadWithFetch(signal: AbortSignal): Promise<WeatherResponse> {
   const response = await fetch(weatherUrl, { signal })
@@ -33,8 +25,7 @@ async function loadWithFetch(signal: AbortSignal): Promise<WeatherResponse> {
   return data
 }
 
-// Keep both teaching examples available in code without a screen control.
-const weatherRequests = { axios: loadWithAxios, fetch: loadWithFetch }
+const weatherRequest = loadWithFetch
 
 // Reuse with only an import and <WeatherCard />. Requests, state, and styles
 // belong to this component; the parent does not need to manage the weather.
@@ -62,9 +53,7 @@ function WeatherCard() {
     // async function inside the effect and then call it.
     async function loadWeather() {
       try {
-        // For the Fetch lesson, change weatherRequests.axios to
-        // weatherRequests.fetch. Only one example sends a request.
-        const data = await weatherRequests.axios(controller.signal)
+        const data = await weatherRequest(controller.signal)
 
         // TypeScript describes the expected shape, but the actual API response
         // still needs checking. Zero degrees is a valid temperature.
