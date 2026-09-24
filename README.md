@@ -19,6 +19,12 @@ You should already have:
 
 Use a personal email address for GitHub if you want your coursework to become part of a professional coding portfolio.
 
+## Before Editing: Create Your Assignment Branch
+
+Keep `main` for pulling the course's published code. Create a personal branch before editing, commit your work on that branch, and submit it through a GitHub pull request. Commit all intended changes before switching back to `main` so unfinished edits do not follow you.
+
+Follow the [student branch workflow](CONTRIBUTING.md) for the commands, VS Code protections, and recovery steps if you accidentally edit on `main`.
+
 ## Technology Overview
 
 For the database-free transcript frontend exercise, see the [Mock Student Transcript API guide](server/README.md). Run `npm start --prefix server` and request `http://localhost:3000/api/transcripts/1001`; five fictional students (`1001`–`1005`) are available.
