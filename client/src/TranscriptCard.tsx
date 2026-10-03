@@ -123,17 +123,33 @@ function TranscriptCard({ id, apiBaseUrl = defaultApiBaseUrl }: TranscriptCardPr
           <p><strong>Institution:</strong> {transcript.institution}</p>
           <p><strong>Credits Attempted:</strong> {transcript.summary.creditsAttempted}</p>
           <p><strong>Credits Earned:</strong> {transcript.summary.creditsEarned}</p>
+          <p><strong>Cumulative GPA:</strong> {transcript.summary.cumulativeGPA.toFixed(2)}</p>
+          {transcript.isMockData && <p className="mock-data-note">Mock transcript, not actual academic data.</p>}
           <h3>Courses</h3>
           {transcript.semesters.map((semester: Semester) => (
             <div key={semester.term} className="semester">
               <h4>{semester.term} ({semester.creditsEarned}/{semester.creditsAttempted} credit hours)</h4>
-              <ul>
-                {semester.courses.map((course: Course) => (
-                  <li key={course.courseCode}>
-                    <strong>{course.courseTitle}</strong> ({course.creditHours} credit hours) - {course.grade}
-                  </li>
-                ))}
-              </ul>
+              <table className="course-table">
+                <thead>
+                  <tr>
+                    <th>Course Code</th>
+                    <th>Course Title</th>
+                    <th>Credit Hours</th>
+                    <th>Grade</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {semester.courses.map((course: Course) => (
+                    <tr key={course.courseCode}>
+                      <td>{course.courseCode}</td>
+                      <td>{course.courseTitle}</td>
+                      <td>{course.creditHours}</td>
+                      <td>{course.grade}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              Term GPA: {semester.gpa.toFixed(2)}
             </div>
           ))}
         </div>
