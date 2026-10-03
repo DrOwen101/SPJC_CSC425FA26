@@ -100,7 +100,7 @@ function TranscriptCard({ id, apiBaseUrl = defaultApiBaseUrl }: TranscriptCardPr
   return (
     <section id={id} className="transcript-card" aria-labelledby={`${labelId}-heading`} tabIndex={-1}>
       <h2 id={`${labelId}-heading`}>Transcript</h2>
-      <form onSubmit={handleSubmit} className="transcript-form">
+      <form onSubmit={handleSubmit} className="transcript-card-controls">
         <label htmlFor={`${labelId}-studentID`}>Student ID</label>
         <input
           id={`${labelId}-studentID`}
