@@ -1,11 +1,11 @@
-type Course = {
+export type Course = {
   courseCode: string
   courseTitle: string
   creditHours: number
   grade: string
 }
 
-type Semester = {
+export type Semester = {
   term: string
   courses: Course[]
   creditsAttempted: number

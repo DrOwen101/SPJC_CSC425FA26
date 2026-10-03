@@ -2,6 +2,9 @@ import { useEffect, useId, useState, type FormEvent } from 'react'
 import axios from 'axios'
 import './TranscriptCard.css'
 import { isTranscript, type Transcript } from './transcriptApi'
+import { type Course } from './transcriptApi'
+import { type Semester } from './transcriptApi'
+
 
 // By default, connect to the API on the same computer as the frontend.
 // For a separately hosted API, set VITE_API_BASE_URL or pass apiBaseUrl.
@@ -96,13 +99,45 @@ function TranscriptCard({ id, apiBaseUrl = defaultApiBaseUrl }: TranscriptCardPr
 
   return (
     <section id={id} className="transcript-card" aria-labelledby={`${labelId}-heading`} tabIndex={-1}>
-
-
-
-      {/* INSERT LAB 6 CODE HERE - GOOD LUCK :)  */}
-    
-    
-    
+      <h2 id={`${labelId}-heading`}>Transcript</h2>
+      <form onSubmit={handleSubmit} className="transcript-form">
+        <label htmlFor={`${labelId}-studentID`}>Student ID</label>
+        <input
+          id={`${labelId}-studentID`}
+          type="text"
+          value={studentID}
+          onChange={(e) => setStudentID(e.target.value)}
+          placeholder="Enter student ID"
+        />
+        <button type="submit" disabled={isLoading}>
+          Load Transcript
+        </button>
+      </form>
+      {inputError && <p className="field-error" role="alert">{inputError}</p>}
+      <p className="status-label">{status}</p>
+      {error && <p className="field-error" role="alert">{error}</p>}
+      {transcript && (
+        <div className="transcript-details">
+          <p><strong>Student:</strong> {transcript.firstName} {transcript.lastName}</p>
+          <p><strong>Major:</strong> {transcript.major}</p>
+          <p><strong>Institution:</strong> {transcript.institution}</p>
+          <p><strong>Credits Attempted:</strong> {transcript.summary.creditsAttempted}</p>
+          <p><strong>Credits Earned:</strong> {transcript.summary.creditsEarned}</p>
+          <h3>Courses</h3>
+          {transcript.semesters.map((semester: Semester) => (
+            <div key={semester.term} className="semester">
+              <h4>{semester.term} ({semester.creditsEarned}/{semester.creditsAttempted} credit hours)</h4>
+              <ul>
+                {semester.courses.map((course: Course) => (
+                  <li key={course.courseCode}>
+                    <strong>{course.courseTitle}</strong> ({course.creditHours} credit hours) - {course.grade}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      )}
     </section>
   )
 }
