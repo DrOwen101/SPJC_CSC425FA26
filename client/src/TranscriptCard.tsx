@@ -96,11 +96,36 @@ function TranscriptCard({ id, apiBaseUrl = defaultApiBaseUrl }: TranscriptCardPr
 
   return (
     <section id={id} className="transcript-card" aria-labelledby={`${labelId}-heading`} tabIndex={-1}>
+      <h2 id={`${labelId}-heading`}>Transcript</h2>
+      <p>Explore fictional student records for this classroom exercise.</p>
+
+      <form onSubmit={handleSubmit} noValidate>
+        <label htmlFor={'${labelId}-student-id'}>Student ID</label>
+          <input
+            id={`${labelId}-student-id`}
+            name="studentID"
+            type="text"
+            inputMode="numeric"
+            autoComplete="off"
+            value={studentID}
+              onChange={(event) => {
+              setStudentID(event.target.value)
+              setInputError('')
+            }}
+            aria-describedby={'${labelId}-help ${labelId}-error'}
+            aria-invalid={!!inputError ? true: undefined}
+          />
+          <button type="submit" disabled={isLoading}>Load Transcript</button>
+        <p id={`${labelId}-help`}>Enter a four-digit student ID, such as 1001.</p>
+        {inputError && <p id={`${labelId}-error`} className="transcript-card-error" role="alert">{inputError}</p>}
+      </form>
+      <div role="status" aria-live="polite" aria-busy={isLoading}>
+        <p className="transcript-card-status">{status}</p>
+      </div>
 
 
 
-      {/* INSERT LAB 6 CODE HERE - GOOD LUCK :)  */}
-    
+
     
     
     </section>
