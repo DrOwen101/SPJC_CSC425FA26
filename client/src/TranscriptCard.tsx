@@ -91,8 +91,13 @@ function TranscriptCard({ id, apiBaseUrl = defaultApiBaseUrl }: TranscriptCardPr
   }
 
   let status = 'No transcript loaded.'
-  if (isLoading) status = `Loading transcript for ${request.studentID}…`
-  else if (transcript) status = `Transcript loaded for ${transcript.firstName} ${transcript.lastName}.`
+  if (isLoading) {
+    status = `Loading transcript for ${request.studentID}…`
+  } else if (transcript) {
+    status = `Transcript loaded for ${transcript.firstName} ${transcript.lastName}.`
+  } else if (error) {
+    status = error
+  }
 
   return (
     <section id={id} className="transcript-card" aria-labelledby={`${labelId}-heading`} tabIndex={-1}>
@@ -122,12 +127,63 @@ function TranscriptCard({ id, apiBaseUrl = defaultApiBaseUrl }: TranscriptCardPr
       <div role="status" aria-live="polite" aria-busy={isLoading}>
         <p className="transcript-card-status">{status}</p>
       </div>
+      {transcript && (
+        <div className="transcript-card-record">
+          <h3>{transcript.firstName} {transcript.lastName}</h3>
+          <p>CSC 425 Demo University</p>
+          <p>Student ID: {transcript.studentID}</p>
+          <p>Mock Transcript - Not an official academic record.</p>
+        </div>
+      )}
+      {transcript && (
+        <div className="transcript-card table">
+          {transcript.semesters.map((semester) => (
+            <section className="transcript-card-semester" key={semester.term}>
+              <h3>{semester.term}</h3>
+              <table>
+              <thead className="transcript-card thead">
+                <tr>
+                  <th>Course</th>
+                  <th>Title</th>
+                  <th>Credits</th>
+                  <th>Grade</th>
+                </tr>
+              </thead>
+              <tbody>
+                {semester.courses.map((course) => (
+                  <tr key={course.courseCode}>
+                    <td>{course.courseCode}</td>
+                    <td>{course.courseTitle}</td>
+                    <td>{course.creditHours}</td>
+                    <td>{course.grade}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <p className="transcript-card-term-summary">Term GPA: <b>{semester.gpa}</b> - Credits attempted: <b>{semester.creditsAttempted}</b> - Credits earned: <b>{semester.creditsEarned}</b></p>
+            </section>
+          ))}
+        </div>
+      )}
+      {transcript && (
+        <dl className="transcript-card-summary">
+          <div>
+            <dt>Cumulative GPA</dt>
+            <dd>{transcript.summary.cumulativeGPA.toFixed(2)}</dd>
+          </div>
 
+          <div>
+            <dt>Credits attempted</dt>
+            <dd>{transcript.summary.creditsAttempted}</dd>
+          </div>
 
-
-
-    
-    
+          <div>
+            <dt>Credits earned</dt>
+            <dd>{transcript.summary.creditsEarned}</dd>
+          </div>
+        </dl>
+      )}
+      <p>GPA is weighted by credit hours on a 4.0 scale. F grades count toward attempted credits but earn no credits.</p>
     </section>
   )
 }
