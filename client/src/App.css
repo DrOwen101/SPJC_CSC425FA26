@@ -56,8 +56,8 @@ code { padding: .15rem .35rem; border-radius: .3rem; background: #e0f2e7; }
     max-width: 1800px;
 }
 
-/* Transcript spans every column so its tables fit without scrolling. */
-#transcript {
+/* Full width only once a transcript is on screen; otherwise a normal-sized card. */
+#transcript:has(.transcript-card-record) {
     grid-column: 1 / -1;
 }
 

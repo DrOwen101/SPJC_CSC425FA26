@@ -79,10 +79,29 @@ section.transcript-card p {
   font-weight: 700;
   cursor: pointer;
 }
-.transcript-card-controls button:hover:not(:disabled) {
+.transcript-card .transcript-card-controls button:hover:not(:disabled) {
   background: #06482a;
 }
-.transcript-card-controls button:disabled {
+.transcript-card .transcript-card-controls button:disabled {
+  opacity: .65;
+  cursor: wait;
+}
+.transcript-card .transcript-card-controls .transcript-card-clear {
+  grid-column: 1 / -1; /* spans input + Load columns */
+  background: darkslategrey;
+  color: white;
+  border: none;
+  border-radius: .45rem;
+  padding: .65rem .75rem;
+  cursor: pointer;
+  justify-self: start;
+  width: 70%;
+}
+.transcript-card .transcript-card-controls .transcript-card-clear:hover:not(:disabled) {
+  background: rgb(47 79 79 / 80%); /* darkslategrey at 80% opacity */
+
+}
+.transcript-card .transcript-card-controls .transcript-card-clear:disabled {
   opacity: .65;
   cursor: wait;
 }
@@ -93,7 +112,7 @@ section.transcript-card p {
   color: #982525;
   font-weight: 650;
 }
-.transcript-card-status {
+.transcript-card .transcript-card-status {
   font-size: .9rem;
 }
 .transcript-card .transcript-card-record {
@@ -136,7 +155,7 @@ section.transcript-card .transcript-card-record p {
 .transcript-card .transcript-card-term-summary {
   font-size: 1rem;
 }
-.transcript-card-summary {
+.transcript-card .transcript-card-summary {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr));
   gap: 1rem;
@@ -145,11 +164,11 @@ section.transcript-card .transcript-card-record p {
   border-radius: .5rem;
   background: #e0f2e7;
 }
-.transcript-card-summary dt {
+.transcript-card .transcript-card-summary dt {
   font-size: .9rem;
   font-weight: 650;
 }
-.transcript-card-summary dd {
+.transcript-card .transcript-card-summary dd {
   margin: 0;
   color: #075c35;
   font-size: 1.75rem;

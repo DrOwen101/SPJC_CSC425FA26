@@ -16,15 +16,18 @@ type TranscriptCardProps = {
 // The async Axios request is below; transcriptApi.ts contains only data types and validation.
 function TranscriptCard({ id, apiBaseUrl = defaultApiBaseUrl }: TranscriptCardProps) {
   const labelId = useId()
-  const [studentID, setStudentID] = useState('1001')
-  const [request, setRequest] = useState({ studentID: '1001' })
+  const [studentID, setStudentID] = useState('')
+  const [request, setRequest] = useState<{ studentID: string } | null>(null)
   const [result, setResult] = useState({
-    transcript: null as Transcript | null, isLoading: true, error: '',
+    transcript: null as Transcript | null, isLoading: false, error: '',
   })
   const { transcript, isLoading, error } = result
   const [inputError, setInputError] = useState('')
 
   useEffect(() => {
+    // Nothing is requested until the user submits an ID.
+    if (!request) return
+    const requestedID = request.studentID
     const controller = new AbortController()
     setResult({ transcript: null, isLoading: true, error: '' })
 
@@ -38,12 +41,12 @@ function TranscriptCard({ id, apiBaseUrl = defaultApiBaseUrl }: TranscriptCardPr
         // Call the Express GET /api/transcripts/:studentID route in the server folder.
         // await waits for the response; Axios puts the parsed JSON in response.data.
         const response = await axios.get<unknown>(
-          `${apiBaseUrl.replace(/\/$/, '')}/api/transcripts/${request.studentID}`,
+          `${apiBaseUrl.replace(/\/$/, '')}/api/transcripts/${requestedID}`,
           { signal: controller.signal },
         )
         if (controller.signal.aborted) return
         const transcript = response.data
-        if (!isTranscript(transcript) || transcript.studentID !== request.studentID) {
+        if (!isTranscript(transcript) || transcript.studentID !== requestedID) {
           throw new Error('The transcript service returned an unexpected response. Please try again.')
         }
         setResult({ transcript, isLoading: false, error: '' })
@@ -53,7 +56,7 @@ function TranscriptCard({ id, apiBaseUrl = defaultApiBaseUrl }: TranscriptCardPr
         // Axios rejects HTTP errors (such as 404) as well as network failures.
         if (axios.isAxiosError(requestError)) {
           const status = requestError.response?.status
-          if (status === 404) error = `No mock student was found with student ID ${request.studentID}. Try 1001–1005.`
+          if (status === 404) error = `No mock student was found with student ID ${requestedID}. Try 1001–1005.`
           else if (status) error = `The transcript request failed (HTTP ${status}). Please try again.`
           else error = 'Unable to reach the transcript service. Check your connection and try again.'
         } else if (requestError instanceof Error) {
@@ -90,8 +93,16 @@ function TranscriptCard({ id, apiBaseUrl = defaultApiBaseUrl }: TranscriptCardPr
     setRequest({ studentID: nextStudentID })
   }
 
+  function handleReset() {
+    // Setting request to null runs the effect cleanup, which aborts any in-flight request.
+    setRequest(null)
+    setResult({ transcript: null, isLoading: false, error: '' })
+    setStudentID('')
+    setInputError('')
+  }
+
   let status = 'No transcript loaded.'
-  if (isLoading) status = `Loading transcript for ${request.studentID}…`
+  if (isLoading) status = `Loading transcript for ${request?.studentID}…`
   else if (transcript) status = `Transcript loaded for ${transcript.firstName} ${transcript.lastName}.`
 
   // Outer loop: one table per semester on record. Inner loop: one row per course.
@@ -153,26 +164,35 @@ function TranscriptCard({ id, apiBaseUrl = defaultApiBaseUrl }: TranscriptCardPr
           />
           <button type="submit">Load Transcript</button>
           {inputError && <p className="transcript-card-error">{inputError}</p>}
+          <button className="transcript-card-clear" type="button" onClick={handleReset}>Clear</button>
         </form>
 
+        <section className="transcript-card-controls">
+          
+        </section>
+
         <section id="info">
-          <p>Available mock student IDs: 1001 - 1004</p>
+          <p>Available mock student IDs: 1001 - 1005</p>
           <p>{status}</p>
           {error && <p className="transcript-card-error">{error}</p>}
         </section>
       </section>
 
-      <div className="transcript-card-record">
-        <h3>{transcript?.firstName} {transcript?.lastName}</h3>
-        <p> {transcript?.institution}</p>
-        <p>Student ID: {transcript?.studentID} - Major: {transcript?.major}</p>
-        <p>Mock transcript - not an official record</p>
-      </div>
+      {transcript && (
+        <>
+          <div className="transcript-card-record">
+            <h3>{transcript.firstName} {transcript.lastName}</h3>
+            <p>{transcript.institution}</p>
+            <p>Student ID: {transcript.studentID} - Major: {transcript.major}</p>
+            <p>Mock transcript - not an official record</p>
+          </div>
 
-      <section className="transcript-card-semester">
-        <h3>Semester Records</h3>
-        {transcript ? semesterTables : <p>Details of each semester will be displayed here.</p>}
-      </section>
+          <section className="transcript-card-semester">
+            <h3>Semester Records</h3>
+            {semesterTables}
+          </section>
+        </>
+      )}
     </section>
   )
 }
