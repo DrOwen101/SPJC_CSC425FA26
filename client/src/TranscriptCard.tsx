@@ -107,6 +107,9 @@ function TranscriptCard({ id, apiBaseUrl = defaultApiBaseUrl }: TranscriptCardPr
 
   // Outer loop: one table per semester on record. Inner loop: one row per course.
   const semesterTables: ReactElement[] = []
+  let cumulativeGPA = 0.0
+  let creditsAttempted = 0
+  let creditsEarned = 0
   if (transcript) {
     for (let s = 0; s < transcript.semesters.length; s++) {
       const semester = transcript.semesters[s]
@@ -190,6 +193,28 @@ function TranscriptCard({ id, apiBaseUrl = defaultApiBaseUrl }: TranscriptCardPr
           <section className="transcript-card-semester">
             <h3>Semester Records</h3>
             {semesterTables}
+          </section>
+
+          <section className="transcript-card-summary">
+            <table>
+
+              <thead>
+                <tr>
+                  <th scope="col">Cumulative GPA</th>
+                  <th scope="col">Credits Attempted</th>
+                  <th scope="col">Credits Earned</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                <tr>
+                  <td>{cumulativeGPA.toFixed(2)}</td>
+                  <td>{creditsAttempted}</td>
+                  <td>{creditsEarned}</td>
+                </tr>
+              </tbody>
+
+            </table>
           </section>
         </>
       )}
