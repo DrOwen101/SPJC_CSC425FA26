@@ -96,15 +96,37 @@ function TranscriptCard({ id, apiBaseUrl = defaultApiBaseUrl }: TranscriptCardPr
 
   return (
     <section id={id} className="transcript-card" aria-labelledby={`${labelId}-heading`} tabIndex={-1}>
-
-
-
       {/* INSERT LAB 6 CODE HERE - GOOD LUCK :)  */}
-    
-    
-    
+      <h2 id={`${labelId}-heading`}>Transcript</h2>
+      <h4>Student ID</h4>
+      <form onSubmit={handleSubmit}>
+        <input
+          type="text"
+          value={studentID}
+          onChange={(e) => setStudentID(e.target.value)}
+          aria-label="Student ID"
+          aria-invalid={!!inputError}
+          aria-describedby={inputError ? `${labelId}-error` : undefined}
+        />
+        <button type="submit" disabled={isLoading}>Load Transcript</button>
+      </form>
+      {inputError && <p id={`${labelId}-error`} className="error">{inputError}</p>}
+      <p>{status}</p>
+      {error && <p className="error">{error}</p>}
+      {transcript && (
+        <div className="transcript">
+          <p><strong>Name:</strong> {transcript.firstName} {transcript.lastName}</p>
+          <p><strong>Student ID:</strong> {transcript.studentID}</p>
+          <p><strong>Major:</strong> {transcript.major}</p>
+          <p><strong>Institution:</strong> {transcript.institution}</p>
+          <p><strong>Credits Attempted:</strong> {transcript.summary.creditsAttempted}</p>
+        </div>
+      )}
+
     </section>
   )
 }
 
+
 export default TranscriptCard
+
