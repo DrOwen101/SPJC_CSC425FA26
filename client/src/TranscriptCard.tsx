@@ -96,13 +96,35 @@ function TranscriptCard({ id, apiBaseUrl = defaultApiBaseUrl }: TranscriptCardPr
 
   return (
     <section id={id} className="transcript-card" aria-labelledby={`${labelId}-heading`} tabIndex={-1}>
+      <section className="transcript-card-top">
+        <section>
+          <h2 id={`${labelId}-heading`}>Transcript</h2>
+          <p>Explore fictional student records for this exercise.</p>
+        </section>  
 
+        <form className="transcript-card-controls" onSubmit={handleSubmit}>
+          <label htmlFor="student-id-input">Student ID:</label>
+          <input
+            id="student-id-input"
+            type="text"
+            value={studentID}
+            onChange={(e) => setStudentID(e.target.value)}
+          />
+          <button type="submit">Load Transcript</button>
+          {inputError && <p className="transcript-card-error">{inputError}</p>}
+        </form>
 
+        <section id="info">
+          <p>Available mock student IDs: 1001 - 1004</p>
+          <p>{status}</p>
+        </section>
+      </section>
 
-      {/* INSERT LAB 6 CODE HERE - GOOD LUCK :)  */}
-    
-    
-    
+      <div className="transcript-card-record">
+        <h3>{transcript?.firstName} {transcript?.lastName}</h3>
+        <p> {transcript?.institution}</p>
+
+      </div>
     </section>
   )
 }

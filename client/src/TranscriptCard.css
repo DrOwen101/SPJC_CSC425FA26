@@ -28,23 +28,35 @@
   margin: 0 0 .5rem;
   font-size: 1.2rem;
 }
-.transcript-card p {
-  margin: .5rem 0 1rem;
+section.transcript-card p {
+  margin: .5rem 0 .75rem;
   overflow-wrap: anywhere;
+  font-size: small;
+  color: green;
+}
+.transcript-card-top {
+  border-bottom: 1px solid #b2ccbd;
 }
 .transcript-card label {
   display: block;
   margin-bottom: .35rem;
   font-weight: 700;
 }
-.transcript-card-controls {
-  display: flex;
-  flex-wrap: wrap;
+.transcript-card .transcript-card-controls {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
   gap: .65rem;
   max-width: 32rem;
+  container-type: inline-size;
 }
-.transcript-card-controls input,
-.transcript-card-controls button {
+.transcript-card .transcript-card-controls label,
+.transcript-card .transcript-card-controls .transcript-card-error {
+  grid-column: 1 / -1;
+  margin: 0;
+}
+.transcript-card .transcript-card-controls input,
+.transcript-card .transcript-card-controls button {
+  width: 100%;
   min-width: 0;
   min-height: 44px;
   padding: .65rem .75rem;
@@ -52,14 +64,16 @@
   border-radius: .45rem;
   font: inherit;
 }
-.transcript-card-controls input {
-  flex: 1 1 10rem;
-  width: 100%;
+.transcript-card .transcript-card-controls input {
+  flex: 1 1 auto;
   color: #123524;
   background: white;
 }
-.transcript-card-controls button {
-  flex: 1 1 10rem;
+.transcript-card .transcript-card-controls button {
+  flex: 2 1 auto;
+  padding-inline: .4rem;
+  font-size: clamp(.65rem, 6.2cqi, 1rem);
+  white-space: nowrap;
   color: white;
   background: #075c35;
   font-weight: 700;

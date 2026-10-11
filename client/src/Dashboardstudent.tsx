@@ -1,6 +1,8 @@
 import { addGrade, calculateGPA, clearList } from '../script.js'
 import type { KeyboardEvent } from 'react'
 import SPJCLogo from './assets/SPJCLogo.jpg'
+import WeatherCard from './WeatherCard'
+import TranscriptCard from './TranscriptCard.js'
 
 
 function Dashboardstudent() {
@@ -43,10 +45,13 @@ function Dashboardstudent() {
           <p>Current attendance: 94%</p>
         </section>
 
-        <section id="transcript" className="dashboard-card">
-          <h2>Transcript</h2>
-          <p>View your completed courses and grades.</p>
-        </section>
+        <div id="weather" className="dashboard-card">
+          <WeatherCard />
+        </div>
+
+        <div id="transcript" className="dashboard-card">
+          <TranscriptCard/>
+        </div>
 
         <section id="alerts" className="dashboard-card">
           <h2>Alerts</h2>
