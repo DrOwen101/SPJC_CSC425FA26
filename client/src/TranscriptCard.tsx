@@ -94,15 +94,81 @@ function TranscriptCard({ id, apiBaseUrl = defaultApiBaseUrl }: TranscriptCardPr
   if (isLoading) status = `Loading transcript for ${request.studentID}…`
   else if (transcript) status = `Transcript loaded for ${transcript.firstName} ${transcript.lastName}.`
 
+  let transcriptContent = <p>No Content Loaded</p>
+  if(transcript) {
+    transcriptContent = (
+    <>
+        {transcript.semesters.map((semester) => (
+        <div key={semester.term} className="semester">
+        Semester: {semester.term}
+          <table> 
+            <tbody>
+              {semester.courses.map((course) => (
+                <tr key={course.courseCode}>
+                  <td>{course.courseCode}</td>
+                  <td>{course.courseTitle}</td>
+                  <td>{course.creditHours}</td>
+                  <td>{course.grade}</td>
+                  <td>{semester.gpa}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+    ))}
+    </>
+    )}
+
+  let yearContent = <p>No Year Content Available</p>
+  if(transcript) {
+    yearContent = (
+      <>
+      <div>
+        <table>
+          <tbody>
+            <tr>
+              <td>Credits Earned: {transcript.summary.creditsEarned}</td>
+              <td>Credits Attempted: {transcript.summary.creditsAttempted}</td>
+              <td>Cumulative GPA: {transcript.summary.cumulativeGPA}</td>
+            </tr>
+          </tbody>
+        </table>
+       </div>
+      </>
+    )
+  }
+
   return (
     <section id={id} className="transcript-card" aria-labelledby={`${labelId}-heading`} tabIndex={-1}>
-
-
-
       {/* INSERT LAB 6 CODE HERE - GOOD LUCK :)  */}
-    
-    
-    
+      <h2>Student Transcript</h2>
+      <form onSubmit={handleSubmit}> 
+        <label htmlFor={`${labelId}-student-id`}>Student ID</label>
+        <div className="transcript-card-controls">
+          <input 
+            id={`${labelId}-student-id`}
+            name="studentID"
+            type="text"
+            inputMode="numeric"
+            autoComplete="off"
+            value={studentID}
+            onChange={(event) => {
+                setStudentID(event.target.value)
+                setInputError('')
+              }
+            }>
+          </input>
+          <button type="submit" disabled={isLoading}>{isLoading ? 'Loading' : 'Submit'}</button> 
+        </div>
+        <br></br>
+        <div className="studentInfo"> 
+          {status}
+          <br></br>
+          <h3>Courses</h3>
+          {transcriptContent} 
+          {yearContent}
+        </div>
+      </form>
     </section>
   )
 }
