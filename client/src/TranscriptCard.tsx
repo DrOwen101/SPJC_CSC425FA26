@@ -96,13 +96,58 @@ function TranscriptCard({ id, apiBaseUrl = defaultApiBaseUrl }: TranscriptCardPr
 
   return (
     <section id={id} className="transcript-card" aria-labelledby={`${labelId}-heading`} tabIndex={-1}>
+    <h2 id={`${labelId}-heading`}>Transcript</h2>
+    <div className="transcript-card-div">
+    <p className="transcript-card-status">{status}</p>
+    <form className="transcript-form" onSubmit={handleSubmit} noValidate>
+      <label htmlFor={`${labelId}-student-id`}>Student ID</label>
+      <input
+        id={`${labelId}-student-id`}
+        name="studentID"
+        type="text"
+        value={studentID}
+        onChange={(event) => setStudentID(event.target.value)}
+        placeholder="1001"
+        maxLength={4}
+        autoComplete="off"
+        aria-describedby={inputError ? `${labelId}-student-id-help ${labelId}-student-id-error` : `${labelId}-student-id-help`}
+        aria-invalid={inputError ? true : undefined}
+      />
+      <p id={`${labelId}-student-id-help`} className="field-help">Enter a four-digit student ID, such as 1001.</p>
+      {inputError && <p id={`${labelId}-student-id-error`} className="field-error" role="alert">{inputError}</p>}
+      <button type="submit" disabled={isLoading}>Load Transcript</button>
+    </form>
+    </div>
 
+    {error && <p className="field-error" role="alert">{error}</p>}
 
-
-      {/* INSERT LAB 6 CODE HERE - GOOD LUCK :)  */}
-    
-    
-    
+    {transcript && (
+      <div className="transcript-details">
+        <div className="transcript-card-div">
+          <p><strong>Name:</strong> {transcript.firstName} {transcript.lastName}</p>
+          <p><strong>Student ID:</strong> {transcript.studentID}</p>
+        </div>
+        <div className="transcript-card-div">
+        <p><strong>University:</strong> {transcript.institution}</p>
+        <p><strong>Major:</strong> {transcript.major}</p>
+        </div>
+        <div className="transcript-card-div">
+          <p><strong>Terms Enrolled:</strong> {transcript.semesters.map(semester => semester.term).join(', ')}</p>
+          <p><strong>Completed Courses:</strong> {transcript.semesters.flatMap(semester => semester.courses).filter(course => course.grade).map(course => `${course.courseCode} (${course.courseTitle}) (${course.grade}) (${course.creditHours} credits)`).join(', ')}</p>
+          <p><strong>Total Courses:</strong> {transcript.semesters.flatMap(semester => semester.courses).length}</p>
+        </div> 
+        <div className="transcript-card-div">
+          <p><strong>Credits Attempted:</strong> {transcript.semesters.flatMap(semester => semester.courses).reduce((sum, course) => sum + course.creditHours, 0)}</p>
+          <p><strong>Total Credit Hours:</strong> {transcript.semesters.flatMap(semester => semester.courses).filter(course => course.grade).reduce((sum, course) => sum + course.creditHours, 0)}</p>
+        </div>
+        <div className="transcript-card-div">
+          {transcript.semesters.map(semester => (
+            <p key={semester.term}><strong>{semester.term} GPA:</strong> {semester.gpa.toFixed(2)}</p>
+          ))}
+          <p><strong>CumulativeGPA:</strong> {transcript.summary.cumulativeGPA.toFixed(2)}</p>
+        </div>
+      </div>
+    )}
     </section>
   )
 }

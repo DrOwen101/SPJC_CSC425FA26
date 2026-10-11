@@ -19,6 +19,20 @@
 .dashboard-grid > .transcript-card {
   grid-column: 1 / -1;
 }
+.transcript-card .transcript-card-div {
+  border: 1px solid #000000;
+  padding: .5rem;
+  border-radius: 1.5rem;
+  background: #075c35;
+  color: white;
+  margin-bottom: 1rem;
+  box-shadow: 0 0 0 3px rgb(132, 176, 146);
+  width: fit-content;
+  display: inline-block;
+  text-align: center;
+  margin-right: 1rem;
+
+}
 .transcript-card h2 {
   margin: 0 0 .75rem;
   font-size: 1.35rem;
