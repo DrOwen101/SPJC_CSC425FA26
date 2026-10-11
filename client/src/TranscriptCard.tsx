@@ -210,6 +210,8 @@ function TranscriptCard({
             }
             placeholder="1001"
             maxLength={4}
+            aria-describedby={`${labelId}-student-help`}
+            aria-invalid={Boolean(inputError)}
           />
 
           <button type="submit" disabled={isLoading}>
@@ -219,7 +221,10 @@ function TranscriptCard({
           </button>
         </div>
 
-        <p className="transcript-card-help">
+        <p
+        id={`${labelId}-student-help`}
+        className="transcript-card-help"
+        >
           Enter a student ID from 1001–1005.
         </p>
 
