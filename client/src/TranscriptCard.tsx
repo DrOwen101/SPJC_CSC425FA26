@@ -94,15 +94,104 @@ function TranscriptCard({ id, apiBaseUrl = defaultApiBaseUrl }: TranscriptCardPr
   if (isLoading) status = `Loading transcript for ${request.studentID}…`
   else if (transcript) status = `Transcript loaded for ${transcript.firstName} ${transcript.lastName}.`
 
-  return (
+    return (
     <section id={id} className="transcript-card" aria-labelledby={`${labelId}-heading`} tabIndex={-1}>
+      <h2 id={`${labelId}-heading`}>Academic Transcript</h2>
+      <p id={`${labelId}-help`} className="transcript-card-help">
+        Enter a four-digit student ID to view that student's transcript.
+      </p>
 
+      <form onSubmit={handleSubmit} noValidate>
+        <div className="transcript-card-controls">
+          <label htmlFor={`${labelId}-input`}>Student ID</label>
+          <input
+            id={`${labelId}-input`}
+            type="text"
+            inputMode="numeric"
+            autoComplete="off"
+            value={studentID}
+            onChange={(event) => setStudentID(event.target.value)}
+            aria-describedby={inputError ? `${labelId}-help ${labelId}-error` : `${labelId}-help`}
+            aria-invalid={inputError ? true : undefined}
+          />
+          <button type="submit" disabled={isLoading}>
+            {isLoading ? 'Loading…' : 'Load transcript'}
+          </button>
+        </div>
+      </form>
 
+      <p className="transcript-card-status" aria-live="polite">{status}</p>
 
-      {/* INSERT LAB 6 CODE HERE - GOOD LUCK :)  */}
-    
-    
-    
+      {inputError && (
+        <p id={`${labelId}-error`} className="transcript-card-error" role="alert">{inputError}</p>
+      )}
+
+      {error && (
+        <p className="transcript-card-error" role="alert">{error}</p>
+      )}
+
+      {transcript && (
+        <div className="transcript-card-record">
+          <h3>{transcript.firstName} {transcript.lastName}</h3>
+          <p>
+            Student ID {transcript.studentID} · {transcript.major} · {transcript.institution}
+          </p>
+          {transcript.isMockData && (
+            <p className="transcript-card-help">
+              Sample data for class practice — not an official academic record.
+            </p>
+          )}
+
+          {transcript.semesters.map((semester) => (
+            <section key={semester.term} className="transcript-card-semester">
+              <h3>{semester.term}</h3>
+              <p className="transcript-card-term-summary">
+                Term GPA {semester.gpa.toFixed(2)} · {semester.creditsEarned} of {semester.creditsAttempted} credits earned
+              </p>
+
+              <div className="transcript-card-table-scroll">
+                <table>
+                  <caption>Courses for {semester.term}</caption>
+                  <thead>
+                    <tr>
+                      <th scope="col">Course</th>
+                      <th scope="col">Title</th>
+                      <th scope="col">Credits</th>
+                      <th scope="col">Grade</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {semester.courses.map((course) => (
+                      <tr key={course.courseCode}>
+                        <td>{course.courseCode}</td>
+                        <td>{course.courseTitle}</td>
+                        <td>{course.creditHours}</td>
+                        <td>{course.grade}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </section>
+          ))}
+
+          <h3>Cumulative Summary</h3>
+          <dl className="transcript-card-summary">
+            <div>
+              <dt>Credits attempted</dt>
+              <dd>{transcript.summary.creditsAttempted}</dd>
+            </div>
+            <div>
+              <dt>Credits earned</dt>
+              <dd>{transcript.summary.creditsEarned}</dd>
+            </div>
+            <div>
+              <dt>Cumulative GPA</dt>
+              <dd>{transcript.summary.cumulativeGPA.toFixed(2)}</dd>
+            </div>
+          </dl>
+        </div>
+      )}
     </section>
   )
 }
