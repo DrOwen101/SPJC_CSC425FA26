@@ -16,15 +16,16 @@ type TranscriptCardProps = {
 // The async Axios request is below; transcriptApi.ts contains only data types and validation.
 function TranscriptCard({ id, apiBaseUrl = defaultApiBaseUrl }: TranscriptCardProps) {
   const labelId = useId()
-  const [studentID, setStudentID] = useState('1001')
-  const [request, setRequest] = useState({ studentID: '1001' })
+  const [studentID, setStudentID] = useState('')
+  const [request, setRequest] = useState({ studentID: '' })
   const [result, setResult] = useState({
-    transcript: null as Transcript | null, isLoading: true, error: '',
+    transcript: null as Transcript | null, isLoading: false, error: '',
   })
   const { transcript, isLoading, error } = result
   const [inputError, setInputError] = useState('')
 
   useEffect(() => {
+    if (!request.studentID) return
     const controller = new AbortController()
     setResult({ transcript: null, isLoading: true, error: '' })
 
@@ -95,14 +96,117 @@ function TranscriptCard({ id, apiBaseUrl = defaultApiBaseUrl }: TranscriptCardPr
   else if (transcript) status = `Transcript loaded for ${transcript.firstName} ${transcript.lastName}.`
 
   return (
-    <section id={id} className="transcript-card" aria-labelledby={`${labelId}-heading`} tabIndex={-1}>
+    <section id={id} className="transcript-card" aria-labelledby={`${labelId}-heading`} tabIndex={-1}> 
+    <h2 id={`${labelId}-heading`}>Transcript</h2>
+    <p>Explore fictional student records.</p>
 
+    <form className="transcript-card-form" onSubmit={handleSubmit} noValidate>
+      <label htmlFor={`${labelId}-student`}>Student ID</label>
 
+      <div className="transcript-card-controls">
+        <input
+          id={`${labelId}-student`}
+          name="studentID"
+          type="text"
+          value={studentID}
+          onChange={(event) => setStudentID(event.target.value)}
+          placeholder="1001"
+          maxLength={4}
+          inputMode="numeric"
+          autoComplete="off"
+          aria-describedby={inputError ? `${labelId}-help ${labelId}-error` : `${labelId}-help`}
+          aria-invalid={inputError ? true : undefined}
+        />
 
-      {/* INSERT LAB 6 CODE HERE - GOOD LUCK :)  */}
+        <button type="submit" disabled={isLoading}>
+          {isLoading ? 'Loading...' : 'Load Transcript'}
+        </button>
+      </div>
+
+      <p id={`${labelId}-help`} className="transcript-card-help">
+        Available mock student IDs: 1001-1005.
+      </p>
+
+      {inputError && (
+        <p id={`${labelId}-error`} className="transcript-card-error" role="alert">{inputError}</p>
+      )}
+    </form>
+
+    {error && (
+      <p className="transcript-card-error" role="alert">{error}</p>
+    )}
+
+    <p className="transcript-card-status" role="status" aria-live="polite">{status}</p>
     
-    
-    
+    {transcript && (
+      <div className="transcript-card-record">
+        <h3>{transcript.firstName} {transcript.lastName}</h3>
+        <p>{transcript.institution}</p>
+        <p>Student ID: {transcript.studentID} • {transcript.major}</p>
+
+        {transcript.isMockData && (
+          <p>Mock transcript • Not an official academic record</p>
+        )}
+
+        {transcript.semesters.map((semester) => (
+          <div className="transcript-card-semester" key={semester.term}>
+            <h3>{semester.term}</h3>
+
+            <div className="transcript-card-table-scroll">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Course</th>
+                    <th>Title</th>
+                    <th>Credits</th>
+                    <th>Grade</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {semester.courses.map((course) => (
+                    <tr key={course.courseCode}>
+                      <td>{course.courseCode}</td>
+                      <td>{course.courseTitle}</td>
+                      <td>{course.creditHours}</td>
+                      <td>{course.grade}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            <p className="transcript-card-term-summary">
+              Term GPA: {semester.gpa.toFixed(2)} • Credits attempted:{' '}
+              {semester.creditsAttempted} • Credits earned:{' '}
+              {semester.creditsEarned}
+            </p>
+          </div>
+        ))}
+
+        <dl className="transcript-card-summary">
+          <div>
+            <dt>Cumulative GPA</dt>
+            <dd>{transcript.summary.cumulativeGPA.toFixed(2)}</dd>
+          </div>
+
+          <div>
+            <dt>Credits attempted</dt>
+            <dd>{transcript.summary.creditsAttempted}</dd>
+          </div>
+
+          <div>
+            <dt>Credits earned</dt>
+            <dd>{transcript.summary.creditsEarned}</dd>
+          </div>
+        </dl>
+
+        <p className="transcript-card-help">
+          GPA is weighted by credit hours on a 4.0 scale.
+          F grades count toward attempted credits but earn no credits.
+        </p>
+      </div>
+    )}
     </section>
   )
 }
