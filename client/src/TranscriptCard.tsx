@@ -13,6 +13,14 @@ type TranscriptCardProps = {
   apiBaseUrl?: string
 }
 
+interface Semester {
+  term?: string
+  //courses?: courses[]
+}
+//type courses = {
+
+//}
+
 // The async Axios request is below; transcriptApi.ts contains only data types and validation.
 function TranscriptCard({ id, apiBaseUrl = defaultApiBaseUrl }: TranscriptCardProps) {
   const labelId = useId()
@@ -96,13 +104,54 @@ function TranscriptCard({ id, apiBaseUrl = defaultApiBaseUrl }: TranscriptCardPr
 
   return (
     <section id={id} className="transcript-card" aria-labelledby={`${labelId}-heading`} tabIndex={-1}>
-
-
-
-      {/* INSERT LAB 6 CODE HERE - GOOD LUCK :)  */}
-    
-    
-    
+      <h2 id={`${labelId}-heading`}>Transcript</h2>
+      <p>Please enter a valid student ID to view their transcript</p>
+      <form onSubmit={handleSubmit} noValidate>
+        <label htmlFor={`${labelId}-student-id`}>Student ID</label>
+        <div className="transcript-card-controls">
+          <input
+          id={`${labelId}-student-id`}
+          name='studentID'
+          type='text'
+          value={studentID}
+          onChange={(event) => setStudentID(event.target.value)}
+          />
+          <button className = "transcript-card-controls button" type="submit">Search Transcript</button>
+        </div>
+        <div className='transcript-card table'>
+          <p className='transcript-card label'>
+            {isLoading? 'Loading Transcript...' :  `Students name: ${transcript?.firstName} ${transcript?.lastName}`}
+          </p>
+          <p className='transcript-card-record'>
+            {isLoading === false? `Major: ${transcript?.major} at ${transcript?.institution}` : ``}
+          </p>
+          {isLoading === false && transcript?.semesters.map((semester, index) => (
+            <h3 className='transcript-card-summary' key = {index}>
+              <span>{"Term: " + semester.term}</span>
+              {semester.courses.map((course, i) => (
+                <p key={i}>
+                  <span>{"Course " + (i+1) + ": " + course.courseCode}</span>
+                  <span>{"Name: " + course.courseTitle}</span>
+                  <span>{"Credit hours: " + course.creditHours}</span>
+                  <span>{"grade: " + course.grade}</span>
+                </p>
+              ))}
+              <span>{"Credits attempted: " + semester.creditsAttempted}</span>
+              <span>{"Credits earned: " + semester.creditsEarned}</span>
+              <span>{"GPA: " + semester.gpa}</span>
+            </h3>
+          ))}
+          <p className='transcript-card-record'>
+            {isLoading === false? `Credits attempted: ${transcript?.summary.creditsAttempted}` : ``}
+          </p>
+          <p>
+            {isLoading === false? `Credits earned: ${transcript?.summary.creditsEarned}` : ``}
+          </p>
+          <p>
+            {isLoading === false? `Cumulative GPA: ${transcript?.summary.cumulativeGPA}` : ``}
+          </p>
+        </div>
+      </form>
     </section>
   )
 }
