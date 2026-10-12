@@ -99,7 +99,51 @@ function TranscriptCard({ id, apiBaseUrl = defaultApiBaseUrl }: TranscriptCardPr
 
 
 
-      {/* INSERT LAB 6 CODE HERE - GOOD LUCK :)  */}
+
+      <h2 id={`${labelId}-heading`}>Student Transcript</h2>
+
+      <form onSubmit={handleSubmit} aria-describedby={`${labelId}-status`}>
+        <label htmlFor={`${labelId}-student-id`}>Student ID</label>
+        <input id={`${labelId}-student-id`} type="text" inputMode="numeric" value={studentID} onChange={e => setStudentID(e.target.value)} aria-invalid={Boolean(inputError)} aria-describedby={inputError ? `${labelId}-input-error` : undefined} />
+        <button type="submit" disabled={isLoading}>Load Transcript</button>
+      </form>
+
+      {inputError && <p id={`${labelId}-input-error`} role="alert">{inputError}</p>}
+      <p id={`${labelId}-status`} role="status" aria-live="polite">{status}</p>
+      {error && <p role="alert" className="transcript-error">{error}</p>}
+
+      {transcript && (
+        <div className="transcript-content">
+          <h3>{transcript.firstName} {transcript.lastName}</h3>
+          <p><strong>Student ID:</strong> {transcript.studentID} | <strong>Major:</strong> {transcript.major}</p>
+          <p><strong>Institution:</strong> {transcript.institution}</p>
+          {transcript.isMockData && <p>This transcript contains mock data.</p>}
+
+          {transcript.semesters.map((semester, i) => (
+            <section key={`${semester.term}-${i}`} className="transcript-semester" aria-labelledby={`${labelId}-semester-${i}`}>
+              <h4 id={`${labelId}-semester-${i}`}>{semester.term}</h4>
+              <table>
+                <caption>Courses for {semester.term}</caption>
+                <thead><tr><th scope="col">Course Code</th><th scope="col">Course Title</th><th scope="col">Credits</th><th scope="col">Grade</th></tr></thead>
+                <tbody>
+                  {semester.courses.map((course, j) => (
+                    <tr key={`${course.courseCode}-${j}`}>
+                      <td>{course.courseCode}</td><td>{course.courseTitle}</td><td>{course.creditHours}</td><td>{course.grade}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              <p><strong>Credits Attempted:</strong> {semester.creditsAttempted} | <strong>Credits Earned:</strong> {semester.creditsEarned} | <strong>Term GPA:</strong> {semester.gpa.toFixed(2)}</p>
+            </section>
+          ))}
+
+          <section className="transcript-summary" aria-labelledby={`${labelId}-summary`}>
+            <h4 id={`${labelId}-summary`}>Cumulative Summary</h4>
+            <p><strong>Credits Attempted:</strong> {transcript.summary.creditsAttempted} | <strong>Credits Earned:</strong> {transcript.summary.creditsEarned}</p>
+            <p><strong>Cumulative GPA:</strong> {transcript.summary.cumulativeGPA.toFixed(2)}</p>
+          </section>
+        </div>
+      )}
     
     
     
