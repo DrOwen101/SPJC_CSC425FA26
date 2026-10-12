@@ -95,16 +95,25 @@ function TranscriptCard({ id, apiBaseUrl = defaultApiBaseUrl }: TranscriptCardPr
   else if (transcript) status = `Transcript loaded for ${transcript.firstName} ${transcript.lastName}.`
 
   return (
-    <section id={id} className="transcript-card" aria-labelledby={`${labelId}-heading`} tabIndex={-1}>
+    <section> id={id} className="transcript-card" aria-labelledby={`${labelId}-heading`} tabIndex={-1}
 
+  
 
-
-      {/* INSERT LAB 6 CODE HERE - GOOD LUCK :)  */}
-    
-    
-    
+      {/* INSERT LAB 6 CODE HERE - GOOD LUCK :)  */
+       async function displayTranscript({}) {
+          if (isLoading) {
+            return <p className="loading">Loading transcript for {request.studentID}…</p>
+          } else if (error) {
+            return <p className="error">{error}</p>
+          } else if (transcript) {
+            return (
+              <div className="transcript"></div>
+            )
+          }
+        }
+      }
     </section>
   )
-}
 
+}
 export default TranscriptCard
