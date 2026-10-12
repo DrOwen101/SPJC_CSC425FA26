@@ -110,6 +110,7 @@ function TranscriptCard({ id, apiBaseUrl = defaultApiBaseUrl }: TranscriptCardPr
   let cumulativeGPA = 0.0
   let creditsAttempted = 0
   let creditsEarned = 0
+  let semesters = 0;
   if (transcript) {
     for (let s = 0; s < transcript.semesters.length; s++) {
       const semester = transcript.semesters[s]
@@ -208,9 +209,9 @@ function TranscriptCard({ id, apiBaseUrl = defaultApiBaseUrl }: TranscriptCardPr
 
               <tbody>
                 <tr>
-                  <td>{cumulativeGPA.toFixed(2)}</td>
-                  <td>{creditsAttempted}</td>
-                  <td>{creditsEarned}</td>
+                  <td>{transcript.summary.cumulativeGPA.toFixed(2)}</td>
+                  <td>{transcript.summary.creditsAttempted}</td>
+                  <td>{transcript.summary.creditsEarned}</td>
                 </tr>
               </tbody>
 
