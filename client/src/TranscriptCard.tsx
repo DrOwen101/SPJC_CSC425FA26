@@ -96,13 +96,79 @@ function TranscriptCard({ id, apiBaseUrl = defaultApiBaseUrl }: TranscriptCardPr
 
   return (
     <section id={id} className="transcript-card" aria-labelledby={`${labelId}-heading`} tabIndex={-1}>
+      <h2 id={`${labelId}-heading`}>Transcript</h2>
+      <p>Explore fictional student records for this classroom exercise.</p>
 
+      <form onSubmit={handleSubmit} noValidate>
+        <label htmlFor={`${labelId}-student-id`}>Student ID</label>
+        <div className="transcript-card-controls">
+          <input
+            id={`${labelId}-student-id`}
+            name="studentID"
+            type="text"
+            inputMode="numeric"
+            value={studentID}
+            onChange={(event) => setStudentID(event.target.value)}
+            aria-describedby={`${labelId}-help${inputError ? ` ${labelId}-input-error` : ''}`}
+            aria-invalid={inputError ? true : undefined}
+          />
+          <button type="submit" disabled={isLoading}>Load transcript</button>
+        </div>
+        <p id={`${labelId}-help`} className="transcript-card-help">Available mock student IDs: 1001–1005.</p>
+        {inputError && <p id={`${labelId}-input-error`} className="transcript-card-error" role="alert">{inputError}</p>}
+      </form>
 
+      <p className="transcript-card-status" role="status" aria-live="polite" aria-busy={isLoading}>{status}</p>
+      {error && <p className="transcript-card-error" role="alert">{error}</p>}
 
-      {/* INSERT LAB 6 CODE HERE - GOOD LUCK :)  */}
-    
-    
-    
+      {transcript && (
+        <div className="transcript-card-record">
+          <h3>{transcript.firstName} {transcript.lastName}</h3>
+          <p>{transcript.institution}</p>
+          <p>Student ID: {transcript.studentID} · {transcript.major}</p>
+          <p>{transcript.isMockData ? 'Mock transcript · Not an official academic record' : 'Academic transcript'}</p>
+
+          {transcript.semesters.map((semester) => (
+            <div className="transcript-card-semester" key={semester.term}>
+              <div className="transcript-card-table-scroll">
+                <table>
+                  <caption>{semester.term}</caption>
+                  <thead>
+                    <tr>
+                      <th>Course</th>
+                      <th>Title</th>
+                      <th>Credits</th>
+                      <th>Grade</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {semester.courses.map((course) => (
+                      <tr key={course.courseCode}>
+                        <td><strong>{course.courseCode}</strong></td>
+                        <td>{course.courseTitle}</td>
+                        <td>{course.creditHours}</td>
+                        <td>{course.grade}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <p className="transcript-card-term-summary">
+                Term GPA: <strong>{semester.gpa.toFixed(2)}</strong>
+                {' · '}Credits attempted: {semester.creditsAttempted}
+                {' · '}Credits earned: {semester.creditsEarned}
+              </p>
+            </div>
+          ))}
+
+          <dl className="transcript-card-summary">
+            <div><dt>Cumulative GPA</dt><dd>{transcript.summary.cumulativeGPA.toFixed(2)}</dd></div>
+            <div><dt>Credits attempted</dt><dd>{transcript.summary.creditsAttempted}</dd></div>
+            <div><dt>Credits earned</dt><dd>{transcript.summary.creditsEarned}</dd></div>
+          </dl>
+          <p className="transcript-card-help">GPA is weighted by credit hours on a 4.0 scale. F grades count toward attempted credits but earn no credits.</p>
+        </div>
+      )}
     </section>
   )
 }

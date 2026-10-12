@@ -68,6 +68,43 @@
   color: inherit;
   text-underline-offset: .25em;
 }
+.weather-card-modal {
+  width: 32rem;
+  max-width: calc(100% - 2rem);
+  max-height: calc(100% - 2rem);
+  padding: 1.5rem;
+  overflow: auto;
+  border: 1px solid #b2ccbd;
+  border-radius: .85rem;
+  color: #123524;
+  background: #f3faf5;
+  font: inherit;
+  line-height: 1.6;
+  box-shadow: 0 8px 32px rgb(7 92 53 / 20%);
+}
+.weather-card-modal::backdrop {
+  background: rgb(8 24 16 / 60%);
+}
+.weather-card-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.weather-card-modal-header h2 {
+  margin: 0 0 .75rem;
+}
+.weather-card-modal-header button {
+  min-height: 44px;
+  padding: .5rem .75rem;
+  border: 1px solid #789b87;
+  border-radius: .35rem;
+  color: white;
+  background: #075c35;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
 .weather-card :focus-visible {
   outline: 3px solid #123524;
   outline-offset: 3px;

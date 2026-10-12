@@ -1,4 +1,4 @@
-import { useEffect, useId, useState } from 'react'
+import { useEffect, useId, useRef, useState } from 'react'
 import axios from 'axios'
 import './WeatherCard.css'
 
@@ -40,6 +40,7 @@ const weatherRequests = { axios: loadWithAxios, fetch: loadWithFetch }
 // belong to this component; the parent does not need to manage the weather.
 function WeatherCard() {
   const id = useId() // Unique labels even when a page has multiple cards.
+  const dialogRef = useRef<HTMLDialogElement>(null)
   const [refreshCount, setRefreshCount] = useState(0)
   const [temperature, setTemperature] = useState<number | null>(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -112,11 +113,31 @@ function WeatherCard() {
       {error && <p className="weather-card-error" role="alert">{error}</p>}
 
       <div className="weather-card-controls">
-        <button type="button" disabled={isLoading} onClick={() => setRefreshCount((count) => count + 1)}>
-          {isLoading ? 'Loading…' : error ? 'Try again' : 'Refresh weather'}
+        <button type="button" onClick={() => dialogRef.current?.showModal()}>
+          View weather details
         </button>
       </div>
       <p className="weather-card-source">Weather data by <a href="https://open-meteo.com/">Open-Meteo</a></p>
+      <dialog ref={dialogRef} className="weather-card-modal" aria-labelledby={`${id}-dialog-heading`}>
+        <div className="weather-card-modal-header">
+          <h2 id={`${id}-dialog-heading`}>Current weather</h2>
+          <button type="button" onClick={() => dialogRef.current?.close()}>Close</button>
+        </div>
+        <p>{location.name}</p>
+        <div role="status" aria-live="polite" aria-busy={isLoading}>
+          <p className="weather-card-temperature">
+            {temperature === null ? '--' : `${temperature.toFixed(1)} °C`}
+          </p>
+          <p>{isLoading ? 'Loading weather…' : temperature === null ? 'Temperature unavailable' : 'Current temperature'}</p>
+        </div>
+        {error && <p className="weather-card-error" role="alert">{error}</p>}
+        <div className="weather-card-controls">
+          <button type="button" disabled={isLoading} onClick={() => setRefreshCount((count) => count + 1)}>
+            {isLoading ? 'Loading…' : error ? 'Try again' : 'Refresh weather'}
+          </button>
+        </div>
+        <p className="weather-card-source">Weather data by <a href="https://open-meteo.com/">Open-Meteo</a></p>
+      </dialog>
     </section>
   )
 }
