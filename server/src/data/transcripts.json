@@ -2,8 +2,8 @@
   "students": [
     {
       "studentID": "1001",
-      "firstName": "Avery",
-      "lastName": "Morgan",
+      "firstName": "Nithin",
+      "lastName": "Deepa",
       "major": "Computer Science",
       "institution": "CSC 425 Demo University",
       "isMockData": true,
