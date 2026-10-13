@@ -40,6 +40,12 @@ const mockStudents = [
     lastName: 'Parker',
     major: 'Computer Science',
   },
+  {
+    studentID: '1069',
+    firstName: 'Dylan',
+    lastName: 'Tucker',
+    major: 'Computer Science',
+  }
 ]
 
 // The earlier transcript exercise keeps its course/grade fixtures in JSON.
