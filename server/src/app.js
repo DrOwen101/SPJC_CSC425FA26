@@ -5,22 +5,59 @@ import express from 'express'
 import { checkDatabase } from './db.js'
 
 export const app = express()
-const { students } = JSON.parse(readFileSync(new URL('./data/transcripts.json', import.meta.url), 'utf8'))
 
-// Only the fictional teaching API allows requests from any frontend origin.
+// Hard-coded data for the Student Lookup exercise. These are fictional people.
+// Students can edit this array to test their frontend without a database,
+// SQL queries, credentials, or a .env file. Keep student IDs as strings.
+const mockStudents = [
+  {
+    studentID: '1001',
+    firstName: 'Avery',
+    lastName: 'Morgan',
+    major: 'Computer Science',
+  },
+  {
+    studentID: '1002',
+    firstName: 'Jordan',
+    lastName: 'Bennett',
+    major: 'Information Systems',
+  },
+  {
+    studentID: '1003',
+    firstName: 'Taylor',
+    lastName: 'Reed',
+    major: 'Business Administration',
+  },
+  {
+    studentID: '1004',
+    firstName: 'Cameron',
+    lastName: 'Brooks',
+    major: 'Mathematics',
+  },
+  {
+    studentID: '1005',
+    firstName: 'Riley',
+    lastName: 'Parker',
+    major: 'Computer Science',
+  },
+]
+
+// The earlier transcript exercise keeps its course/grade fixtures in JSON.
+// It also works without a database. /api/students uses only the array above.
+const { students: transcripts } = JSON.parse(readFileSync(new URL('./data/transcripts.json', import.meta.url), 'utf8'))
+
+// Only the fictional API allows requests from any frontend origin.
 const teachingApi = express.Router()
 teachingApi.use(['/status', '/students', '/transcripts'], cors({ methods: ['GET', 'HEAD', 'OPTIONS'] }))
 
 teachingApi.get('/status', (_request, response) => {
-  response.json({ status: 'ok', service: 'Mock transcript API', studentCount: students.length })
+  response.json({ status: 'ok', service: 'Mock transcript API', studentCount: mockStudents.length })
 })
 
 teachingApi.get('/students', (_request, response) => {
-  response.json({
-    students: students.map(({ studentID, firstName, lastName, major }) => ({
-      studentID, firstName, lastName, major,
-    })),
-  })
+  // Express converts the JavaScript object to JSON for the React frontend.
+  // StudentLookup selects the matching full name from this returned array.
+  response.json({ students: mockStudents })
 })
 
 // Support both a path parameter and a query parameter for classroom examples.
@@ -34,7 +71,7 @@ function getTranscript(request, response) {
     })
   }
 
-  const student = students.find((student) => student.studentID === studentID)
+  const student = transcripts.find((student) => student.studentID === studentID)
   if (!student) {
     return response.status(404).json({
       error: 'STUDENT_NOT_FOUND',

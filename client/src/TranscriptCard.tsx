@@ -1,4 +1,4 @@
-import { useEffect, useId, useState, type FormEvent } from 'react'
+import { useEffect, useId, useState, type SubmitEvent } from 'react'
 import axios from 'axios'
 import './TranscriptCard.css'
 import { isTranscript, type Transcript } from './transcriptApi'
@@ -75,7 +75,7 @@ function TranscriptCard({ id, apiBaseUrl = defaultApiBaseUrl }: TranscriptCardPr
     }
   }, [apiBaseUrl, request])
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault()
     if (isLoading) return
     const nextStudentID = studentID.trim()
