@@ -167,7 +167,7 @@ function TranscriptCard({ id, apiBaseUrl = defaultApiBaseUrl }: TranscriptCardPr
           <p className="transcript-card-help">GPA is weighted by credit hours on a 4.0 scale. F grades count toward attempted credits but earn no credits.</p>
         </div>
       )}
-      // END ASSIGNMENT DELIVERABLE CODE FOR LAB 6
+        {/* END ASSIGNMENT DELIVERABLE CODE FOR LAB 6 */}
     </section>
   )
 }
