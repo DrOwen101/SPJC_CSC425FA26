@@ -1,5 +1,6 @@
-import { useState, type FormEvent } from 'react'
+import { useState, type SubmitEvent } from 'react'
 import WeatherCard from './WeatherCard'
+import StudentLookup from './StudentLookup'
 import TranscriptCard from './TranscriptCard'
 
 // Each letter grade maps to its value on a standard 4.0 GPA scale.
@@ -20,14 +21,14 @@ const gradePoints: Record<string, number> = {
 }
 
 // This role component supplies content; App.css supplies the shared layout.
-// Keep these examples separate from live records until a data source is connected.
+// The lookup uses the dummy API; the other cards remain classroom examples.
 function Dashboardstudent() {
   const [gradeEntry, setGradeEntry] = useState('')
   const [grades, setGrades] = useState<string[]>([])
   const [gpa, setGpa] = useState<number | null>(null)
   const [gradeError, setGradeError] = useState('')
 
-  function addGrade(event: FormEvent<HTMLFormElement>) {
+  function addGrade(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault()
 
     // Removing spaces and capitalizing lets entries such as "b +" become "B+".
@@ -64,6 +65,7 @@ function Dashboardstudent() {
         <ul>
             <li><a href="#gpa">GPA</a></li>
             {/* <li><a href="#attendance">Attendance</a></li> */}
+            <li><a href="#student-lookup">Student lookup</a></li>
             <li><a href="#transcript">Transcript</a></li>
             <li><a href="#alerts">Alerts</a></li>
             <li><a href="#courses">Upcoming Courses</a></li>
@@ -74,6 +76,9 @@ function Dashboardstudent() {
           Each named section is a card. tabIndex=-1 permits anchor focus without
           adding every card to the Tab sequence; links remain the normal stops. */}
       <div className="dashboard-grid">
+        {/* StudentLookup contains the Lab 7 form, request, state, and result.
+            The dashboard imports and places it like any other React component. */}
+        <StudentLookup />
         <WeatherCard />
         <section id="gpa" className="dashboard-card" aria-labelledby="gpa-heading" tabIndex={-1}>
           <h2 id="gpa-heading">GPA</h2>

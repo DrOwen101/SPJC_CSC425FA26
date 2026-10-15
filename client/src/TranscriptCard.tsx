@@ -26,7 +26,6 @@ const gradePoints: Record<string, number> = {
   F: 0,
 }
 
-// Calculate GPA using credit-weighted grade points.
 function calculateGPA(courses: CourseForGPA[]): number {
   const totalCredits = courses.reduce(
     (sum, course) => sum + course.creditHours,
@@ -51,16 +50,13 @@ function TranscriptCard({
   apiBaseUrl = defaultApiBaseUrl,
 }: TranscriptCardProps) {
   const labelId = useId()
-
   const [studentID, setStudentID] = useState('1001')
   const [request, setRequest] = useState({ studentID: '1001' })
-
   const [result, setResult] = useState({
     transcript: null as Transcript | null,
     isLoading: true,
     error: '',
   })
-
   const { transcript, isLoading, error } = result
   const [inputError, setInputError] = useState('')
 
@@ -75,12 +71,10 @@ function TranscriptCard({
 
     const timeout = window.setTimeout(() => {
       controller.abort()
-
       setResult({
         transcript: null,
         isLoading: false,
-        error:
-          'The transcript request timed out. Please try again.',
+        error: 'The transcript request timed out. Please try again.',
       })
     }, 15000)
 
@@ -112,8 +106,7 @@ function TranscriptCard({
       } catch (requestError) {
         if (controller.signal.aborted) return
 
-        let error =
-          'Unable to load the transcript. Please try again.'
+        let error = 'Unable to load the transcript. Please try again.'
 
         if (axios.isAxiosError(requestError)) {
           const status = requestError.response?.status
@@ -156,9 +149,7 @@ function TranscriptCard({
     const nextStudentID = studentID.trim()
 
     if (!/^\d{4}$/.test(nextStudentID)) {
-      setInputError(
-        'Enter a four-digit student ID, such as 1001.',
-      )
+      setInputError('Enter a four-digit student ID, such as 1001.')
       return
     }
 
@@ -175,11 +166,8 @@ function TranscriptCard({
     status = `Transcript loaded for ${transcript.firstName} ${transcript.lastName}.`
   }
 
-  // Calculate cumulative GPA across all fetched semesters.
   const allCourses = transcript
-    ? transcript.semesters.flatMap(
-        (semester) => semester.courses,
-      )
+    ? transcript.semesters.flatMap((semester) => semester.courses)
     : []
 
   const cumulativeGPA = calculateGPA(allCourses)
@@ -191,45 +179,44 @@ function TranscriptCard({
       aria-labelledby={`${labelId}-heading`}
       tabIndex={-1}
     >
-      <h2 id={`${labelId}-heading`}>
-        Student Transcript
-      </h2>
+      <h2 id={`${labelId}-heading`}>Student Transcript</h2>
 
-      <form onSubmit={handleSubmit}>
-        <label htmlFor={`${labelId}-student-id`}>
-          Student ID
-        </label>
+      <form onSubmit={handleSubmit} noValidate>
+        <label htmlFor={`${labelId}-student-id`}>Student ID</label>
 
         <div className="transcript-card-controls">
           <input
             id={`${labelId}-student-id`}
+            name="studentID"
             type="text"
+            inputMode="numeric"
+            autoComplete="off"
             value={studentID}
-            onChange={(event) =>
+            onChange={(event) => {
               setStudentID(event.target.value)
-            }
+              setInputError('')
+            }}
             placeholder="1001"
             maxLength={4}
-            aria-describedby={`${labelId}-student-help`}
+            aria-describedby={`${labelId}-student-help${inputError ? ` ${labelId}-input-error` : ''}`}
             aria-invalid={Boolean(inputError)}
           />
 
           <button type="submit" disabled={isLoading}>
-            {isLoading
-              ? 'Loading…'
-              : 'Load Transcript'}
+            {isLoading ? 'Loading…' : 'Load Transcript'}
           </button>
         </div>
 
         <p
-        id={`${labelId}-student-help`}
-        className="transcript-card-help"
+          id={`${labelId}-student-help`}
+          className="transcript-card-help"
         >
           Enter a student ID from 1001–1005.
         </p>
 
         {inputError && (
           <p
+            id={`${labelId}-input-error`}
             className="transcript-card-error"
             role="alert"
           >
@@ -247,10 +234,7 @@ function TranscriptCard({
       </p>
 
       {error && (
-        <p
-          className="transcript-card-error"
-          role="alert"
-        >
+        <p className="transcript-card-error" role="alert">
           {error}
         </p>
       )}
@@ -258,27 +242,25 @@ function TranscriptCard({
       {transcript && (
         <div className="transcript-card-record">
           <h3>
-            {transcript.firstName}{' '}
-            {transcript.lastName}
+            {transcript.firstName} {transcript.lastName}
           </h3>
 
           <p>
-            <strong>Student ID:</strong>{' '}
-            {transcript.studentID}
+            <strong>Student ID:</strong> {transcript.studentID}
             <br />
-
-            <strong>Major:</strong>{' '}
-            {transcript.major}
+            <strong>Major:</strong> {transcript.major}
             <br />
-
-            <strong>Institution:</strong>{' '}
-            {transcript.institution}
+            <strong>Institution:</strong> {transcript.institution}
           </p>
 
+          {transcript.isMockData && (
+            <p className="transcript-card-help">
+              Mock transcript · Not an official academic record
+            </p>
+          )}
+
           {transcript.semesters.map((semester) => {
-            const semesterGPA = calculateGPA(
-              semester.courses,
-            )
+            const semesterGPA = calculateGPA(semester.courses)
 
             return (
               <section
@@ -287,11 +269,14 @@ function TranscriptCard({
               >
                 <h3>{semester.term}</h3>
 
-                <div className="transcript-card-table-scroll">
+                <div
+                  className="transcript-card-table-scroll"
+                  role="region"
+                  aria-label={`${semester.term} courses`}
+                  tabIndex={0}
+                >
                   <table>
-                    <caption>
-                      {semester.term} Courses
-                    </caption>
+                    <caption>{semester.term} Courses</caption>
 
                     <thead>
                       <tr>
@@ -305,7 +290,7 @@ function TranscriptCard({
                     <tbody>
                       {semester.courses.map((course) => (
                         <tr key={course.courseCode}>
-                          <td>{course.courseCode}</td>
+                          <th scope="row">{course.courseCode}</th>
                           <td>{course.courseTitle}</td>
                           <td>{course.creditHours}</td>
                           <td>{course.grade}</td>
@@ -316,14 +301,11 @@ function TranscriptCard({
                 </div>
 
                 <p className="transcript-card-term-summary">
-                  Credits Attempted:{' '}
-                  {semester.creditsAttempted}
+                  Credits Attempted: {semester.creditsAttempted}
                   {' · '}
-                  Credits Earned:{' '}
-                  {semester.creditsEarned}
+                  Credits Earned: {semester.creditsEarned}
                   {' · '}
-                  Semester GPA:{' '}
-                  {semesterGPA.toFixed(2)}
+                  Semester GPA: {semesterGPA.toFixed(2)}
                 </p>
               </section>
             )
@@ -332,23 +314,17 @@ function TranscriptCard({
           <dl className="transcript-card-summary">
             <div>
               <dt>Credits Attempted</dt>
-              <dd>
-                {transcript.summary.creditsAttempted}
-              </dd>
+              <dd>{transcript.summary.creditsAttempted}</dd>
             </div>
 
             <div>
               <dt>Credits Earned</dt>
-              <dd>
-                {transcript.summary.creditsEarned}
-              </dd>
+              <dd>{transcript.summary.creditsEarned}</dd>
             </div>
 
             <div>
               <dt>Cumulative GPA</dt>
-              <dd>
-                {cumulativeGPA.toFixed(2)}
-              </dd>
+              <dd>{cumulativeGPA.toFixed(2)}</dd>
             </div>
           </dl>
         </div>

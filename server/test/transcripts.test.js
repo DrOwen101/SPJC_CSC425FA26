@@ -32,6 +32,8 @@ test('lists exactly five students and serves consistent transcripts with correct
     const transcript = await result.json()
     assert.equal(transcript.studentID, student.studentID)
     assert.equal(transcript.firstName, student.firstName)
+    assert.equal(transcript.lastName, student.lastName)
+    assert.equal(transcript.major, student.major)
     assert.equal(transcript.isMockData, true)
     assert.equal(transcript.semesters.length, 2)
     let totalAttempted = 0
