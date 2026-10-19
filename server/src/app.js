@@ -40,7 +40,7 @@ const mockStudents = [
     lastName: 'Parker',
     major: 'Computer Science',
   },
-    {
+  {
     studentID: '1006',
     firstName: 'Tristan',
     lastName: 'Coday',
