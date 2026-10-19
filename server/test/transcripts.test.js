@@ -22,7 +22,7 @@ test('lists exactly five students and serves consistent transcripts with correct
   const response = await fetch(`${baseURL}/api/students`)
   assert.equal(response.status, 200)
   const { students } = await response.json()
-  assert.deepEqual(students.map((student) => student.studentID), ['1001', '1002', '1003', '1004', '1005'])
+  assert.deepEqual(students.map((student) => student.studentID), ['1001', '1002', '1003', '1004', '1005', '1006'])
   const gradePoints = { A: 4, B: 3, C: 2, D: 1, F: 0 }
 
   for (const student of students) {

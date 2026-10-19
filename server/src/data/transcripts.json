@@ -394,6 +394,85 @@
         "creditsEarned": 20,
         "cumulativeGPA": 1.81
       }
+    },
+    {
+      "studentID": "1006",
+      "firstName": "Tristan",
+      "lastName": "Coday",
+      "major": "Mathematics",
+      "institution": "CSC 425 Demo University",
+      "isMockData": true,
+      "semesters": [
+        {
+          "term": "Fall 2025",
+          "courses": [
+            {
+              "courseCode": "MAT 150",
+              "courseTitle": "College Algebra",
+              "creditHours": 3,
+              "grade": "C"
+            },
+            {
+              "courseCode": "PHY 101",
+              "courseTitle": "General Physics",
+              "creditHours": 4,
+              "grade": "B"
+            },
+            {
+              "courseCode": "CHE 101",
+              "courseTitle": "General Chemistry",
+              "creditHours": 4,
+              "grade": "A"
+            },
+            {
+              "courseCode": "ENG 101",
+              "courseTitle": "Composition I",
+              "creditHours": 3,
+              "grade": "B"
+            }
+          ],
+          "creditsAttempted": 14,
+          "creditsEarned": 13,
+          "gpa": 2.86
+        },
+        {
+          "term": "Spring 2026",
+          "courses": [
+            {
+              "courseCode": "MAT 250",
+              "courseTitle": "Calculus I",
+              "creditHours": 4,
+              "grade": "A"
+            },
+            {
+              "courseCode": "PHY 102",
+              "courseTitle": "General Physics II",
+              "creditHours": 4,
+              "grade": "B"
+            },
+            {
+              "courseCode": "CHE 102",
+              "courseTitle": "General Chemistry II",
+              "creditHours": 4,
+              "grade": "C"
+            },
+            {
+              "courseCode": "ENG 102",
+              "courseTitle": "Composition II",
+              "creditHours": 3,
+              "grade": "A"
+            }
+          ],
+          "creditsAttempted": 15,
+          "creditsEarned": 15,
+          "gpa": 3.27
+        }
+      ],
+      "summary": {
+        "creditsAttempted": 29,
+        "creditsEarned": 28,
+        "cumulativeGPA": 3.06
+      }
     }
   ]
 }
