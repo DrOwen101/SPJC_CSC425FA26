@@ -6,7 +6,6 @@ import './StudentLookup.css'
 // This is the same Express API used by the Lab 6 transcript example.
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL
   || `${window.location.protocol}//${window.location.hostname}:3000`
-
 // This component owns the lookup's state, API request, and displayed result.
 // Import it into a dashboard and render <StudentLookup /> to show the feature.
 function StudentLookup() {
