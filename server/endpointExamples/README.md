@@ -4,9 +4,12 @@ Start with the [student lab PDF](PostgreSQL_Express_Lab.pdf). It walks through
 installation, a personal Git branch, database creation, connection settings,
 GET/POST checks, and submission.
 
-See [Jason Owen's completed instructor notes](lab-notes-jason-owen.md) for actual
-results and explanation answers. This example used an existing local database;
-the notes identify the differences from a fresh student installation.
+Open the [completed instructor example PDF](Completed_PostgreSQL_Express_Lab_Jason_Owen.pdf)
+to see actual results and explanation answers. The full
+[Jason Owen lab notes](lab-notes-jason-owen.md) include the commands and
+[submission pull request](https://github.com/DrOwen101/SPJC_CSC425FA26/pull/57).
+This example used an existing local database; the notes identify the differences
+from a fresh student installation.
 
 ## Run the demo
 

@@ -276,6 +276,24 @@ on a running database are separate from the script itself.
 
 ## Step 10 — Submission
 
-This file is the completed lab-notes artifact. The lab branch and pull request
-will contain the guide, runnable demo, and this instructor example. Publication
-details are recorded here after the push and pull request are confirmed.
+Committed the lab with the PDF's commit message:
+
+```bash
+git commit -m "Document PostgreSQL connection lab"
+git push -u origin jason-owen/postgresql-lab
+```
+
+The lab submission commit is `9d86910`. GitHub confirmed the branch was
+published. Opened [pull request #57](https://github.com/DrOwen101/SPJC_CSC425FA26/pull/57)
+with **base: main** and **compare: jason-owen/postgresql-lab**.
+The pull request is open and unmerged for instructor review. A follow-up commit
+adds the confirmed submission link and printable completed example.
+
+The [completed instructor example PDF](Completed_PostgreSQL_Express_Lab_Jason_Owen.pdf)
+summarizes these results and answers for classroom viewing.
+
+- [x] PostgreSQL and the existing course database were inspected.
+- [x] The lab login connects and the table contains the seed records.
+- [x] Express GET, POST, and restart/persistence checks passed.
+- [x] Notes were committed without credentials.
+- [x] The personal branch was published and its pull request is open.
