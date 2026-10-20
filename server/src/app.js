@@ -57,6 +57,18 @@ date: "2026-10-20", status: "absent" },
 date: "2026-10-20", status: "late" }
 ];
 
+app.get("/api/attendance", (req, res) => {
+res.status(200).json(attendance);
+});
+
+app.get("/api/attendance/:id", (req, res) => {
+const attendanceId = Number(req.params.id);
+const record = attendance.find((item) => {
+return item.id === attendanceId;
+});
+res.status(200).json(record);
+});
+
 // The earlier transcript exercise keeps its course/grade fixtures in JSON.
 // It also works without a database. /api/students uses only the array above.
 const { students: transcripts } = JSON.parse(readFileSync(new URL('./data/transcripts.json', import.meta.url), 'utf8'))
