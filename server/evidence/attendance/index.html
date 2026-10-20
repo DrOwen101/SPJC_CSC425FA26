@@ -1,0 +1,294 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><title>Attendance API evidence</title><style>
+body { margin: 0; padding: 36px; color: #172331; background: #eef2f6;
+       font: 16px/1.5 system-ui, sans-serif; }
+main { max-width: 1120px; margin: auto; }
+h1 { margin: 0 0 16px; font-size: 26px; }
+h2 { font-size: 20px; overflow-wrap: anywhere; }
+.meta { color: #33485c; overflow-wrap: anywhere; }
+article { background: white; border: 1px solid #b7c5d3; border-radius: 10px;
+          padding: 24px; margin: 24px 0; break-inside: avoid; }
+pre { white-space: pre-wrap; overflow-wrap: anywhere; font: 16px/1.5 monospace;
+      background: #f4f6f8; padding: 16px; }
+.status { font-weight: 700; color: #153f68; }
+</style><main><h1>Attendance API · captured HTTP evidence</h1><div class="meta">Repository: https://github.com/DrOwen101/SPJC_CSC425FA26<br>Branch: jason-owen/attendance-api<br>Tested source commit: de588b36a099d92fd0c89a6b622ba3be6e455212<br>Captured (UTC): 2026-10-20T16:08:53.851930+00:00<br>Actual browser fetch responses from a fresh local server. This page formats captured evidence; it is not an application screen.</div><article><h2>GET http://127.0.0.1:57973/</h2><p class="status">HTTP 200 OK</p><p>Content-Type: application/json; charset=utf-8</p><pre>{
+  &quot;message&quot;: &quot;CSC 425 API&quot;,
+  &quot;description&quot;: &quot;Fictional student transcripts and attendance for frontend practice. No API key required.&quot;,
+  &quot;endpoints&quot;: {
+    &quot;students&quot;: &quot;/api/students&quot;,
+    &quot;transcript&quot;: &quot;/api/transcripts/1001&quot;,
+    &quot;transcriptQuery&quot;: &quot;/api/transcripts?studentID=1001&quot;,
+    &quot;attendance&quot;: &quot;/api/attendance&quot;,
+    &quot;studentAttendance&quot;: &quot;/api/attendance/1001&quot;,
+    &quot;attendanceRecord&quot;: &quot;/api/attendance/1001/2026-10-12&quot;,
+    &quot;status&quot;: &quot;/api/status&quot;,
+    &quot;databaseHealth&quot;: &quot;/api/health&quot;
+  }
+}</pre></article><article><h2>GET http://127.0.0.1:57973/api/status</h2><p class="status">HTTP 200 OK</p><p>Content-Type: application/json; charset=utf-8</p><pre>{
+  &quot;status&quot;: &quot;ok&quot;,
+  &quot;service&quot;: &quot;Mock transcript API&quot;,
+  &quot;studentCount&quot;: 5
+}</pre></article><article><h2>GET http://127.0.0.1:57973/api/attendance</h2><p class="status">HTTP 200 OK</p><p>Content-Type: application/json; charset=utf-8</p><pre>{
+  &quot;courseCode&quot;: &quot;CSC425&quot;,
+  &quot;isMockData&quot;: true,
+  &quot;count&quot;: 12,
+  &quot;records&quot;: [
+    {
+      &quot;studentID&quot;: &quot;1001&quot;,
+      &quot;date&quot;: &quot;2026-10-12&quot;,
+      &quot;status&quot;: &quot;present&quot;
+    },
+    {
+      &quot;studentID&quot;: &quot;1001&quot;,
+      &quot;date&quot;: &quot;2026-10-14&quot;,
+      &quot;status&quot;: &quot;late&quot;
+    },
+    {
+      &quot;studentID&quot;: &quot;1001&quot;,
+      &quot;date&quot;: &quot;2026-10-16&quot;,
+      &quot;status&quot;: &quot;absent&quot;
+    },
+    {
+      &quot;studentID&quot;: &quot;1002&quot;,
+      &quot;date&quot;: &quot;2026-10-12&quot;,
+      &quot;status&quot;: &quot;present&quot;
+    },
+    {
+      &quot;studentID&quot;: &quot;1002&quot;,
+      &quot;date&quot;: &quot;2026-10-14&quot;,
+      &quot;status&quot;: &quot;present&quot;
+    },
+    {
+      &quot;studentID&quot;: &quot;1002&quot;,
+      &quot;date&quot;: &quot;2026-10-16&quot;,
+      &quot;status&quot;: &quot;present&quot;
+    },
+    {
+      &quot;studentID&quot;: &quot;1003&quot;,
+      &quot;date&quot;: &quot;2026-10-12&quot;,
+      &quot;status&quot;: &quot;absent&quot;
+    },
+    {
+      &quot;studentID&quot;: &quot;1003&quot;,
+      &quot;date&quot;: &quot;2026-10-14&quot;,
+      &quot;status&quot;: &quot;present&quot;
+    },
+    {
+      &quot;studentID&quot;: &quot;1003&quot;,
+      &quot;date&quot;: &quot;2026-10-16&quot;,
+      &quot;status&quot;: &quot;late&quot;
+    },
+    {
+      &quot;studentID&quot;: &quot;1004&quot;,
+      &quot;date&quot;: &quot;2026-10-12&quot;,
+      &quot;status&quot;: &quot;late&quot;
+    },
+    {
+      &quot;studentID&quot;: &quot;1004&quot;,
+      &quot;date&quot;: &quot;2026-10-14&quot;,
+      &quot;status&quot;: &quot;absent&quot;
+    },
+    {
+      &quot;studentID&quot;: &quot;1004&quot;,
+      &quot;date&quot;: &quot;2026-10-16&quot;,
+      &quot;status&quot;: &quot;absent&quot;
+    }
+  ]
+}</pre></article><article><h2>GET http://127.0.0.1:57973/api/attendance/1001</h2><p class="status">HTTP 200 OK</p><p>Content-Type: application/json; charset=utf-8</p><pre>{
+  &quot;courseCode&quot;: &quot;CSC425&quot;,
+  &quot;isMockData&quot;: true,
+  &quot;student&quot;: {
+    &quot;studentID&quot;: &quot;1001&quot;,
+    &quot;firstName&quot;: &quot;Avery&quot;,
+    &quot;lastName&quot;: &quot;Morgan&quot;,
+    &quot;major&quot;: &quot;Computer Science&quot;
+  },
+  &quot;records&quot;: [
+    {
+      &quot;studentID&quot;: &quot;1001&quot;,
+      &quot;date&quot;: &quot;2026-10-12&quot;,
+      &quot;status&quot;: &quot;present&quot;
+    },
+    {
+      &quot;studentID&quot;: &quot;1001&quot;,
+      &quot;date&quot;: &quot;2026-10-14&quot;,
+      &quot;status&quot;: &quot;late&quot;
+    },
+    {
+      &quot;studentID&quot;: &quot;1001&quot;,
+      &quot;date&quot;: &quot;2026-10-16&quot;,
+      &quot;status&quot;: &quot;absent&quot;
+    }
+  ],
+  &quot;summary&quot;: {
+    &quot;total&quot;: 3,
+    &quot;present&quot;: 1,
+    &quot;late&quot;: 1,
+    &quot;absent&quot;: 1,
+    &quot;attendancePercentage&quot;: 66.67
+  }
+}</pre></article><article><h2>GET http://127.0.0.1:57973/api/attendance/1002</h2><p class="status">HTTP 200 OK</p><p>Content-Type: application/json; charset=utf-8</p><pre>{
+  &quot;courseCode&quot;: &quot;CSC425&quot;,
+  &quot;isMockData&quot;: true,
+  &quot;student&quot;: {
+    &quot;studentID&quot;: &quot;1002&quot;,
+    &quot;firstName&quot;: &quot;Jordan&quot;,
+    &quot;lastName&quot;: &quot;Bennett&quot;,
+    &quot;major&quot;: &quot;Information Systems&quot;
+  },
+  &quot;records&quot;: [
+    {
+      &quot;studentID&quot;: &quot;1002&quot;,
+      &quot;date&quot;: &quot;2026-10-12&quot;,
+      &quot;status&quot;: &quot;present&quot;
+    },
+    {
+      &quot;studentID&quot;: &quot;1002&quot;,
+      &quot;date&quot;: &quot;2026-10-14&quot;,
+      &quot;status&quot;: &quot;present&quot;
+    },
+    {
+      &quot;studentID&quot;: &quot;1002&quot;,
+      &quot;date&quot;: &quot;2026-10-16&quot;,
+      &quot;status&quot;: &quot;present&quot;
+    }
+  ],
+  &quot;summary&quot;: {
+    &quot;total&quot;: 3,
+    &quot;present&quot;: 3,
+    &quot;late&quot;: 0,
+    &quot;absent&quot;: 0,
+    &quot;attendancePercentage&quot;: 100
+  }
+}</pre></article><article><h2>GET http://127.0.0.1:57973/api/attendance/1003</h2><p class="status">HTTP 200 OK</p><p>Content-Type: application/json; charset=utf-8</p><pre>{
+  &quot;courseCode&quot;: &quot;CSC425&quot;,
+  &quot;isMockData&quot;: true,
+  &quot;student&quot;: {
+    &quot;studentID&quot;: &quot;1003&quot;,
+    &quot;firstName&quot;: &quot;Taylor&quot;,
+    &quot;lastName&quot;: &quot;Reed&quot;,
+    &quot;major&quot;: &quot;Business Administration&quot;
+  },
+  &quot;records&quot;: [
+    {
+      &quot;studentID&quot;: &quot;1003&quot;,
+      &quot;date&quot;: &quot;2026-10-12&quot;,
+      &quot;status&quot;: &quot;absent&quot;
+    },
+    {
+      &quot;studentID&quot;: &quot;1003&quot;,
+      &quot;date&quot;: &quot;2026-10-14&quot;,
+      &quot;status&quot;: &quot;present&quot;
+    },
+    {
+      &quot;studentID&quot;: &quot;1003&quot;,
+      &quot;date&quot;: &quot;2026-10-16&quot;,
+      &quot;status&quot;: &quot;late&quot;
+    }
+  ],
+  &quot;summary&quot;: {
+    &quot;total&quot;: 3,
+    &quot;present&quot;: 1,
+    &quot;late&quot;: 1,
+    &quot;absent&quot;: 1,
+    &quot;attendancePercentage&quot;: 66.67
+  }
+}</pre></article><article><h2>GET http://127.0.0.1:57973/api/attendance/1004</h2><p class="status">HTTP 200 OK</p><p>Content-Type: application/json; charset=utf-8</p><pre>{
+  &quot;courseCode&quot;: &quot;CSC425&quot;,
+  &quot;isMockData&quot;: true,
+  &quot;student&quot;: {
+    &quot;studentID&quot;: &quot;1004&quot;,
+    &quot;firstName&quot;: &quot;Cameron&quot;,
+    &quot;lastName&quot;: &quot;Brooks&quot;,
+    &quot;major&quot;: &quot;Mathematics&quot;
+  },
+  &quot;records&quot;: [
+    {
+      &quot;studentID&quot;: &quot;1004&quot;,
+      &quot;date&quot;: &quot;2026-10-12&quot;,
+      &quot;status&quot;: &quot;late&quot;
+    },
+    {
+      &quot;studentID&quot;: &quot;1004&quot;,
+      &quot;date&quot;: &quot;2026-10-14&quot;,
+      &quot;status&quot;: &quot;absent&quot;
+    },
+    {
+      &quot;studentID&quot;: &quot;1004&quot;,
+      &quot;date&quot;: &quot;2026-10-16&quot;,
+      &quot;status&quot;: &quot;absent&quot;
+    }
+  ],
+  &quot;summary&quot;: {
+    &quot;total&quot;: 3,
+    &quot;present&quot;: 0,
+    &quot;late&quot;: 1,
+    &quot;absent&quot;: 2,
+    &quot;attendancePercentage&quot;: 33.33
+  }
+}</pre></article><article><h2>GET http://127.0.0.1:57973/api/attendance/1005</h2><p class="status">HTTP 200 OK</p><p>Content-Type: application/json; charset=utf-8</p><pre>{
+  &quot;courseCode&quot;: &quot;CSC425&quot;,
+  &quot;isMockData&quot;: true,
+  &quot;student&quot;: {
+    &quot;studentID&quot;: &quot;1005&quot;,
+    &quot;firstName&quot;: &quot;Riley&quot;,
+    &quot;lastName&quot;: &quot;Parker&quot;,
+    &quot;major&quot;: &quot;Computer Science&quot;
+  },
+  &quot;records&quot;: [],
+  &quot;summary&quot;: {
+    &quot;total&quot;: 0,
+    &quot;present&quot;: 0,
+    &quot;late&quot;: 0,
+    &quot;absent&quot;: 0,
+    &quot;attendancePercentage&quot;: null
+  }
+}</pre></article><article><h2>GET http://127.0.0.1:57973/api/attendance/1001/2026-10-12</h2><p class="status">HTTP 200 OK</p><p>Content-Type: application/json; charset=utf-8</p><pre>{
+  &quot;courseCode&quot;: &quot;CSC425&quot;,
+  &quot;isMockData&quot;: true,
+  &quot;record&quot;: {
+    &quot;studentID&quot;: &quot;1001&quot;,
+    &quot;date&quot;: &quot;2026-10-12&quot;,
+    &quot;status&quot;: &quot;present&quot;
+  }
+}</pre></article><article><h2>GET http://127.0.0.1:57973/api/attendance/1001/2026-10-14</h2><p class="status">HTTP 200 OK</p><p>Content-Type: application/json; charset=utf-8</p><pre>{
+  &quot;courseCode&quot;: &quot;CSC425&quot;,
+  &quot;isMockData&quot;: true,
+  &quot;record&quot;: {
+    &quot;studentID&quot;: &quot;1001&quot;,
+    &quot;date&quot;: &quot;2026-10-14&quot;,
+    &quot;status&quot;: &quot;late&quot;
+  }
+}</pre></article><article><h2>GET http://127.0.0.1:57973/api/attendance/1001/2026-10-16</h2><p class="status">HTTP 200 OK</p><p>Content-Type: application/json; charset=utf-8</p><pre>{
+  &quot;courseCode&quot;: &quot;CSC425&quot;,
+  &quot;isMockData&quot;: true,
+  &quot;record&quot;: {
+    &quot;studentID&quot;: &quot;1001&quot;,
+    &quot;date&quot;: &quot;2026-10-16&quot;,
+    &quot;status&quot;: &quot;absent&quot;
+  }
+}</pre></article><article><h2>GET http://127.0.0.1:57973/api/attendance/1001/2026-10-19</h2><p class="status">HTTP 404 Not Found</p><p>Content-Type: application/json; charset=utf-8</p><pre>{
+  &quot;error&quot;: &quot;ATTENDANCE_NOT_FOUND&quot;,
+  &quot;message&quot;: &quot;No attendance record was found for studentID 1001 on 2026-10-19.&quot;,
+  &quot;studentID&quot;: &quot;1001&quot;,
+  &quot;date&quot;: &quot;2026-10-19&quot;
+}</pre></article><article><h2>GET http://127.0.0.1:57973/api/attendance/9999</h2><p class="status">HTTP 404 Not Found</p><p>Content-Type: application/json; charset=utf-8</p><pre>{
+  &quot;error&quot;: &quot;STUDENT_NOT_FOUND&quot;,
+  &quot;message&quot;: &quot;No mock student was found with studentID 9999.&quot;
+}</pre></article><article><h2>GET http://127.0.0.1:57973/api/attendance/abc</h2><p class="status">HTTP 400 Bad Request</p><p>Content-Type: application/json; charset=utf-8</p><pre>{
+  &quot;error&quot;: &quot;INVALID_STUDENT_ID&quot;,
+  &quot;message&quot;: &quot;Provide a four-digit studentID, for example /api/attendance/1001.&quot;
+}</pre></article><article><h2>GET http://127.0.0.1:57973/api/attendance/1001/2026-02-30</h2><p class="status">HTTP 400 Bad Request</p><p>Content-Type: application/json; charset=utf-8</p><pre>{
+  &quot;error&quot;: &quot;INVALID_DATE&quot;,
+  &quot;message&quot;: &quot;Provide a real calendar date in YYYY-MM-DD format.&quot;
+}</pre></article><article><h2>POST http://127.0.0.1:57973/api/attendance/1001/2026-10-12</h2><p class="status">HTTP 405 Method Not Allowed</p><p>Content-Type: application/json; charset=utf-8</p><pre>{
+  &quot;error&quot;: &quot;METHOD_NOT_ALLOWED&quot;,
+  &quot;message&quot;: &quot;Attendance is read-only. Use GET.&quot;
+}</pre></article><article><h2>GET http://127.0.0.1:57973/api/attendance/1005/2026-10-12</h2><p class="status">HTTP 404 Not Found</p><p>Content-Type: application/json; charset=utf-8</p><pre>{
+  &quot;error&quot;: &quot;ATTENDANCE_NOT_FOUND&quot;,
+  &quot;message&quot;: &quot;No attendance record was found for studentID 1005 on 2026-10-12.&quot;,
+  &quot;studentID&quot;: &quot;1005&quot;,
+  &quot;date&quot;: &quot;2026-10-12&quot;
+}</pre></article><article><h2>GET http://127.0.0.1:57973/api/attendance/1001/2026-10-12/extra</h2><p class="status">HTTP 404 Not Found</p><p>Content-Type: application/json; charset=utf-8</p><pre>{
+  &quot;error&quot;: &quot;ROUTE_NOT_FOUND&quot;,
+  &quot;message&quot;: &quot;No attendance route matches this URL.&quot;
+}</pre></article></main></html>
