@@ -11,7 +11,7 @@ export type StudentsResponse = { students: Student[] }
 
 // Ignore capitalization and leading/trailing spaces, but require a full name.
 export function normalizeName(name: string): string {
-  return name.trim().toLowerCase()
+    return name.trim().replace(/\s+/g, ' ').toLowerCase()
 }
 
 // Accept unknown network data only after checking the envelope and each record.
