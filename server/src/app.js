@@ -49,9 +49,12 @@ const mockStudents = [
 ]
 
 const attendance = [
-  { id: 1, student: "Alice Johnson",  date: "2026-09-01", status: "present" },
-  { id: 2, student: "Bob Martinez",   date: "2026-09-01", status: "absent"  },
-  { id: 3, student: "Carol Williams", date: "2026-09-01", status: "late"    }
+{ id: 1, studentId: "1001", studentName: "Avery Morgan",
+date: "2026-10-20", status: "present" },
+{ id: 2, studentId: "1002", studentName: "Jordan Bennett",
+date: "2026-10-20", status: "absent" },
+{ id: 3, studentId: "1003", studentName: "Taylor Reed",
+date: "2026-10-20", status: "late" }
 ];
 
 // The earlier transcript exercise keeps its course/grade fixtures in JSON.
