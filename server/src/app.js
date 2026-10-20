@@ -42,6 +42,13 @@ const mockStudents = [
   },
 ]
 
+// mock attendance data
+const attendance = [
+  { id: 1, student: "Alice Johnson",  date: "2026-09-01", status: "present" },
+  { id: 2, student: "Bob Martinez",   date: "2026-09-01", status: "absent"  },
+  { id: 3, student: "Carol Williams", date: "2026-09-01", status: "late"    }
+];
+
 // The earlier transcript exercise keeps its course/grade fixtures in JSON.
 // It also works without a database. /api/students uses only the array above.
 const { students: transcripts } = JSON.parse(readFileSync(new URL('./data/transcripts.json', import.meta.url), 'utf8'))
