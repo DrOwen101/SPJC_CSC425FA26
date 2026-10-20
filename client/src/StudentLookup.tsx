@@ -56,6 +56,13 @@ function StudentLookup() {
         `${apiBaseUrl.replace(/\/$/, '')}/api/students`,
         { signal: controller.signal, timeout: 15000 },
       )
+
+      // ATTENDANCE TESTING
+      // const _response = await axios.get<unknown>(
+      //   `${apiBaseUrl.replace(/\/$/, '')}/api/attendance`,
+      //   { signal: controller.signal, timeout: 15000 },
+      // )
+
       if (controller.signal.aborted) return
 
       // TypeScript cannot guarantee the shape of JSON received over the network.

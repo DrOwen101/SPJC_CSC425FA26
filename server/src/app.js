@@ -66,6 +66,10 @@ teachingApi.get('/students', (_request, response) => {
   response.json({ students: mockStudents })
 })
 
+teachingApi.get('/api/attendance', (req, res) => {
+  res.status(200).json(attendance);
+});
+
 // Support both a path parameter and a query parameter for classroom examples.
 function getTranscript(request, response) {
   const studentID = request.params.studentID ?? request.query.studentID
