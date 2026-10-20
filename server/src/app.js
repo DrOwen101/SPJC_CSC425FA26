@@ -6,6 +6,15 @@ import { checkDatabase } from './db.js'
 
 export const app = express()
 
+// Data source, in place of a database, added for Module 9.
+// Fictional attendance array.
+// id identifies an attendance event. studentID identifies a student.
+const attendance = [
+  { id: 1, student: "Alice Johnson",  date: "2026-09-01", status: "present" },
+  { id: 2, student: "Bob Martinez",   date: "2026-09-01", status: "absent"  },
+  { id: 3, student: "Carol Williams", date: "2026-09-01", status: "late"    }
+];
+
 // Hard-coded data for the Student Lookup exercise. These are fictional people.
 // Students can edit this array to test their frontend without a database,
 // SQL queries, credentials, or a .env file. Keep student IDs as strings.
