@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs'
 import cors from 'cors'
 import express from 'express'
 import { checkDatabase } from './db.js'
+import { createAttendanceRouter } from './attendance.js'
 
 export const app = express()
 
@@ -48,7 +49,9 @@ const { students: transcripts } = JSON.parse(readFileSync(new URL('./data/transc
 
 // Only the fictional API allows requests from any frontend origin.
 const teachingApi = express.Router()
-teachingApi.use(['/status', '/students', '/transcripts'], cors({ methods: ['GET', 'HEAD', 'OPTIONS'] }))
+teachingApi.use(['/status', '/students', '/transcripts', '/attendance'], cors({ methods: ['GET', 'HEAD', 'OPTIONS'] }))
+
+teachingApi.use('/attendance', createAttendanceRouter(mockStudents))
 
 teachingApi.get('/status', (_request, response) => {
   response.json({ status: 'ok', service: 'Mock transcript API', studentCount: mockStudents.length })
@@ -94,11 +97,14 @@ app.use(express.json())
 app.get('/', (_request, response) => {
   response.json({
     message: 'CSC 425 API',
-    description: 'Fictional student transcripts for frontend practice. No API key required.',
+    description: 'Fictional student transcripts and attendance for frontend practice. No API key required.',
     endpoints: {
       students: '/api/students',
       transcript: '/api/transcripts/1001',
       transcriptQuery: '/api/transcripts?studentID=1001',
+      attendance: '/api/attendance',
+      studentAttendance: '/api/attendance/1001',
+      attendanceRecord: '/api/attendance/1001/2026-10-12',
       status: '/api/status',
       databaseHealth: '/api/health',
     },

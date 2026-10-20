@@ -1,0 +1,14 @@
+[
+  { "studentID": "1001", "date": "2026-10-12", "status": "present" },
+  { "studentID": "1001", "date": "2026-10-14", "status": "late" },
+  { "studentID": "1001", "date": "2026-10-16", "status": "absent" },
+  { "studentID": "1002", "date": "2026-10-12", "status": "present" },
+  { "studentID": "1002", "date": "2026-10-14", "status": "present" },
+  { "studentID": "1002", "date": "2026-10-16", "status": "present" },
+  { "studentID": "1003", "date": "2026-10-12", "status": "absent" },
+  { "studentID": "1003", "date": "2026-10-14", "status": "present" },
+  { "studentID": "1003", "date": "2026-10-16", "status": "late" },
+  { "studentID": "1004", "date": "2026-10-12", "status": "late" },
+  { "studentID": "1004", "date": "2026-10-14", "status": "absent" },
+  { "studentID": "1004", "date": "2026-10-16", "status": "absent" }
+]

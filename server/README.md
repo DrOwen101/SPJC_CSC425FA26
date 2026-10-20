@@ -1,5 +1,7 @@
 # Mock Student Transcript API
 
+The same Express application also provides the [Attendance API lab](ATTENDANCE.md), including route definitions, status-code rules, tests, screenshots, and branch/commit evidence.
+
 A read-only classroom API with **five fictional students**. Students build their own frontend to request a transcript by `studentID` and display it. No database, API key, login, or additional packages are required for these endpoints.
 
 ## Run the server
