@@ -3,6 +3,7 @@ import type { KeyboardEvent } from 'react'
 import SPJCLogo from './assets/SPJCLogo.jpg'
 import WeatherCard from './WeatherCard'
 import TranscriptCard from './TranscriptCard.js'
+import StudentLookup from './StudentLookup.js'
 
 
 function Dashboardstudent() {
@@ -23,6 +24,10 @@ function Dashboardstudent() {
       </header>
 
       <main id="student-dashboard" className="dashboard-main">
+        <div id="student-lookup" className="dashboard-card">
+          <StudentLookup />
+        </div>
+
         <section id="gpa" className="dashboard-card">
           <h2>GPA</h2>
           <div>
