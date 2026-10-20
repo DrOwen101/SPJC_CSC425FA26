@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs'
 import cors from 'cors'
 import express from 'express'
 import { checkDatabase } from './db.js'
+import { studentRoutes } from '../endpointExamples/studentServer.js'
 
 export const app = express()
 
@@ -48,17 +49,15 @@ const { students: transcripts } = JSON.parse(readFileSync(new URL('./data/transc
 
 // Only the fictional API allows requests from any frontend origin.
 const teachingApi = express.Router()
-teachingApi.use(['/status', '/students', '/transcripts'], cors({ methods: ['GET', 'HEAD', 'OPTIONS'] }))
+teachingApi.use(
+  ['/status', '/transcripts'],
+  cors({ methods: ['GET', 'HEAD', 'OPTIONS'] }),
+)
 
 teachingApi.get('/status', (_request, response) => {
   response.json({ status: 'ok', service: 'Mock transcript API', studentCount: mockStudents.length })
 })
 
-teachingApi.get('/students', (_request, response) => {
-  // Express converts the JavaScript object to JSON for the React frontend.
-  // StudentLookup selects the matching full name from this returned array.
-  response.json({ students: mockStudents })
-})
 
 // Support both a path parameter and a query parameter for classroom examples.
 function getTranscript(request, response) {
@@ -90,6 +89,7 @@ app.use('/api', teachingApi)
 
 app.use(cors({ origin: 'http://localhost:5173' }))
 app.use(express.json())
+app.use('/api/students', studentRoutes)
 
 app.get('/', (_request, response) => {
   response.json({
