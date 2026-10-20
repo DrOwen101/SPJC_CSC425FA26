@@ -54,7 +54,7 @@ const { students: transcripts } = JSON.parse(readFileSync(new URL('./data/transc
 
 // Only the fictional API allows requests from any frontend origin.
 const teachingApi = express.Router()
-teachingApi.use(['/status', '/students', '/transcripts'], cors({ methods: ['GET', 'HEAD', 'OPTIONS'] }))
+teachingApi.use(['/status', '/students', '/transcripts', '/attendance'], cors({ methods: ['GET', 'HEAD', 'OPTIONS'] }))
 
 teachingApi.get('/status', (_request, response) => {
   response.json({ status: 'ok', service: 'Mock transcript API', studentCount: mockStudents.length })
@@ -66,7 +66,7 @@ teachingApi.get('/students', (_request, response) => {
   response.json({ students: mockStudents })
 })
 
-teachingApi.get('/api/attendance', (req, res) => {
+teachingApi.get('/attendance', (req, res) => {
   res.status(200).json(attendance);
 });
 
