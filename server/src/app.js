@@ -121,3 +121,20 @@ app.get('/api/health', async (_request, response) => {
     response.status(503).json({ status: 'error', database: 'disconnected', message: error.message })
   }
 })
+
+// get route 1 (array)
+app.get('/api/attendance', (req, res) => {
+  res.status(200).json(attendance);
+});
+
+// get route 2 (single record by id)
+app.get('/api/attendance/:id', (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  const record = attendance.find(r => r.id === id);
+
+  if (!record) {
+    return res.status(404).json({ error: 'Record not found' });
+  }
+
+  res.status(200).json(record);
+});
