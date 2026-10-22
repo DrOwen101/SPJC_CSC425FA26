@@ -15,6 +15,36 @@ const attendance = [
   { id: 3, student: "Carol Williams", date: "2026-09-01", status: "late"    }
 ];
 
+// Route 1: Returns entire array.
+// res.status: Explicitly sets the HTTP status code. 200 is the default, 
+// but setting it explicitly makes your intent clear and is good practice for graded work.
+// .json(attendance): Serializes the entire array to a JSON string, 
+// sets the Content-Type header to application/json, and ends the response.
+// Expected response shape: An array of three objects — verify in Postman 
+// or the browser by hitting http://localhost:PORT/api/attendance.
+app.get('/api/attendance', (req, res) => {
+  res.status(200).json(attendance);
+});
+
+// Route 2: Reads the URL parameter, converts it to a number, and finds the matching record.
+// req.params.id: Express pulls the value from the URL segment 
+// that matched :id. It arrives as a string — that is why we call parseInt() before comparing.
+// Array.find(): Iterates the array and returns the first element where the 
+// callback returns true. If nothing matches it returns undefined, which is falsy.
+// The 404 branch - Phase 3: When the ID is a valid number but has no matching 
+// record, we return 404 with a JSON error message. This is the Transfer 
+// evidence the assignment asks for.
+app.get('/api/attendance/:id', (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  const record = attendance.find(r => r.id === id);
+
+  if (!record) {
+    return res.status(404).json({ error: 'Record not found' });
+  }
+
+  res.status(200).json(record);
+});
+
 // Hard-coded data for the Student Lookup exercise. These are fictional people.
 // Students can edit this array to test their frontend without a database,
 // SQL queries, credentials, or a .env file. Keep student IDs as strings.
