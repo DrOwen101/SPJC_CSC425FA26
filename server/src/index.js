@@ -8,4 +8,5 @@ app.listen(port, host, () => {
   console.log(`CSC 425 API listening on http://localhost:${port}`)
   console.log(`Student lookup data: http://localhost:${port}/api/students`)
   console.log(`Example transcript: http://localhost:${port}/api/transcripts/1001`)
+  console.log(`Attendance data: http://localhost:${port}/api/attendance`)
 })
