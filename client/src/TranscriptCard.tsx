@@ -2,19 +2,17 @@ import { useEffect, useId, useState, type SubmitEvent } from 'react'
 import axios from 'axios'
 import './TranscriptCard.css'
 import { isTranscript, type Transcript } from './transcriptApi'
-
-// By default, connect to the API on the same computer as the frontend.
-// For a separately hosted API, set VITE_API_BASE_URL or pass apiBaseUrl.
-const defaultApiBaseUrl = import.meta.env.VITE_API_BASE_URL
-  || `${window.location.protocol}//${window.location.hostname}:3000`
+import { apiBaseUrl as defaultApiBaseUrl } from './apiBaseUrl'
 
 type TranscriptCardProps = {
   id?: string
   apiBaseUrl?: string
+  selectedStudentID?: string
+  revision?: number
 }
 
 // The async Axios request is below; transcriptApi.ts contains only data types and validation.
-function TranscriptCard({ id, apiBaseUrl = defaultApiBaseUrl }: TranscriptCardProps) {
+function TranscriptCard({ id, apiBaseUrl = defaultApiBaseUrl, selectedStudentID, revision = 0 }: TranscriptCardProps) {
   const labelId = useId()
   const [studentID, setStudentID] = useState('1001')
   const [request, setRequest] = useState({ studentID: '1001' })
@@ -23,6 +21,8 @@ function TranscriptCard({ id, apiBaseUrl = defaultApiBaseUrl }: TranscriptCardPr
   })
   const { transcript, isLoading, error } = result
   const [inputError, setInputError] = useState('')
+
+  const requestedID = selectedStudentID ?? request.studentID
 
   useEffect(() => {
     const controller = new AbortController()
@@ -38,12 +38,12 @@ function TranscriptCard({ id, apiBaseUrl = defaultApiBaseUrl }: TranscriptCardPr
         // Call the Express GET /api/transcripts/:studentID route in the server folder.
         // await waits for the response; Axios puts the parsed JSON in response.data.
         const response = await axios.get<unknown>(
-          `${apiBaseUrl.replace(/\/$/, '')}/api/transcripts/${request.studentID}`,
+          `${apiBaseUrl.replace(/\/$/, '')}/api/transcripts/${requestedID}`,
           { signal: controller.signal },
         )
         if (controller.signal.aborted) return
         const transcript = response.data
-        if (!isTranscript(transcript) || transcript.studentID !== request.studentID) {
+        if (!isTranscript(transcript) || transcript.studentID !== requestedID) {
           throw new Error('The transcript service returned an unexpected response. Please try again.')
         }
         setResult({ transcript, isLoading: false, error: '' })
@@ -53,7 +53,7 @@ function TranscriptCard({ id, apiBaseUrl = defaultApiBaseUrl }: TranscriptCardPr
         // Axios rejects HTTP errors (such as 404) as well as network failures.
         if (axios.isAxiosError(requestError)) {
           const status = requestError.response?.status
-          if (status === 404) error = `No mock student was found with student ID ${request.studentID}. Try 1001–1005.`
+          if (status === 404) error = `No student was found with student ID ${requestedID}.`
           else if (status) error = `The transcript request failed (HTTP ${status}). Please try again.`
           else error = 'Unable to reach the transcript service. Check your connection and try again.'
         } else if (requestError instanceof Error) {
@@ -73,7 +73,7 @@ function TranscriptCard({ id, apiBaseUrl = defaultApiBaseUrl }: TranscriptCardPr
       window.clearTimeout(timeout)
       controller.abort()
     }
-  }, [apiBaseUrl, request])
+  }, [apiBaseUrl, request, requestedID, revision])
 
   function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -91,7 +91,7 @@ function TranscriptCard({ id, apiBaseUrl = defaultApiBaseUrl }: TranscriptCardPr
   }
 
   let status = 'No transcript loaded.'
-  if (isLoading) status = `Loading transcript for ${request.studentID}…`
+  if (isLoading) status = `Loading transcript for ${requestedID}…`
   else if (transcript) status = `Transcript loaded for ${transcript.firstName} ${transcript.lastName}.`
 
   return (
@@ -100,7 +100,7 @@ function TranscriptCard({ id, apiBaseUrl = defaultApiBaseUrl }: TranscriptCardPr
       <h2 id={`${labelId}-heading`}>Transcript</h2>
       <p>Explore fictional student records for this classroom exercise.</p>
 
-      <form onSubmit={handleSubmit} noValidate>
+      {!selectedStudentID && <form onSubmit={handleSubmit} noValidate>
         <label htmlFor={`${labelId}-student-id`}>Student ID</label>
         <div className="transcript-card-controls">
           <input
@@ -119,9 +119,9 @@ function TranscriptCard({ id, apiBaseUrl = defaultApiBaseUrl }: TranscriptCardPr
           />
           <button type="submit" disabled={isLoading}>{isLoading ? 'Loading…' : 'Load transcript'}</button>
         </div>
-        <p id={`${labelId}-help`} className="transcript-card-help">Available mock student IDs: 1001–1005.</p>
+        <p id={`${labelId}-help`} className="transcript-card-help">Use a four-digit ID from Student records. Seeded IDs: 1001–1005.</p>
         {inputError && <p id={`${labelId}-input-error`} className="transcript-card-error" role="alert">{inputError}</p>}
-      </form>
+      </form>}
 
       <p className="transcript-card-status" role="status">{status}</p>
       {error && <p className="transcript-card-error" role="alert">{error}</p>}
@@ -132,9 +132,10 @@ function TranscriptCard({ id, apiBaseUrl = defaultApiBaseUrl }: TranscriptCardPr
             <h3>{transcript.firstName} {transcript.lastName}</h3>
             <p>{transcript.institution}</p>
             <p>Student ID: {transcript.studentID} · {transcript.major}</p>
-            {transcript.isMockData && <p className="transcript-card-help">Mock transcript · Not an official academic record</p>}
+            {transcript.isMockData && <p className="transcript-card-help">Fictional classroom transcript · Not an official academic record</p>}
           </header>
 
+          {transcript.semesters.length === 0 && <p>No completed courses yet. Add a completed registration to build this transcript.</p>}
           {transcript.semesters.map((semester) => (
             <div className="transcript-card-semester" key={semester.term}>
               {/* A caption names each table; column headers describe its cells.

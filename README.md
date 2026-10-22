@@ -1,5 +1,11 @@
 # CSC 425 Full-Stack Development Starter
 
+## Student dashboard with PostgreSQL
+
+The student dashboard now saves student profiles, course registrations/final grades, attendance, alerts, and GPA practice grades through the Express API. Configure `server/.env`, run `npm run db:setup --prefix server`, then `npm run dev` and open `http://localhost:5173/#student-dashboard`. Manage the shared course catalog from the same dashboard.
+
+See [database setup and project-folder backups](server/database/README.md) and the [CRUD API reference](server/README.md). On this computer, the existing project-local PostgreSQL cluster and `student_lookup` database are used; a fresh installation may use `csc425fa26` as described below. All records are fictional classroom data.
+
 Welcome to CSC 425: Web-Based Services and Applications with Dr. Jason T. Owen.
 
 This public starter repository provides the foundation for building a full-stack web application with:

@@ -6,3 +6,6 @@ dist/
 .DS_Store
 *.log
 
+# PostgreSQL data, backups, and local test databases must stay off Git.
+server/local-postgres/
+server/database/backups/

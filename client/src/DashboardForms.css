@@ -1,0 +1,23 @@
+.dashboard-student-picker { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem; margin-bottom: 1.5rem; }
+.dashboard-student-picker label { font-weight: 650; }
+.crud-card fieldset { border: 0; padding: 0; margin: 0; min-width: 0; }
+.crud-field { display: grid; gap: .3rem; margin: .75rem 0; }
+.crud-field label { font-weight: 650; }
+.crud-field input:not([type=checkbox]), .crud-field select, .dashboard-student-picker select {
+  box-sizing: border-box; width: 100%; min-width: 0; min-height: 44px; padding: .6rem; border: 1px solid #64748b;
+  border-radius: .4rem; background: #fff; color: #172033; font: inherit;
+}
+.dashboard-student-picker select { width: auto; max-width: 100%; }
+.crud-field input[type=checkbox] { width: 24px; height: 24px; }
+.crud-card button, .dashboard-student-picker button {
+  min-height: 44px; padding: .5rem .9rem; border: 1px solid #174ea6; border-radius: .4rem;
+  background: #174ea6; color: white; font: inherit; cursor: pointer;
+}
+.crud-card button:disabled, .dashboard-student-picker button:disabled { opacity: .6; cursor: wait; }
+.crud-actions { display: flex; flex-wrap: wrap; gap: .5rem; }
+.crud-records { padding: 0; list-style: none; max-height: 24rem; overflow: auto; }
+.crud-records li { border-bottom: 1px solid #ccd5e0; padding: .75rem 0; overflow-wrap: anywhere; }
+.crud-records li p { margin-top: 0; }
+.delete-confirmation { border: 2px solid #9a3412; border-radius: .5rem; padding: .75rem; margin: 1rem 0; }
+.crud-card :focus-visible, .dashboard-student-picker :focus-visible { outline: 3px solid #bf5700; outline-offset: 3px; }
+.crud-card .metric { margin: .5rem 0; }

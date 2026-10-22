@@ -6,7 +6,11 @@
   "scripts": {
     "dev": "nodemon src/index.js",
     "start": "node src/index.js",
-    "test": "node --test"
+    "test": "node --test",
+    "db:setup": "node scripts/setup.js",
+    "db:backup": "node scripts/backup.js",
+    "db:start": "node scripts/local-postgres.js start",
+    "db:stop": "node scripts/local-postgres.js stop"
   },
   "dependencies": {
     "cors": "^2.8.5",

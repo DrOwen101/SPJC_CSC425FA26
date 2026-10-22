@@ -2,14 +2,11 @@ import { useEffect, useRef, useState, type SubmitEvent } from 'react'
 import axios from 'axios'
 import { isStudentsResponse, normalizeName, type Student } from './studentLookupApi'
 import './StudentLookup.css'
-
-// This is the same Express API used by the Lab 6 transcript example.
-const apiBaseUrl = import.meta.env.VITE_API_BASE_URL
-  || `${window.location.protocol}//${window.location.hostname}:3000`
+import { apiBaseUrl } from './apiBaseUrl'
 
 // This component owns the lookup's state, API request, and displayed result.
 // Import it into a dashboard and render <StudentLookup /> to show the feature.
-function StudentLookup() {
+function StudentLookup({ onSelectStudent }: { onSelectStudent?: (studentID: string) => void }) {
   // The editable input and submitted name are separate: typing a new name
   // must not relabel an existing result or start a request automatically.
   const [searchName, setSearchName] = useState('')
@@ -76,6 +73,7 @@ function StudentLookup() {
         setLookupError(`More than one student matches “${name}”. Please clarify which student you mean with your instructor before continuing.`)
       } else {
         setStudent(matches[0]) // Store only the one matching record for rendering.
+        onSelectStudent?.(matches[0].studentID)
       }
     } catch (error) {
       // Cancellation is expected on another search or navigation. An old error
