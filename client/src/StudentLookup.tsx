@@ -53,14 +53,14 @@ function StudentLookup() {
       // Keep the request here so this component's input-to-result flow is visible.
       // A timeout also allows the user to retry if the server stops responding.
       const response = await axios.get<unknown>(
-        `${apiBaseUrl.replace(/\/$/, '')}/api/students`,
+        `${apiBaseUrl.replace(/\/$/, '')}/api/students/:StudentID`,
         { signal: controller.signal, timeout: 15000 },
       )
 
       //ATTENDANCE TESTING
-      // ATTENDANCE GOTTEN!
+      //ATTENDANCE GOTTEN!
             // const _response = await axios.get<unknown>(
-            //   `${apiBaseUrl.replace(/\/$/, '')}/api/attendance`,
+            //   `${apiBaseUrl.replace(/\/$/, '')}/api/attendance/id:1`,
             //   { signal: controller.signal, timeout: 15000 },
             // )
 

@@ -77,6 +77,17 @@ teachingApi.get('/attendance', (req, res) => {
   res.status(200).json(attendance);
 });
 
+teachingApi.get('/api/attendance/id', (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  const record = attendance.find(r => r.id === id);
+
+  if (!record) {
+    return res.status(404).json({ error: 'Record not found' });
+  }
+
+  res.status(200).json(record);
+});
+
 // Support both a path parameter and a query parameter for classroom examples.
 function getTranscript(request, response) {
   const studentID = request.params.studentID ?? request.query.studentID
