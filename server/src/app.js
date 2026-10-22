@@ -9,6 +9,12 @@ export const app = express()
 // Hard-coded data for the Student Lookup exercise. These are fictional people.
 // Students can edit this array to test their frontend without a database,
 // SQL queries, credentials, or a .env file. Keep student IDs as strings.
+const attendance = [
+  { id: 1, student: "Alice Johnson",  date: "2026-09-01", status: "present" },
+  { id: 2, student: "Bob Martinez",   date: "2026-09-01", status: "absent"  },
+  { id: 3, student: "Carol Williams", date: "2026-09-01", status: "late"    }
+];
+
 const mockStudents = [
   {
     studentID: '1001',
@@ -66,6 +72,7 @@ teachingApi.get('/students', (_request, response) => {
   response.json({ students: mockStudents })
 })
 
+// ATTENDANCE
 teachingApi.get('/attendance', (req, res) => {
   res.status(200).json(attendance);
 });

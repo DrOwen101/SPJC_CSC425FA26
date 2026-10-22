@@ -57,11 +57,12 @@ function StudentLookup() {
         { signal: controller.signal, timeout: 15000 },
       )
 
-      // ATTENDANCE TESTING
-      // const _response = await axios.get<unknown>(
-      //   `${apiBaseUrl.replace(/\/$/, '')}/api/attendance`,
-      //   { signal: controller.signal, timeout: 15000 },
-      // )
+      //ATTENDANCE TESTING
+      // ATTENDANCE GOTTEN!
+            // const _response = await axios.get<unknown>(
+            //   `${apiBaseUrl.replace(/\/$/, '')}/api/attendance`,
+            //   { signal: controller.signal, timeout: 15000 },
+            // )
 
       if (controller.signal.aborted) return
 
