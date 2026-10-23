@@ -9,14 +9,14 @@ export const app = express()
 const attendance = [
   {
     id: 1,
-    studentID: '1001',
+    studentId: '1001',
     studentName: 'Avery Morgan',
     date: '2026-10-20',
     status: 'present'
   },
   {
     id: 2,
-    studentID: '1002',
+    studentId: '1002',
     studentName: 'Jordan Bennett',
     date: '2026-10-20',
     status: 'absent'
@@ -24,7 +24,7 @@ const attendance = [
 
   {
     id: 3,
-    studentID: '1003',
+    studentId: '1003',
     studentName: 'Taylor Reed',
     date: '2026-10-20',
     status: 'late'
