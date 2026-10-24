@@ -111,6 +111,7 @@ function StudentLookup() {
     statusMessage = 'No student requested yet.'
   }
 
+
   return (
     <section id="student-lookup" className="dashboard-card student-lookup" aria-labelledby="lookup-heading" tabIndex={-1}>
       <h2 id="lookup-heading">Student lookup</h2>
