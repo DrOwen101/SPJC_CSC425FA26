@@ -61,10 +61,14 @@ const attendance = [
     res.status(200).json(attendance);
     });
     app.get("/api/attendance/:id", (req, res) => {
-    const attendanceId = Number(req.params.id);
-    const record = attendance.find((item) => {
-    return item.id === attendanceId;
+      const attendanceId = Number(req.params.id);
+      const record = attendance.find((item) => {
+        return item.id === attendanceId;
     });
+    if (!record) {
+      return res.status(404).json({ error: 'No attendance record found with that ID.'});
+    }
+    
     res.status(200).json(record);
     });
 
