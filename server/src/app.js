@@ -6,9 +6,31 @@ import { checkDatabase } from './db.js'
 
 export const app = express()
 
-// Hard-coded data for the Student Lookup exercise. These are fictional people.
-// Students can edit this array to test their frontend without a database,
-// SQL queries, credentials, or a .env file. Keep student IDs as strings.
+const attendance = [
+  {
+    id: 1,
+    studentId: '1001',
+    studentName: 'Avery Morgan',
+    date: '2026-10-20',
+    status: 'present',
+  },
+  {
+    id: 2,
+    studentId: '1002',
+    studentName: 'Jordan Bennett',
+    date: '2026-10-20',
+    status: 'absent',
+  },
+  {
+    id: 3,
+    studentId: '1003',
+    studentName: 'Taylor Reed',
+    date: '2026-10-20',
+    status: 'late',
+  },
+]
+
+// Fictional data for the Student Lookup exercise.
 const mockStudents = [
   {
     studentID: '1001',
@@ -42,36 +64,53 @@ const mockStudents = [
   },
 ]
 
-// The earlier transcript exercise keeps its course/grade fixtures in JSON.
-// It also works without a database. /api/students uses only the array above.
-const { students: transcripts } = JSON.parse(readFileSync(new URL('./data/transcripts.json', import.meta.url), 'utf8'))
+// Load the fictional transcript data.
+const { students: transcripts } = JSON.parse(
+  readFileSync(
+    new URL('./data/transcripts.json', import.meta.url),
+    'utf8'
+  )
+)
 
-// Only the fictional API allows requests from any frontend origin.
 const teachingApi = express.Router()
-teachingApi.use(['/status', '/students', '/transcripts'], cors({ methods: ['GET', 'HEAD', 'OPTIONS'] }))
+
+teachingApi.use(
+  ['/status', '/students', '/transcripts'],
+  cors({ methods: ['GET', 'HEAD', 'OPTIONS'] })
+)
 
 teachingApi.get('/status', (_request, response) => {
-  response.json({ status: 'ok', service: 'Mock transcript API', studentCount: mockStudents.length })
+  response.json({
+    status: 'ok',
+    service: 'Mock transcript API',
+    studentCount: mockStudents.length,
+  })
 })
 
 teachingApi.get('/students', (_request, response) => {
-  // Express converts the JavaScript object to JSON for the React frontend.
-  // StudentLookup selects the matching full name from this returned array.
   response.json({ students: mockStudents })
 })
 
-// Support both a path parameter and a query parameter for classroom examples.
+// Support transcript requests using a path or query parameter.
 function getTranscript(request, response) {
-  const studentID = request.params.studentID ?? request.query.studentID
+  const studentID =
+    request.params.studentID ?? request.query.studentID
 
-  if (typeof studentID !== 'string' || !/^\d{4}$/.test(studentID)) {
+  if (
+    typeof studentID !== 'string' ||
+    !/^\d{4}$/.test(studentID)
+  ) {
     return response.status(400).json({
       error: 'INVALID_STUDENT_ID',
-      message: 'Provide a four-digit studentID, for example /api/transcripts/1001.',
+      message:
+        'Provide a four-digit studentID, for example /api/transcripts/1001.',
     })
   }
 
-  const student = transcripts.find((student) => student.studentID === studentID)
+  const student = transcripts.find(
+    (student) => student.studentID === studentID
+  )
+
   if (!student) {
     return response.status(404).json({
       error: 'STUDENT_NOT_FOUND',
@@ -85,16 +124,38 @@ function getTranscript(request, response) {
 teachingApi.get('/transcripts', getTranscript)
 teachingApi.get('/transcripts/:studentID', getTranscript)
 
-// These handlers finish before the original starter API's CORS middleware.
 app.use('/api', teachingApi)
 
 app.use(cors({ origin: 'http://localhost:5173' }))
 app.use(express.json())
 
+// Return all attendance records.
+app.get('/api/attendance', (req, res) => {
+  res.status(200).json(attendance)
+})
+
+// Return one attendance record or a 404 JSON error.
+app.get('/api/attendance/:id', (req, res) => {
+  const attendanceId = Number(req.params.id)
+
+  const record = attendance.find((item) => {
+    return item.id === attendanceId
+  })
+
+  if (!record) {
+    return res.status(404).json({
+      error: 'Attendance record not found',
+    })
+  }
+
+  return res.status(200).json(record)
+})
+
 app.get('/', (_request, response) => {
   response.json({
     message: 'CSC 425 API',
-    description: 'Fictional student transcripts for frontend practice. No API key required.',
+    description:
+      'Fictional student transcripts for frontend practice. No API key required.',
     endpoints: {
       students: '/api/students',
       transcript: '/api/transcripts/1001',
@@ -108,9 +169,22 @@ app.get('/', (_request, response) => {
 app.get('/api/health', async (_request, response) => {
   try {
     const database = await checkDatabase()
-    response.json({ status: 'ok', database: 'connected', timestamp: database.current_time })
+
+    response.json({
+      status: 'ok',
+      database: 'connected',
+      timestamp: database.current_time,
+    })
   } catch (error) {
-    console.error('Database health check failed:', error.message)
-    response.status(503).json({ status: 'error', database: 'disconnected', message: error.message })
+    console.error(
+      'Database health check failed:',
+      error.message
+    )
+
+    response.status(503).json({
+      status: 'error',
+      database: 'disconnected',
+      message: error.message,
+    })
   }
 })
