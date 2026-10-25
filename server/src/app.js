@@ -40,7 +40,40 @@ const mockStudents = [
     lastName: 'Parker',
     major: 'Computer Science',
   },
+  {
+    studentID: '1006',
+    firstName: 'Riley',
+    lastName: 'Parker',
+    major: 'Computer Science',
+  }
 ]
+
+const attendance = [
+  { id: 1, student: "Alice Johnson",  date: "2026-09-01", status: "present" },
+  { id: 2, student: "Bob Martinez",   date: "2026-09-01", status: "absent"  },
+  { id: 3, student: "Carol Williams", date: "2026-09-01", status: "late"    }
+];
+
+app.get('/api/attendance', (req, res) => {
+  res.status(200).json(attendance);
+});
+
+// --- PASTE SLIDE CODE HERE ---
+app.get('/api/attendance', (req, res) => {
+  res.status(200).json(attendance);
+});
+
+app.get('/api/attendance/:id', (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  const record = attendance.find(r => r.id === id);
+
+  if (!record) {
+    return res.status(404).json({ error: 'Record not found' });
+  }
+
+  res.status(200).json(record);
+});
+// ----------------------------
 
 // The earlier transcript exercise keeps its course/grade fixtures in JSON.
 // It also works without a database. /api/students uses only the array above.
