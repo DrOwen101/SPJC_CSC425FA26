@@ -48,6 +48,7 @@ app.get('/api/attendance/:id', (req, res) => {
   if (!record) {
     return res.status(404).json({
       error: 'ATTENDANCE_NOT_FOUND',
+      id: attendanceId,
       message: `No attendance record was found with id ${attendanceId}.`,
     });
   }
