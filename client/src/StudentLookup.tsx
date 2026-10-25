@@ -59,10 +59,17 @@ function StudentLookup() {
 
       //ATTENDANCE TESTING
       // ATTENDANCE GOTTEN!
-            // const _response = await axios.get<unknown>(
-            //   `${apiBaseUrl.replace(/\/$/, '')}/api/attendance`,
-            //   { signal: controller.signal, timeout: 15000 },
-            // )
+            const _response = await axios.get<unknown>(
+              `${apiBaseUrl.replace(/\/$/, '')}/api/attendance`,
+              { signal: controller.signal, timeout: 15000 },
+            )
+
+      // NOW IMPLEMENT ID CHECK FOR ATTENDANCE
+            const requestedStudentId = 1
+            const attendanceByIdResponse = await axios.get<unknown>(
+              `${apiBaseUrl.replace(/\/$/, '')}/api/attendance/${requestedStudentId}`,
+              { signal: controller.signal, timeout: 15000 },
+            )
 
       if (controller.signal.aborted) return
 
