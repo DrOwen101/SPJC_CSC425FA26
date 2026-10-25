@@ -115,6 +115,7 @@ function StudentLookup() {
     <section id="student-lookup" className="dashboard-card student-lookup" aria-labelledby="lookup-heading" tabIndex={-1}>
       <h2 id="lookup-heading">Student lookup</h2>
       <p id="lookup-help">Enter a student’s full name, then select Search. These are fictional classroom records.</p>
+
       <form onSubmit={searchStudents} noValidate>
         <label htmlFor="student-name">Student full name</label>
         <div className="student-lookup-controls">
@@ -135,6 +136,7 @@ function StudentLookup() {
           <button type="submit">Search</button>
         </div>
       </form>
+
       {inputError && <p id="lookup-input-error" className="field-error" role="alert">{inputError}</p>}
       {/* The live region announces changes without moving keyboard focus. */}
       <p role="status">{statusMessage}</p>
