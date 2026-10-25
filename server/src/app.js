@@ -66,6 +66,9 @@ const attendanceId = Number(req.params.id);
 const record = attendance.find((item) => {
 return item.id === attendanceId;
 });
+if (!record) {
+  return res.status(404).json({ error: 'ATTENDANCE_RECORD_NOT_FOUND', message: `No attendance record was found with ID ${attendanceId}.` });
+}
 res.status(200).json(record);
 });
 
