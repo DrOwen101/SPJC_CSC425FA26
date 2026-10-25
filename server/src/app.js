@@ -131,5 +131,8 @@ app.get('/api/attendance', (req, res) => {
 app.get('/api/attendance/:id', (req, res) => {
   const id = Number(req.params.id)
   const record = attendance.find((item) => item.id === id)
+  if (!record) {
+    return res.status(404).json({ error: `No attendance record found with id ${req.params.id}.` })
+  }
   res.status(200).json(record)
 })
