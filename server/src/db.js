@@ -1,6 +1,8 @@
 import pg from 'pg'
+import pkg from 'pg';
 
-const { Pool } = pg
+
+const { Pool } = pg, pkg = pkg;
 
 export const pool = new Pool({
   host: process.env.DB_HOST,
