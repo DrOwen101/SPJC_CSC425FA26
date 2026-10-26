@@ -81,6 +81,13 @@ test('returns JSON errors for missing, malformed, repeated, and unknown IDs', as
   assert.equal((await response.json()).error, 'STUDENT_NOT_FOUND')
 })
 
+test('returns 404 with a clear JSON error for a missing attendance record', async () => {
+  const response = await fetch(`${baseURL}/api/attendance/999`)
+  assert.equal(response.status, 404)
+  assert.match(response.headers.get('content-type'), /application\/json/)
+  assert.deepEqual(await response.json(), { error: 'Attendance record 999 not found.' })
+})
+
 test('supports frontend origins and preflight, including error responses', async () => {
   for (const path of ['/api/students', '/api/transcripts/1001', '/api/transcripts/9999', '/api/transcripts/invalid', '/api/status']) {
     const response = await fetch(`${baseURL}${path}`, { headers: { Origin: 'http://student-project.example' } })
