@@ -65,7 +65,7 @@ function StudentLookup() {
             )
 
       // NOW IMPLEMENT ID CHECK FOR ATTENDANCE
-            const requestedStudentId = 1
+            const requestedStudentId = 999
             const attendanceByIdResponse = await axios.get<unknown>(
               `${apiBaseUrl.replace(/\/$/, '')}/api/attendance/${requestedStudentId}`,
               { signal: controller.signal, timeout: 15000 },
