@@ -24,6 +24,9 @@ app.get("/api/attendance/:id", (req, res) => {
   const record = attendance.find((item) => {
     return item.id === attendanceId;
   });
+  if (!record) {
+    return res.status(404).json({ error: "Attendance record not found" });
+  }
   res.status(200).json(record);
 });
 // Hard-coded data for the Student Lookup exercise. These are fictional people.
