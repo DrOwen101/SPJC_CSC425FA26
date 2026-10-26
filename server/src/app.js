@@ -86,9 +86,9 @@ teachingApi.get('/attendance/:id', (req, res) => {
   const id = Number(req.params.id);
   const record = attendance.find(r => r.id === id);
 
-  //if (!record) {
-  //  return res.status(404).json({ error: 'Record not found' });
-  //}
+  if (!record) {
+    return res.status(404).json({ error: 'Record not found' });
+  }
 
   res.status(200).json(record);
 });
