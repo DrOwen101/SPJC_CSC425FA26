@@ -42,6 +42,17 @@ const mockStudents = [
   },
 ]
 
+// mock API attendance
+const attendance = [
+  { id: 1, studentId: "1001", studentName: "Avery Morgan",
+    date: "2026-10-20", status: "present" },
+  { id: 2, studentId: "1002", studentName: "Jordan Bennett",
+    date: "2026-10-20", status: "absent" },
+  { id: 3, studentId: "1003", studentName: "Taylor Reed",
+    date: "2026-10-20", status: "late" }
+];
+
+
 // The earlier transcript exercise keeps its course/grade fixtures in JSON.
 // It also works without a database. /api/students uses only the array above.
 const { students: transcripts } = JSON.parse(readFileSync(new URL('./data/transcripts.json', import.meta.url), 'utf8'))
@@ -114,3 +125,19 @@ app.get('/api/health', async (_request, response) => {
     response.status(503).json({ status: 'error', database: 'disconnected', message: error.message })
   }
 })
+
+// attendance API logic
+app.get("/api/attendance/:studentId", (req, res) => {
+  const studentId = req.params.studentId;
+  const record = attendance.find((item) => {
+    return item.studentId === studentId;
+  });
+
+  if (!record) {
+    return res.status(404).json({
+      error: "ATTENDANCE_NOT_FOUND",
+      message: "No attendance record found for this student."
+    });
+  }
+  res.status(200).json(record);
+});

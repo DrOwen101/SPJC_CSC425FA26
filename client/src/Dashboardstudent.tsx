@@ -2,6 +2,7 @@ import { useState, type SubmitEvent } from 'react'
 import WeatherCard from './WeatherCard'
 import StudentLookup from './StudentLookup'
 import TranscriptCard from './TranscriptCard'
+import AttendanceCard from './AttendanceCard'
 
 // Each letter grade maps to its value on a standard 4.0 GPA scale.
 const gradePoints: Record<string, number> = {
@@ -64,7 +65,7 @@ function Dashboardstudent() {
       <nav className="dashboard-nav" aria-label="Student sections">
         <ul>
             <li><a href="#gpa">GPA</a></li>
-            {/* <li><a href="#attendance">Attendance</a></li> */}
+            <li><a href="#attendance">Attendance</a></li>
             <li><a href="#student-lookup">Student lookup</a></li>
             <li><a href="#transcript">Transcript</a></li>
             <li><a href="#alerts">Alerts</a></li>
@@ -128,11 +129,7 @@ function Dashboardstudent() {
             Calculate GPA
           </button>
         </section>
-        {/* <section id="attendance" className="dashboard-card" aria-labelledby="attendance-heading" tabIndex={-1}>
-          <h2 id="attendance-heading">Attendance</h2>
-          <p className="metric">94%</p>
-          <p>Current attendance · sample value</p>
-        </section> */}
+        <AttendanceCard id="attendance" />
         <TranscriptCard id="transcript" />
         <section id="alerts" className="dashboard-card" aria-labelledby="alerts-heading" tabIndex={-1}>
           <h2 id="alerts-heading">Alerts</h2>

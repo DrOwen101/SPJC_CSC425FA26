@@ -1,0 +1,156 @@
+/* Imported by AttendanceCard itself; styles stay scoped to this component. */
+.attendance-card,
+.attendance-card * {
+  box-sizing: border-box;
+}
+.attendance-card {
+  min-width: 0;
+  padding: 1.25rem;
+  border: 1px solid #b2ccbd;
+  border-radius: .85rem;
+  background: #f3faf5;
+  color: #123524;
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  line-height: 1.6;
+  scroll-margin-top: 1rem;
+  box-shadow: 0 4px 14px rgb(7 92 53 / 5%);
+}
+/* Give course tables the dashboard's full width without changing other cards. */
+.dashboard-grid > .attendance-card {
+  grid-column: 1 / -1;
+}
+.attendance-card h2 {
+  margin: 0 0 .75rem;
+  font-size: 1.35rem;
+  line-height: 1.3;
+}
+.attendance-card h3 {
+  margin: 0 0 .5rem;
+  font-size: 1.2rem;
+}
+.attendance-card p {
+  margin: .5rem 0 1rem;
+  overflow-wrap: anywhere;
+}
+.attendance-card label {
+  display: block;
+  margin-bottom: .35rem;
+  font-weight: 700;
+}
+.attendance-card-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .65rem;
+  max-width: 32rem;
+}
+.attendance-card-controls input,
+.attendance-card-controls button {
+  min-width: 0;
+  min-height: 44px;
+  padding: .65rem .75rem;
+  border: 1px solid #568069;
+  border-radius: .45rem;
+  font: inherit;
+}
+.attendance-card-controls input {
+  flex: 1 1 10rem;
+  width: 100%;
+  color: #123524;
+  background: white;
+}
+.attendance-card-controls button {
+  flex: 1 1 10rem;
+  color: white;
+  background: #075c35;
+  font-weight: 700;
+  cursor: pointer;
+}
+.attendance-card-controls button:hover:not(:disabled) {
+  background: #06482a;
+}
+.attendance-card-controls button:disabled {
+  opacity: .65;
+  cursor: wait;
+}
+.attendance-card .attendance-card-help {
+  font-size: .9rem;
+}
+.attendance-card .attendance-card-error {
+  color: #982525;
+  font-weight: 650;
+}
+.attendance-card-status {
+  font-size: .9rem;
+}
+.attendance-card-record {
+  padding-top: 1rem;
+  border-top: 1px solid #b2ccbd;
+}
+.attendance-card-semester {
+  margin-top: 1.5rem;
+}
+.attendance-card-table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+}
+.attendance-card table {
+  width: 100%;
+  min-width: 28rem;
+  border-collapse: collapse;
+  text-align: left;
+  background: white;
+}
+.attendance-card caption {
+  padding: .5rem 0;
+  text-align: left;
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+.attendance-card th,
+.attendance-card td {
+  padding: .65rem .75rem;
+  border-bottom: 1px solid #b2ccbd;
+}
+.attendance-card thead {
+  background: #e0f2e7;
+}
+.attendance-card .attendance-card-term-summary {
+  font-size: .9rem;
+}
+.attendance-card-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr));
+  gap: 1rem;
+  margin: 1.5rem 0 1rem;
+  padding: 1rem;
+  border-radius: .5rem;
+  background: #e0f2e7;
+}
+.attendance-card-summary dt {
+  font-size: .9rem;
+  font-weight: 650;
+}
+.attendance-card-summary dd {
+  margin: 0;
+  color: #075c35;
+  font-size: 1.75rem;
+  font-weight: 750;
+}
+.attendance-card :focus-visible,
+.attendance-card:focus-visible {
+  outline: 3px solid #123524;
+  outline-offset: 3px;
+  box-shadow: 0 0 0 3px white;
+}
+@media (min-width: 651px) {
+  .attendance-card {
+    padding: 1.5rem;
+  }
+}
+@media (forced-colors: active) {
+  .attendance-card,
+  .attendance-card th,
+  .attendance-card td {
+    border-color: CanvasText;
+  }
+}
