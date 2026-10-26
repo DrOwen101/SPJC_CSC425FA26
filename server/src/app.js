@@ -6,9 +6,15 @@ import { checkDatabase } from './db.js'
 
 export const app = express()
 
-// Hard-coded data for the Student Lookup exercise. These are fictional people.
-// Students can edit this array to test their frontend without a database,
-// SQL queries, credentials, or a .env file. Keep student IDs as strings.
+const attendance = [
+{ id: 1, studentId: "1001", studentName: "Avery Morgan",
+date: "2026-10-20", status: "present" },
+{ id: 2, studentId: "1002", studentName: "Jordan Bennett",
+date: "2026-10-20", status: "absent" },
+{ id: 3, studentId: "1003", studentName: "Taylor Reed",
+date: "2026-10-20", status: "late" }
+]
+
 const mockStudents = [
   {
     studentID: '1001',
@@ -114,3 +120,24 @@ app.get('/api/health', async (_request, response) => {
     response.status(503).json({ status: 'error', database: 'disconnected', message: error.message })
   }
 })
+
+app.get("/api/attendance", (req, res) => {
+  res.status(200).json(attendance);
+});
+
+app.get("/api/attendance/:id", (req, res) => {
+  const attendanceId = Number(req.params.id);
+
+  const record = attendance.find((item) => {
+    return item.id === attendanceId;
+  });
+
+  if (!record) {
+    return res.status(404).json({
+      error: "Attendance record not found"
+    });
+  }
+
+  return res.status(200).json(record);
+});
+
