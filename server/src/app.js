@@ -83,7 +83,7 @@ teachingApi.get('/attendance', (req, res) => {
 
 // ATTENDANCE --- ROUTE 2 (by ID)
 teachingApi.get('/attendance/:id', (req, res) => {
-  const id = parseInt(req.params.id, 10);
+  const id = Number(req.params.id);
   const record = attendance.find(r => r.id === id);
 
   if (!record) {
