@@ -10,9 +10,12 @@ export const app = express()
 // Fictional attendance array.
 // id identifies an attendance event. studentID identifies a student.
 const attendance = [
-  { id: 1, student: "Alice Johnson",  date: "2026-09-01", status: "present" },
-  { id: 2, student: "Bob Martinez",   date: "2026-09-01", status: "absent"  },
-  { id: 3, student: "Carol Williams", date: "2026-09-01", status: "late"    }
+  { id: 1, studentId: "1001", studentName: "Avery Morgan", 
+    date: "2026-10-20", status: "present" },
+  { id: 2, studentId: "1002", studentName: "Jordan Bennett",
+    date: "2026-10-20", status: "absent" },
+  { id: 3, studentId: "1003", studentName: "Taylor Reed",
+    date: "2026-10-20", status: "late" }
 ];
 
 // Route 1: Returns entire array.
@@ -39,7 +42,7 @@ app.get('/api/attendance/:id', (req, res) => {
   const record = attendance.find(r => r.id === id);
 
   if (!record) {
-    return res.status(404).json({ error: 'Record not found' });
+    return res.status(404).json({ error: 'No attendance record found' });
   }
 
   res.status(200).json(record);
