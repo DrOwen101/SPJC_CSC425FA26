@@ -127,6 +127,10 @@ app.get('/api/health', async (_request, response) => {
 })
 
 // attendance API logic
+app.get("/api/attendance", (req, res) => {
+  res.status(200).json(attendance);
+});
+
 app.get("/api/attendance/:studentId", (req, res) => {
   const studentId = req.params.studentId;
   const record = attendance.find((item) => {
