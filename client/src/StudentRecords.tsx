@@ -6,7 +6,14 @@ import {
 } from './studentRecordsApi'
 
 function emptyStudent(): StudentInput {
-  return { firstName: '', lastName: '', email: '', majorId: 0, enrollmentYear: new Date().getFullYear(), isActive: true }
+  return {
+    firstName: '',
+    lastName: '',
+    email: '',
+    majorId: 0,
+    enrollmentYear: new Date().getFullYear(),
+    isActive: true,
+  }
 }
 
 type StudentRecordsProps = {
@@ -36,36 +43,68 @@ export default function StudentRecords({ id, selection, onChange }: StudentRecor
     setDraft(emptyStudent())
     setConfirmDelete(false)
     setMessage('Loading student records…')
-    Promise.all([listMajors(controller.signal), selectedId === undefined ? undefined : getStudentRecord(selectedId, controller.signal)])
-      .then(([options, student]) => {
+    async function loadForm() {
+      try {
+        // These independent requests can run together. Promise.all waits for both.
+        const [options, student] = await Promise.all([
+          listMajors(controller.signal),
+          selectedId === undefined ? undefined : getStudentRecord(selectedId, controller.signal),
+        ])
         if (controller.signal.aborted) return
+
         setMajors(options)
-        if (student) selectStudent(student)
-        setMessage(student ? `Retrieved student #${student.id} from the database.` : 'Student records loaded.')
-      })
-      .catch((reason: unknown) => {
-        if (!controller.signal.aborted) { setError(studentRecordsError(reason)); setMessage('') }
-      })
-      .finally(() => { if (!controller.signal.aborted) setBusy(false) })
+        if (student) {
+          selectStudent(student)
+          setMessage(`Retrieved student #${student.id} from the database.`)
+        } else {
+          setMessage('Student records loaded.')
+        }
+      } catch (error) {
+        if (controller.signal.aborted) return
+
+        setError(studentRecordsError(error))
+        setMessage('')
+      } finally {
+        if (!controller.signal.aborted) {
+          setBusy(false)
+        }
+      }
+    }
+
+    void loadForm()
     return () => controller.abort()
   }, [selectedId, selectionRequest])
 
   function selectStudent(student: StudentRecord) {
     setSelected(student)
     // Only writable fields belong in POST/PUT bodies; IDs and timestamps are server-owned.
-    setDraft({ firstName: student.firstName, lastName: student.lastName, email: student.email,
-      majorId: student.majorId, enrollmentYear: student.enrollmentYear, isActive: student.isActive })
+    setDraft({
+      firstName: student.firstName,
+      lastName: student.lastName,
+      email: student.email,
+      majorId: student.majorId,
+      enrollmentYear: student.enrollmentYear,
+      isActive: student.isActive,
+    })
     setLookupId(String(student.id))
     setConfirmDelete(false)
   }
 
-  async function perform(action: () => Promise<void>) {
+  // Each action supplies its API call. This helper handles the shared UI steps:
+  // show progress, await the action, display errors, and enable the form again.
+  async function runStudentAction(action: () => Promise<void>) {
     if (busy) return
     setBusy(true)
     setError('')
     setMessage('Working…')
-    try { await action() } catch (reason) { setError(studentRecordsError(reason)); setMessage('') }
-    finally { setBusy(false) }
+    try {
+      await action()
+    } catch (error) {
+      setError(studentRecordsError(error))
+      setMessage('')
+    } finally {
+      setBusy(false)
+    }
   }
 
   function newStudent() {
@@ -77,7 +116,7 @@ export default function StudentRecords({ id, selection, onChange }: StudentRecor
   }
 
   async function retrieve(id: number) {
-    await perform(async () => {
+    await runStudentAction(async () => {
       // Clear stale details so a failed lookup cannot display the previous student.
       setSelected(null)
       setDraft(emptyStudent())
@@ -88,22 +127,30 @@ export default function StudentRecords({ id, selection, onChange }: StudentRecor
     })
   }
 
-  function save(event: SubmitEvent<HTMLFormElement>) {
+  async function handleLookup(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault()
-    void perform(async () => {
-      const saved = selected
-        ? await updateStudentRecord(selected.id, draft)
-        : await createStudentRecord(draft)
+    await retrieve(Number(lookupId))
+  }
+
+  async function save(event: SubmitEvent<HTMLFormElement>) {
+    event.preventDefault()
+    await runStudentAction(async () => {
+      let saved: StudentRecord
+      if (selected) {
+        saved = await updateStudentRecord(selected.id, draft)
+      } else {
+        saved = await createStudentRecord(draft)
+      }
       selectStudent(saved)
       onChange?.()
       setMessage(`${selected ? 'Updated' : 'Created'} student #${saved.id}. Retrieve by ID to read it again.`)
     })
   }
 
-  function remove() {
+  async function remove() {
     if (!selected) return
     const id = selected.id
-    void perform(async () => {
+    await runStudentAction(async () => {
       await deleteStudentRecord(id)
       onChange?.()
       setSelected(null)
@@ -121,7 +168,7 @@ export default function StudentRecords({ id, selection, onChange }: StudentRecor
       <p role="status" aria-live="polite">{message}</p>
       {error && <p role="alert" className="field-error">{error}</p>}
 
-      <form className="records-lookup" onSubmit={(event) => { event.preventDefault(); void retrieve(Number(lookupId)) }}>
+      <form className="records-lookup" onSubmit={handleLookup}>
         <label htmlFor={`${labelId}-record-lookup-id`}>Student record ID</label>
         <input id={`${labelId}-record-lookup-id`} type="number" required min="1" max="2147483647" step="1"
           value={lookupId} disabled={busy} onChange={(event) => setLookupId(event.target.value)} />

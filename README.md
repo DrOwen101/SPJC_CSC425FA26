@@ -37,10 +37,55 @@ Student lookup and Transcript also use PostgreSQL. See the [Student database API
 | npm | Installs and manages project packages |
 | React | Builds the user interface |
 | Vite | Runs and builds the frontend project |
-| TypeScript | Adds type checking to JavaScript |
+| TypeScript | Adds type checking to frontend JavaScript |
+| Axios | Sends asynchronous HTTP requests from React to an API |
 | Express.js | Creates the backend web server and API |
 | PostgreSQL | Stores application data |
 | `pg` | Connects the Express server to PostgreSQL |
+
+## Start reading the application here
+
+Follow one feature before reading the entire project: **All students**.
+
+```text
+AllStudents.tsx (React screen)
+    → studentRecordsApi.ts (Axios request)
+    → studentRecordsRoutes.js (Express route)
+    → studentRecordsData.js (SQL query through pg)
+    → PostgreSQL
+```
+
+The result travels back through those same layers as JSON, and React updates the table.
+
+1. Open [`AllStudents.tsx`](client/src/AllStudents.tsx). `useState` stores the students, loading state, and error message. `useEffect` loads data when the component opens or refreshes.
+2. Find `await listStudentRecords(controller.signal)`. `listStudentRecords` is our own helper function, imported from [`studentRecordsApi.ts`](client/src/studentRecordsApi.ts).
+3. In that helper, `await api.get('/students', ...)` sends an Axios GET request. The configured base URL makes the complete path `/api/dashboard/students`. Axios puts the returned JSON in `response.data`.
+4. In [`studentRecordsRoutes.js`](server/src/studentRecordsRoutes.js), the Express GET route calls `await data.listStudents()` and sends `{ students: [...] }` as JSON. [`app.js`](server/src/app.js) mounts this router at `/api/dashboard`.
+5. In [`studentRecordsData.js`](server/src/studentRecordsData.js), `await database.query(...)` runs SQL through the `pg` connection pool. `result.rows` contains the saved database rows.
+6. Back in the component, `setStudents(records)` updates React state. The JSX uses `students` to render the table.
+
+Use the same asynchronous pattern throughout the application:
+
+```ts
+try {
+  const records = await listStudentRecords()
+  setStudents(records)
+} catch (error) {
+  setError(studentRecordsError(error))
+} finally {
+  setBusy(false)
+}
+```
+
+`async` makes a function return a Promise. `await` waits inside that function while the browser can continue responding to the user. `catch` handles a failed request, and `finally` runs after either success or failure. The actual component also cancels outdated requests with `AbortController`, so an older response cannot replace newer data. `void loadStudents()` starts the function from an effect; the function handles its own errors.
+
+Keep these responsibilities separate: components display data, Axios helpers make HTTP requests, Express routes validate requests, and database helpers run SQL. TypeScript describes expected data; runtime checks verify the JSON actually received. SQL parameters such as `$1` keep user input separate from the SQL command.
+
+After the list, study Student Lookup, then create/edit/delete in Student Records. `Promise.all` in the record editor runs independent loading requests together. The dashboard connects reusable components through props: `onSelect` chooses a record and `onChange` refreshes the list after a save or delete.
+
+Weather uses Axios to call an external weather API directly. The GPA Calculator uses local React state. Student records, lookup, and transcripts use Express and PostgreSQL. All styles live in `client/src/App.css`.
+
+The `server/test` files are verification tools; their Node.js `fetch` calls are test clients, not application HTTP helpers. The `server/database/proposal` folder is an advanced historical design for future lessons. Start with the four numbered SQL files directly inside `server/database`; do not run proposal SQL against the working application database.
 
 ## 1. Install Node.js and npm
 

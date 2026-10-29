@@ -11,6 +11,18 @@ function Dashboardstudent() {
   const [selection, setSelection] = useState<{ studentId: number; requestKey: number }>()
   const [studentsRevision, setStudentsRevision] = useState(0)
 
+  function viewStudent(studentId: number) {
+    // Incrementing requestKey also reloads a student who is selected again.
+    setSelection((previous) => ({
+      studentId,
+      requestKey: (previous?.requestKey ?? 0) + 1,
+    }))
+  }
+
+  function refreshStudents() {
+    setStudentsRevision((revision) => revision + 1)
+  }
+
   return (
     <main id="student-dashboard" className="dashboard" aria-labelledby="student-title" tabIndex={-1}>
       <header className="dashboard-header">
@@ -30,9 +42,9 @@ function Dashboardstudent() {
       </nav>
       <div className="dashboard-grid">
         <AllStudents id="all-students" refreshKey={studentsRevision}
-          onSelect={(studentId) => setSelection((previous) => ({ studentId, requestKey: (previous?.requestKey ?? 0) + 1 }))} />
+          onSelect={viewStudent} />
         <StudentRecords id="student-records" selection={selection}
-          onChange={() => setStudentsRevision((revision) => revision + 1)} />
+          onChange={refreshStudents} />
         <StudentLookup id="student-lookup" />
         <WeatherCard id="weather" />
         <GpaCalculator id="gpa" />

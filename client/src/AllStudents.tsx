@@ -25,14 +25,39 @@ export default function AllStudents({ id, refreshKey = 0, onSelect }: AllStudent
     const controller = new AbortController()
     setBusy(true)
     setError('')
-    listStudentRecords(controller.signal)
-      .then((records) => { if (!controller.signal.aborted) setStudents(records) })
-      .catch((reason: unknown) => {
-        if (!controller.signal.aborted) { setStudents([]); setError(studentRecordsError(reason)) }
-      })
-      .finally(() => { if (!controller.signal.aborted) setBusy(false) })
+    // Define an async function inside the effect so the effect can return cleanup.
+    async function loadStudents() {
+      try {
+        const records = await listStudentRecords(controller.signal)
+        if (controller.signal.aborted) return
+
+        // Updating state tells React to display the returned students.
+        setStudents(records)
+      } catch (error) {
+        if (controller.signal.aborted) return
+
+        setStudents([])
+        setError(studentRecordsError(error))
+      } finally {
+        if (!controller.signal.aborted) {
+          setBusy(false)
+        }
+      }
+    }
+
+    // Start the request. loadStudents handles any errors in its catch block.
+    void loadStudents()
+
+    // Cancel an old request when refreshing or leaving this component.
     return () => controller.abort()
   }, [refreshKey, refreshCount])
+
+  let statusMessage = 'Student records loaded.'
+  if (busy) {
+    statusMessage = 'Loading student records…'
+  } else if (error) {
+    statusMessage = ''
+  }
 
   return (
     <section id={id} className="dashboard-card all-students" aria-labelledby={`${labelId}-heading`} tabIndex={-1}>
@@ -40,19 +65,46 @@ export default function AllStudents({ id, refreshKey = 0, onSelect }: AllStudent
         <summary><h2 id={`${labelId}-heading`}>All students ({students.length})</h2></summary>
         <div className="all-students-content">
           <button type="button" disabled={busy} onClick={() => setRefreshCount((count) => count + 1)}>Refresh list</button>
-          <p role="status">{busy ? 'Loading student records…' : error ? '' : 'Student records loaded.'}</p>
+          <p role="status">{statusMessage}</p>
           {error && <p role="alert" className="field-error">{error}</p>}
           <div className="records-table-scroll" role="region" aria-label="Saved student records" tabIndex={0}>
             <table>
               <caption>{students.length} saved student records</caption>
-              <thead><tr><th scope="col">ID</th><th scope="col">Student</th><th scope="col">Major</th><th scope="col">Status</th>{onSelect && <th scope="col">Action</th>}</tr></thead>
-              <tbody>{visibleStudents.map((student) => (
-                <tr key={student.id}>
-                  <td>{student.id}</td><td>{student.firstName} {student.lastName}<br /><small>{student.email}</small></td>
-                  <td>{student.majorName}</td><td>{student.isActive ? 'Active' : 'Inactive'}</td>
-                  {onSelect && <td><button type="button" disabled={busy} aria-label={`View student ${student.id}`} onClick={() => onSelect(student.id)}>View</button></td>}
+              <thead>
+                <tr>
+                  <th scope="col">ID</th>
+                  <th scope="col">Student</th>
+                  <th scope="col">Major</th>
+                  <th scope="col">Status</th>
+                  {onSelect && <th scope="col">Action</th>}
                 </tr>
-              ))}</tbody>
+              </thead>
+              <tbody>
+                {visibleStudents.map((student) => (
+                  <tr key={student.id}>
+                    <td>{student.id}</td>
+                    <td>
+                      {student.firstName} {student.lastName}
+                      <br />
+                      <small>{student.email}</small>
+                    </td>
+                    <td>{student.majorName}</td>
+                    <td>{student.isActive ? 'Active' : 'Inactive'}</td>
+                    {onSelect && (
+                      <td>
+                        <button
+                          type="button"
+                          disabled={busy}
+                          aria-label={`View student ${student.id}`}
+                          onClick={() => onSelect(student.id)}
+                        >
+                          View
+                        </button>
+                      </td>
+                    )}
+                  </tr>
+                ))}
+              </tbody>
             </table>
             {!busy && !error && students.length === 0 && <p>No student records found.</p>}
           </div>
