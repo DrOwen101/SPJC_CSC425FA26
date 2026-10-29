@@ -6,7 +6,13 @@
   "scripts": {
     "dev": "nodemon src/index.js",
     "start": "node src/index.js",
-    "test": "node --test"
+    "test": "node --test test/transcripts.test.js",
+    "test:db": "node --test test/studentRecords.integration.js",
+    "test:browser": "node test/studentRecords.browser.js",
+    "test:dashboard": "node test/dashboard.browser.js",
+    "test:components": "node test/components.browser.js",
+    "db:setup": "node database/setup.js",
+    "db:transcripts": "node database/setup.js --transcripts-only"
   },
   "dependencies": {
     "cors": "^2.8.5",
@@ -15,6 +21,7 @@
     "pg": "^8.16.3"
   },
   "devDependencies": {
-    "nodemon": "^3.1.10"
+    "nodemon": "^3.1.10",
+    "playwright": "^1.64.1"
   }
 }

@@ -1,3 +1,417 @@
+/* Application stylesheet. Imported once by main.tsx.
+   Feature sections retain their original order, followed by shared defaults,
+   to preserve the existing cascade across all dashboards. */
+
+/* ===== AllStudents ===== */
+.all-students { grid-column: 1 / -1; }
+.all-students-content { padding: 1rem; }
+.records-list > summary h2 { display: inline; font-size: 1.35rem; }
+.all-students .records-actions { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem; margin: 1rem 0; }
+.all-students button { min-height: 44px; padding: .55rem .9rem; border: 1px solid #075c35; border-radius: .4rem; background: #075c35; color: white; font: inherit; cursor: pointer; }
+.all-students button:disabled { opacity: .55; cursor: not-allowed; }
+.all-students button:hover:not(:disabled) { background: #06472a; }
+.records-list { margin: 1rem 0; border: 1px solid #b2ccbd; border-radius: .5rem; }
+.records-list > summary { min-height: 44px; padding: .75rem 1rem; color: #123524; background: #e0f2e7; border-radius: .5rem; font-weight: 650; cursor: pointer; }
+.records-list > summary:hover { background: #d4eadd; }
+.records-list > summary:focus-visible { outline: 3px solid #075c35; outline-offset: 3px; }
+.records-table-scroll { overflow-x: auto; }
+.all-students table { width: 100%; min-width: 40rem; border-collapse: collapse; text-align: left; }
+.all-students caption { text-align: left; font-weight: 650; margin-bottom: .5rem; }
+.all-students th, .all-students td { padding: .65rem; border-bottom: 1px solid #b2ccbd; overflow-wrap: anywhere; }
+
+/* ===== StudentRecords ===== */
+.student-records { grid-column: 1 / -1; }
+.records-heading-row, .records-actions, .records-lookup { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem; }
+.records-heading-row { justify-content: space-between; }
+.records-lookup, .records-actions { margin: 1rem 0; }
+.student-records button { min-height: 44px; padding: .55rem .9rem; border: 1px solid #075c35; border-radius: .4rem; background: #075c35; color: white; font: inherit; cursor: pointer; }
+.student-records button:disabled { opacity: .55; cursor: not-allowed; }
+.student-records button:hover:not(:disabled) { background: #06472a; }
+.student-records input, .student-records select { width: 100%; min-width: 0; min-height: 44px; padding: .5rem; border: 1px solid #568069; border-radius: .35rem; background: white; color: #123524; font: inherit; }
+.records-lookup input { width: 9rem; }
+.student-records fieldset { border: 1px solid #b2ccbd; border-radius: .5rem; padding: 1rem; min-width: 0; }
+.student-records legend, .records-fields label { font-weight: 650; }
+.records-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+.records-fields label { display: grid; gap: .3rem; }
+.records-fields > div { display: grid; gap: .3rem; }
+.records-fields .records-checkbox { display: flex; align-items: center; gap: .5rem; }
+.records-checkbox input { width: 1.2rem; }
+.records-saved { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .75rem; }
+.records-saved dt { font-weight: 650; }
+.records-saved dd { margin: 0; overflow-wrap: anywhere; }
+.student-records .records-delete { background: #842525; border-color: #842525; }
+.student-records .records-delete:hover:not(:disabled) { background: #651b1b; }
+.records-confirm { border-left: 4px solid #842525; padding: .5rem 1rem; background: #fff4f4; }
+@media (max-width: 600px) {
+  .records-fields, .records-saved { grid-template-columns: 1fr; }
+  .student-records { padding: 1rem; }
+}
+
+/* ===== StudentLookup ===== */
+/* Scope the lookup styles so the other teaching cards keep their own layout. */
+.student-lookup {
+  grid-column: 1 / -1;
+}
+.student-lookup label {
+  display: block;
+  margin-bottom: .35rem;
+  font-weight: 700;
+}
+.student-lookup-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .65rem;
+  max-width: 34rem;
+}
+.student-lookup-controls input,
+.student-lookup-controls button {
+  min-width: 0;
+  min-height: 44px;
+  padding: .65rem .75rem;
+  border: 1px solid #568069;
+  border-radius: .45rem;
+  font: inherit;
+}
+.student-lookup-controls input {
+  flex: 1 1 12rem;
+  color: #123524;
+  background: white;
+}
+.student-lookup-controls button {
+  color: white;
+  background: #075c35;
+  font-weight: 700;
+  cursor: pointer;
+}
+.student-lookup-controls button:hover {
+  background: #06482a;
+}
+.student-lookup-result {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+  gap: 1rem;
+  border-top: 1px solid #b2ccbd;
+  padding-top: 1rem;
+}
+.student-lookup-result dt {
+  font-weight: 700;
+}
+.student-lookup-result dd {
+  margin: .25rem 0 0;
+  overflow-wrap: anywhere;
+}
+
+/* ===== WeatherCard ===== */
+.weather-card {
+  box-sizing: border-box;
+  min-width: 0;
+  padding: 1.5rem;
+  border: 1px solid #b2ccbd;
+  border-radius: .85rem;
+  background: #f3faf5;
+  color: #123524;
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  line-height: 1.6;
+  box-shadow: 0 4px 14px rgb(7 92 53 / 5%);
+}
+.weather-card h2 {
+  margin: 0 0 .75rem;
+  font-size: 1.35rem;
+  line-height: 1.3;
+}
+.weather-card p {
+  margin: .5rem 0 1rem;
+  overflow-wrap: anywhere;
+}
+.weather-card .weather-card-temperature {
+  margin: 0;
+  color: #075c35;
+  font-size: 2.75rem;
+  line-height: 1.2;
+  font-weight: 750;
+}
+.weather-card-controls {
+  display: grid;
+  gap: .5rem;
+}
+.weather-card-controls button {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  padding: .6rem .75rem;
+  border: 1px solid #789b87;
+  border-radius: .35rem;
+  font: inherit;
+  color: #123524;
+  background: white;
+}
+.weather-card-controls button {
+  font-weight: 700;
+  color: white;
+  background: #075c35;
+  cursor: pointer;
+}
+.weather-card-controls button:hover:not(:disabled) {
+  background: #06482a;
+}
+.weather-card-controls button:disabled {
+  opacity: .65;
+  cursor: wait;
+}
+.weather-card .weather-card-error {
+  color: #982525;
+}
+.weather-card .weather-card-source {
+  margin: 1rem 0 0;
+  font-size: .875rem;
+}
+.weather-card a {
+  color: inherit;
+  text-underline-offset: .25em;
+}
+.weather-card :focus-visible {
+  outline: 3px solid #123524;
+  outline-offset: 3px;
+  box-shadow: 0 0 0 3px white;
+}
+@media (max-width: 650px) {
+  .weather-card {
+    padding: 1.25rem;
+  }
+}
+@media (forced-colors: active) {
+  .weather-card {
+    border-color: CanvasText;
+  }
+  .weather-card :focus-visible {
+    outline-color: Highlight;
+  }
+}
+
+/* ===== GpaCalculator ===== */
+/* The reusable GPA form supports both
+   Enter-key entry and a visible click/tap target for mouse and touch users. */
+.gpa-form {
+  margin-top: 1.25rem;
+}
+.gpa-form label {
+  display: block;
+  margin-bottom: .35rem;
+  font-weight: 700;
+}
+.gpa-entry-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .65rem;
+}
+.gpa-entry-row input {
+  flex: 1 1 9rem;
+  min-width: 0;
+  min-height: 44px;
+  padding: .65rem .75rem;
+  border: 1px solid #568069;
+  border-radius: .45rem;
+  color: #123524;
+  background: white;
+  font: inherit;
+}
+.gpa-entry-row button, .calculate-button {
+  min-height: 44px;
+  padding: .65rem 1rem;
+  border: 2px solid #075c35;
+  border-radius: .45rem;
+  color: white;
+  background: #075c35;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+.gpa-entry-row button:hover, .calculate-button:hover {
+  background: #06472a;
+}
+.grade-list-area {
+  margin-top: 1.25rem;
+}
+.grade-list {
+  margin: 0;
+  padding-left: 1.5rem;
+}
+.grade-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: .3rem 0;
+  border-bottom: 1px solid #b2ccbd;
+}
+.calculate-button {
+  width: 100%;
+  margin-top: 1.25rem;
+}
+.calculate-button:disabled {
+  border-color: #718078;
+  background: #718078;
+  cursor: not-allowed;
+}
+
+/* ===== TranscriptCard ===== */
+.transcript-card,
+.transcript-card * {
+  box-sizing: border-box;
+}
+.transcript-card {
+  min-width: 0;
+  padding: 1.25rem;
+  border: 1px solid #b2ccbd;
+  border-radius: .85rem;
+  background: #f3faf5;
+  color: #123524;
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  line-height: 1.6;
+  scroll-margin-top: 1rem;
+  box-shadow: 0 4px 14px rgb(7 92 53 / 5%);
+}
+/* Give course tables the dashboard's full width without changing other cards. */
+.dashboard-grid > .transcript-card {
+  grid-column: 1 / -1;
+}
+.transcript-card h2 {
+  margin: 0 0 .75rem;
+  font-size: 1.35rem;
+  line-height: 1.3;
+}
+.transcript-card h3 {
+  margin: 0 0 .5rem;
+  font-size: 1.2rem;
+}
+.transcript-card p {
+  margin: .5rem 0 1rem;
+  overflow-wrap: anywhere;
+}
+.transcript-card label {
+  display: block;
+  margin-bottom: .35rem;
+  font-weight: 700;
+}
+.transcript-card-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .65rem;
+  max-width: 32rem;
+}
+.transcript-card-controls input,
+.transcript-card-controls button {
+  min-width: 0;
+  min-height: 44px;
+  padding: .65rem .75rem;
+  border: 1px solid #568069;
+  border-radius: .45rem;
+  font: inherit;
+}
+.transcript-card-controls input {
+  flex: 1 1 10rem;
+  width: 100%;
+  color: #123524;
+  background: white;
+}
+.transcript-card-controls button {
+  flex: 1 1 10rem;
+  color: white;
+  background: #075c35;
+  font-weight: 700;
+  cursor: pointer;
+}
+.transcript-card-controls button:hover:not(:disabled) {
+  background: #06482a;
+}
+.transcript-card-controls button:disabled {
+  opacity: .65;
+  cursor: wait;
+}
+.transcript-card .transcript-card-help {
+  font-size: .9rem;
+}
+.transcript-card .transcript-card-error {
+  color: #982525;
+  font-weight: 650;
+}
+.transcript-card-status {
+  font-size: .9rem;
+}
+.transcript-card-record {
+  padding-top: 1rem;
+  border-top: 1px solid #b2ccbd;
+}
+.transcript-card-semester {
+  margin-top: 1.5rem;
+}
+.transcript-card-table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+}
+.transcript-card table {
+  width: 100%;
+  min-width: 28rem;
+  border-collapse: collapse;
+  text-align: left;
+  background: white;
+}
+.transcript-card caption {
+  padding: .5rem 0;
+  text-align: left;
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+.transcript-card th,
+.transcript-card td {
+  padding: .65rem .75rem;
+  border-bottom: 1px solid #b2ccbd;
+}
+.transcript-card thead {
+  background: #e0f2e7;
+}
+.transcript-card .transcript-card-term-summary {
+  font-size: .9rem;
+}
+.transcript-card-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr));
+  gap: 1rem;
+  margin: 1.5rem 0 1rem;
+  padding: 1rem;
+  border-radius: .5rem;
+  background: #e0f2e7;
+}
+.transcript-card-summary dt {
+  font-size: .9rem;
+  font-weight: 650;
+}
+.transcript-card-summary dd {
+  margin: 0;
+  color: #075c35;
+  font-size: 1.75rem;
+  font-weight: 750;
+}
+.transcript-card :focus-visible,
+.transcript-card:focus-visible {
+  outline: 3px solid #123524;
+  outline-offset: 3px;
+  box-shadow: 0 0 0 3px white;
+}
+@media (min-width: 651px) {
+  .transcript-card {
+    padding: 1.5rem;
+  }
+}
+@media (forced-colors: active) {
+  .transcript-card,
+  .transcript-card th,
+  .transcript-card td {
+    border-color: CanvasText;
+  }
+}
+
+/* ===== Shared application layout and defaults ===== */
 /*
   CSS describes how HTML elements look. A rule is written as:
 
@@ -245,46 +659,6 @@ main, .dashboard-card {
   margin-top: .4rem;
 }
 
-/* The GPA form stays on the Student Dashboard. Its submit button supports both
-   Enter-key entry and a visible click/tap target for mouse and touch users. */
-.gpa-form {
-  margin-top: 1.25rem;
-}
-.gpa-form label {
-  display: block;
-  margin-bottom: .35rem;
-  font-weight: 700;
-}
-.gpa-entry-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: .65rem;
-}
-.gpa-entry-row input {
-  flex: 1 1 9rem;
-  min-width: 0;
-  min-height: 44px;
-  padding: .65rem .75rem;
-  border: 1px solid #568069;
-  border-radius: .45rem;
-  color: #123524;
-  background: white;
-  font: inherit;
-}
-.gpa-entry-row button, .calculate-button {
-  min-height: 44px;
-  padding: .65rem 1rem;
-  border: 2px solid #075c35;
-  border-radius: .45rem;
-  color: white;
-  background: #075c35;
-  font: inherit;
-  font-weight: 700;
-  cursor: pointer;
-}
-.gpa-entry-row button:hover, .calculate-button:hover {
-  background: #06472a;
-}
 .field-help, .field-error {
   margin: .5rem 0 0;
   font-size: .9rem;
@@ -292,29 +666,6 @@ main, .dashboard-card {
 .field-error {
   color: #9b1c1c;
   font-weight: 650;
-}
-.grade-list-area {
-  margin-top: 1.25rem;
-}
-.grade-list {
-  margin: 0;
-  padding-left: 1.5rem;
-}
-.grade-list li {
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: .3rem 0;
-  border-bottom: 1px solid #b2ccbd;
-}
-.calculate-button {
-  width: 100%;
-  margin-top: 1.25rem;
-}
-.calculate-button:disabled {
-  border-color: #718078;
-  background: #718078;
-  cursor: not-allowed;
 }
 
 /* Home keeps the original logo and green/white presentation. */

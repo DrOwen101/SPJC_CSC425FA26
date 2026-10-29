@@ -27,7 +27,9 @@ Follow the [student branch workflow](CONTRIBUTING.md) for the commands, VS Code 
 
 ## Technology Overview
 
-For the database-free transcript frontend exercise, see the [Mock Student Transcript API guide](server/README.md). Run `npm start --prefix server` and request `http://localhost:3000/api/transcripts/1001`; five fictional students (`1001`–`1005`) are available.
+For the PostgreSQL **Student records** CRUD lab, follow [the setup and complete create/read/update/delete walkthrough](server/database/README.md). It includes related student, major, and transcript tables, manual sample inserts, Axios integration, endpoint documentation, and database/browser verification.
+
+Student lookup and Transcript also use PostgreSQL. See the [Student database API guide](server/README.md) for full-name searches and sample transcript setup for all saved students.
 
 | Technology | Purpose |
 | --- | --- |
@@ -51,7 +53,7 @@ node --version
 npm --version
 ```
 
-Use Node.js 20 or newer and npm 10 or newer.
+Use Node.js 22.12 or newer and npm 10 or newer. Vite requires Node.js 20.19+ or 22.12+; the course setup uses 22.12+ consistently.
 
 If either command is not recognized, restart VS Code and try again.
 
@@ -59,10 +61,12 @@ You should see the current branch and repository status without an error.
 
 ## 2. Install Project Dependencies
 
-This repository contains separate frontend and backend applications. Install the packages for both:
+Install the root development helper, then the frontend and backend packages from their lockfiles:
 
 ```bash
-npm run install:all
+npm ci
+npm ci --prefix client
+npm ci --prefix server
 ```
 
 If the root helper script is unavailable, install them separately:
@@ -107,7 +111,7 @@ psql -U postgres
 Enter the password you created during installation. At the `postgres=#` prompt, run:
 
 ```sql
-CREATE DATABASE csc425fa26;
+CREATE DATABASE csc425_practice;
 ```
 
 Confirm that it exists:
@@ -125,14 +129,14 @@ Exit PostgreSQL:
 Test the new database connection:
 
 ```bash
-psql -U postgres -d csc425fa26
+psql -U postgres -d csc425_practice
 ```
 
 Exit again with `\q`.
 
 ## 5. Configure Environment Variables
 
-The backend reads private configuration from a `.env` file. From the repository root, copy the example file:
+The backend reads private configuration from a `.env` file. If `server/.env` already exists, update it rather than overwriting it. Otherwise, from the repository root, copy the example file:
 
 macOS or Linux:
 
@@ -152,7 +156,7 @@ Open `server/.env` and enter your PostgreSQL information:
 PORT=3000
 DB_HOST=localhost
 DB_PORT=5432
-DB_NAME=csc425fa26
+DB_NAME=csc425_practice
 DB_USER=postgres
 DB_PASSWORD=replace_with_your_password
 ```
@@ -160,6 +164,14 @@ DB_PASSWORD=replace_with_your_password
 Replace `replace_with_your_password` with your actual PostgreSQL password.
 
 Never commit `.env`. The repository's `.gitignore` should exclude it. The `.env.example` file may be committed because it contains field names but no real passwords.
+
+Create the dashboard tables and fictional sample data before starting the application:
+
+```bash
+npm run db:setup --prefix server
+```
+
+This preserves existing records and fills sample transcripts only for students without courses. For the SQL walkthrough, see [database setup](server/database/README.md). Do not run the separate `database/proposal` SQL against this application database.
 
 ## 6. Start the Application
 
@@ -216,20 +228,33 @@ Install these from the VS Code Extensions view:
 ```text
 csc425-fullstack-starter/
 ├── client/
-│   ├── public/
 │   ├── src/
 │   │   ├── assets/
 │   │   ├── App.tsx
 │   │   ├── main.tsx
-│   │   └── index.css
+│   │   ├── Dashboardstudent.tsx
+│   │   ├── AllStudents.tsx
+│   │   ├── StudentRecords.tsx
+│   │   ├── StudentLookup.tsx
+│   │   ├── WeatherCard.tsx
+│   │   ├── GpaCalculator.tsx
+│   │   ├── TranscriptCard.tsx
+│   │   └── App.css
 │   ├── index.html
 │   ├── package.json
 │   ├── tsconfig.json
 │   └── vite.config.ts
 ├── server/
 │   ├── src/
+│   │   ├── app.js
+│   │   ├── academicRoutes.js
+│   │   ├── academicData.js
+│   │   ├── studentRecordsRoutes.js
+│   │   ├── studentRecordsData.js
 │   │   ├── db.js
 │   │   └── index.js
+│   ├── database/
+│   ├── test/
 │   ├── .env.example
 │   └── package.json
 ├── .gitignore
@@ -263,6 +288,15 @@ Within `server`:
 | --- | --- |
 | `npm run dev` | Starts Express with automatic restart |
 | `npm start` | Starts Express normally |
+| `npm run db:setup` | Creates dashboard tables and fictional sample data |
+| `npm run db:transcripts` | Adds sample transcripts only for students without courses |
+| `npm test` | Runs transcript API tests in a disposable PostgreSQL database |
+| `npm run test:db` | Runs student CRUD tests in a disposable PostgreSQL database |
+| `npm run test:browser` | Verifies browser CRUD against PostgreSQL |
+| `npm run test:dashboard` | Verifies student lookup and transcript searches |
+| `npm run test:components` | Verifies independent reusable component instances |
+
+API tests require PostgreSQL and permission to create temporary test databases. Browser tests require Vite, Express, and Chrome running/available; see the [verification instructions](server/README.md#verification).
 
 ## Packages Used by the Starter
 
@@ -270,6 +304,7 @@ Frontend dependencies:
 
 - `react`
 - `react-dom`
+- `axios`
 - `typescript`
 - `vite`
 - `@vitejs/plugin-react`
@@ -282,6 +317,7 @@ Backend dependencies:
 - `dotenv` for loading local environment variables
 - `cors` for controlled frontend-to-backend requests during development
 - `nodemon` for restarting the server after code changes
+- `playwright` for browser verification
 
 The packages are already declared in the repository's `package.json` files. Students should use `npm install`, not reinstall each package individually.
 
@@ -364,7 +400,7 @@ Confirm the username and password in `server/.env`. The password must match the 
 
 ### The API cannot connect to PostgreSQL
 
-Confirm that PostgreSQL is running, the database is named `csc425fa26`, the port is `5432`, and all values in `server/.env` are correct.
+Confirm that PostgreSQL is running, the database is named `csc425_practice`, the port is `5432`, and all values in `server/.env` are correct.
 
 ### PowerShell blocks an npm script
 
@@ -374,10 +410,11 @@ Use Command Prompt or Git Bash in VS Code, or ask the instructor before changing
 
 - [ ] Node.js LTS and npm are installed.
 - [ ] The repository is cloned and open in VS Code.
-- [ ] Frontend and backend dependencies are installed.
+- [ ] Root, frontend, and backend dependencies are installed.
 - [ ] PostgreSQL is installed and running.
-- [ ] The `csc425fa26` database exists.
+- [ ] The `csc425_practice` database exists.
 - [ ] `server/.env` contains the correct local database values.
+- [ ] `npm run db:setup --prefix server` has created the dashboard tables and samples.
 - [ ] The React frontend opens at `http://localhost:5173`.
 - [ ] The Express API responds at `http://localhost:3000/api/health`.
 - [ ] The backend connects successfully to PostgreSQL.

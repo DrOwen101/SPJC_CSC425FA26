@@ -1,6 +1,5 @@
 import { useEffect, useId, useState } from 'react'
 import axios from 'axios'
-import './WeatherCard.css'
 
 // Open-Meteo is free for noncommercial teaching use and needs no API key.
 // Change these values together to use another location.
@@ -38,8 +37,8 @@ const weatherRequests = { axios: loadWithAxios, fetch: loadWithFetch }
 
 // Reuse with only an import and <WeatherCard />. Requests, state, and styles
 // belong to this component; the parent does not need to manage the weather.
-function WeatherCard() {
-  const id = useId() // Unique labels even when a page has multiple cards.
+function WeatherCard({ id }: { id?: string }) {
+  const labelId = useId() // Unique labels even when a page has multiple cards.
   const [refreshCount, setRefreshCount] = useState(0)
   const [temperature, setTemperature] = useState<number | null>(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -100,8 +99,8 @@ function WeatherCard() {
   }, [refreshCount]) // Fetch on mount or refresh.
 
   return (
-    <section className="weather-card" aria-labelledby={`${id}-heading`}>
-      <h2 id={`${id}-heading`}>Weather</h2>
+    <section id={id} tabIndex={-1} className="weather-card" aria-labelledby={`${labelId}-heading`}>
+      <h2 id={`${labelId}-heading`}>Weather</h2>
       <p>{location.name}</p>
       <div role="status" aria-live="polite" aria-busy={isLoading}>
         <p className="weather-card-temperature">

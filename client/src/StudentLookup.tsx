@@ -1,15 +1,14 @@
-import { useEffect, useRef, useState, type SubmitEvent } from 'react'
+import { useEffect, useId, useRef, useState, type SubmitEvent } from 'react'
 import axios from 'axios'
 import { isStudentsResponse, normalizeName, type Student } from './studentLookupApi'
-import './StudentLookup.css'
 
-// This is the same Express API used by the Lab 6 transcript example.
-const apiBaseUrl = import.meta.env.VITE_API_BASE_URL
-  || `${window.location.protocol}//${window.location.hostname}:3000`
+// Use the same development proxy and deployed API setting as Student Records.
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || ''
 
 // This component owns the lookup's state, API request, and displayed result.
 // Import it into a dashboard and render <StudentLookup /> to show the feature.
-function StudentLookup() {
+function StudentLookup({ id }: { id?: string }) {
+  const labelId = useId()
   // The editable input and submitted name are separate: typing a new name
   // must not relabel an existing result or start a request automatically.
   const [searchName, setSearchName] = useState('')
@@ -54,7 +53,7 @@ function StudentLookup() {
       // A timeout also allows the user to retry if the server stops responding.
       const response = await axios.get<unknown>(
         `${apiBaseUrl.replace(/\/$/, '')}/api/students`,
-        { signal: controller.signal, timeout: 15000 },
+        { params: { name }, signal: controller.signal, timeout: 15000 },
       )
       if (controller.signal.aborted) return
 
@@ -112,14 +111,14 @@ function StudentLookup() {
   }
 
   return (
-    <section id="student-lookup" className="dashboard-card student-lookup" aria-labelledby="lookup-heading" tabIndex={-1}>
-      <h2 id="lookup-heading">Student lookup</h2>
-      <p id="lookup-help">Enter a student’s full name, then select Search. These are fictional classroom records.</p>
+    <section id={id} className="dashboard-card student-lookup" aria-labelledby={`${labelId}-lookup-heading`} tabIndex={-1}>
+      <h2 id={`${labelId}-lookup-heading`}>Student lookup</h2>
+      <p id={`${labelId}-lookup-help`}>Enter a student’s full name to search the saved student records.</p>
       <form onSubmit={searchStudents} noValidate>
-        <label htmlFor="student-name">Student full name</label>
+        <label htmlFor={`${labelId}-student-name`}>Student full name</label>
         <div className="student-lookup-controls">
           <input
-            id="student-name"
+            id={`${labelId}-student-name`}
             name="studentName"
             type="text"
             autoComplete="off"
@@ -128,14 +127,14 @@ function StudentLookup() {
               setSearchName(event.target.value)
               setInputError('')
             }}
-            aria-describedby={inputError ? 'lookup-help lookup-input-error' : 'lookup-help'}
+            aria-describedby={`${labelId}-lookup-help${inputError ? ` ${labelId}-lookup-input-error` : ''}`}
             aria-invalid={inputError ? true : undefined}
           />
           {/* Remain usable while loading: a new search cancels the old one. */}
           <button type="submit">Search</button>
         </div>
       </form>
-      {inputError && <p id="lookup-input-error" className="field-error" role="alert">{inputError}</p>}
+      {inputError && <p id={`${labelId}-lookup-input-error`} className="field-error" role="alert">{inputError}</p>}
       {/* The live region announces changes without moving keyboard focus. */}
       <p role="status">{statusMessage}</p>
       {lookupError && <p className="field-error" role="alert">{lookupError}</p>}

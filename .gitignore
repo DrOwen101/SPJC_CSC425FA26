@@ -5,4 +5,7 @@ dist/
 !.env.example
 .DS_Store
 *.log
-
+server/local-postgres/
+server/database/backups/
+# Temporary Vite consumer created by the reusable-component browser check.
+client/.component-check-*.jsx

@@ -1,106 +1,146 @@
 import assert from 'node:assert/strict'
 import { once } from 'node:events'
+import { readFile } from 'node:fs/promises'
 import { after, before, test } from 'node:test'
-import { app } from '../src/app.js'
+import express from 'express'
+import pg from 'pg'
+import { databaseConfig, pool } from '../src/db.js'
+import { createAcademicRouter } from '../src/academicRoutes.js'
+import { createStudentRecordsRouter } from '../src/studentRecordsRoutes.js'
 
-let server
-let baseURL
+// Exercise real SQL in a disposable database, never the user's student records.
+const name = `csc425_transcript_test_${process.pid}_${Date.now()}`
+const admin = new pg.Pool(databaseConfig)
+let database, server, baseURL
+let created = false
+const sql = async (file) => readFile(new URL(`../database/${file}`, import.meta.url), 'utf8')
+const request = (path, options) => fetch(`${baseURL}/api${path}`, options)
 
 before(async () => {
+  await admin.query(`CREATE DATABASE "${name}"`)
+  created = true
+  database = new pg.Pool({ ...databaseConfig, database: name })
+  for (const file of ['001_student_records.sql', '002_sample_inserts.sql', '003_transcripts.sql']) {
+    await database.query(await sql(file))
+  }
+  // A student outside the former hard-coded list must also get a transcript.
+  await database.query(`INSERT INTO student_dashboard.students
+    (first_name, last_name, email, major_id, enrollment_year)
+    VALUES ('New', 'Student', 'new.student@example.test', 1, 2026)`)
+  await database.query(await sql('004_transcript_samples.sql'))
+  const app = express()
+  app.use('/api', createAcademicRouter(database))
+  app.use('/api/dashboard', createStudentRecordsRouter(database))
   server = app.listen(0, '127.0.0.1')
   await once(server, 'listening')
   baseURL = `http://127.0.0.1:${server.address().port}`
 })
 
 after(async () => {
-  if (server?.listening) {
-    await new Promise((resolve, reject) => server.close((error) => error ? reject(error) : resolve()))
-  }
+  if (server?.listening) await new Promise((resolve, reject) => server.close((error) => error ? reject(error) : resolve()))
+  await database?.end()
+  if (created) await admin.query(`DROP DATABASE "${name}" WITH (FORCE)`)
+  await admin.end()
+  await pool.end()
 })
 
-test('lists exactly five students and serves consistent transcripts with correct GPA totals', async () => {
-  const response = await fetch(`${baseURL}/api/students`)
+test('all database students have transcripts; names and totals match stored data', async () => {
+  const response = await request('/students')
   assert.equal(response.status, 200)
   const { students } = await response.json()
-  assert.deepEqual(students.map((student) => student.studentID), ['1001', '1002', '1003', '1004', '1005'])
-  const gradePoints = { A: 4, B: 3, C: 2, D: 1, F: 0 }
-
+  assert.equal(students.length, 4)
+  const points = { A: 4, 'A-': 3.7, 'B+': 3.3, B: 3 }
   for (const student of students) {
-    const result = await fetch(`${baseURL}/api/transcripts/${student.studentID}`)
+    const fullName = `${student.firstName} ${student.lastName}`
+    const lookup = await request(`/students?name=${encodeURIComponent(`  ${fullName.toUpperCase().replace(' ', '   ')}  `)}`)
+    assert.deepEqual((await lookup.json()).students, [student])
+    const result = await request(`/transcripts?name=${encodeURIComponent(fullName)}`)
     assert.equal(result.status, 200)
-    assert.match(result.headers.get('content-type'), /application\/json/)
     const transcript = await result.json()
     assert.equal(transcript.studentID, student.studentID)
-    assert.equal(transcript.firstName, student.firstName)
-    assert.equal(transcript.lastName, student.lastName)
     assert.equal(transcript.major, student.major)
     assert.equal(transcript.isMockData, true)
     assert.equal(transcript.semesters.length, 2)
-    let totalAttempted = 0
-    let totalEarned = 0
-    let totalQuality = 0
-
-    for (const semester of transcript.semesters) {
-      assert.equal(semester.courses.length, 4)
-      let attempted = 0
-      let earned = 0
-      let quality = 0
-      for (const course of semester.courses) {
-        assert.ok(Object.hasOwn(gradePoints, course.grade))
-        attempted += course.creditHours
-        earned += course.grade === 'F' ? 0 : course.creditHours
-        quality += course.creditHours * gradePoints[course.grade]
-      }
-      assert.equal(semester.creditsAttempted, attempted)
-      assert.equal(semester.creditsEarned, earned)
-      assert.equal(semester.gpa, Number((quality / attempted).toFixed(2)))
-      totalAttempted += attempted
-      totalEarned += earned
-      totalQuality += quality
+    let attempted = 0, quality = 0
+    for (const term of transcript.semesters) {
+      const credits = term.courses.reduce((sum, course) => sum + course.creditHours, 0)
+      const termPoints = term.courses.reduce((sum, course) => sum + course.creditHours * points[course.grade], 0)
+      assert.equal(term.creditsAttempted, credits)
+      assert.equal(term.creditsEarned, credits)
+      assert.equal(term.gpa, Number((termPoints / credits).toFixed(2)))
+      attempted += credits
+      quality += termPoints
     }
-
-    assert.deepEqual(transcript.summary, {
-      creditsAttempted: totalAttempted,
-      creditsEarned: totalEarned,
-      cumulativeGPA: Number((totalQuality / totalAttempted).toFixed(2)),
-    })
-    const queryResult = await fetch(`${baseURL}/api/transcripts?studentID=${student.studentID}`)
-    assert.equal(queryResult.status, 200)
-    assert.deepEqual(await queryResult.json(), transcript)
+    assert.deepEqual(transcript.summary, { creditsAttempted: attempted, creditsEarned: attempted, cumulativeGPA: Number((quality / attempted).toFixed(2)) })
+    assert.deepEqual(await (await request(`/transcripts/${student.studentID}`)).json(), transcript)
+    assert.deepEqual(await (await request(`/transcripts?studentID=${student.studentID}`)).json(), transcript)
   }
 })
 
-test('returns JSON errors for missing, malformed, repeated, and unknown IDs', async () => {
-  for (const path of ['/api/transcripts', '/api/transcripts/abc', '/api/transcripts/100', '/api/transcripts?studentID=', '/api/transcripts?studentID=1001&studentID=1002']) {
-    const response = await fetch(`${baseURL}${path}`)
-    assert.equal(response.status, 400, path)
-    assert.equal((await response.json()).error, 'INVALID_STUDENT_ID')
-  }
-  const response = await fetch(`${baseURL}/api/transcripts/9999`)
-  assert.equal(response.status, 404)
-  assert.equal((await response.json()).error, 'STUDENT_NOT_FOUND')
+test('rerunning the seed preserves records and only adds data for students without courses', async () => {
+  await database.query("UPDATE student_dashboard.transcript_courses SET grade = 'F', is_sample = false WHERE student_id = 1 AND course_code = 'ENG101'")
+  const beforeRows = (await database.query('SELECT * FROM student_dashboard.transcript_courses ORDER BY id')).rows
+  await database.query(await sql('004_transcript_samples.sql'))
+  assert.deepEqual((await database.query('SELECT * FROM student_dashboard.transcript_courses ORDER BY id')).rows, beforeRows)
+  const transcript = await (await request('/transcripts/1')).json()
+  assert.equal(transcript.summary.creditsAttempted, 20)
+  assert.equal(transcript.summary.creditsEarned, 17)
+  assert.equal(transcript.summary.cumulativeGPA, 2.95)
+  assert.equal(transcript.semesters[0].gpa, 2.47)
 })
 
-test('supports frontend origins and preflight, including error responses', async () => {
-  for (const path of ['/api/students', '/api/transcripts/1001', '/api/transcripts/9999', '/api/transcripts/invalid', '/api/status']) {
-    const response = await fetch(`${baseURL}${path}`, { headers: { Origin: 'http://student-project.example' } })
-    assert.equal(response.headers.get('access-control-allow-origin'), '*')
-    await response.text()
-  }
-  const preflight = await fetch(`${baseURL}/api/transcripts/1001`, {
-    method: 'OPTIONS',
-    headers: { Origin: 'http://student-project.example', 'Access-Control-Request-Method': 'GET' },
-  })
-  assert.equal(preflight.status, 204)
-  assert.match(preflight.headers.get('access-control-allow-methods'), /GET/)
+test('search reads current database edits and distinguishes missing transcripts and duplicate names', async () => {
+  await database.query("UPDATE student_dashboard.students SET first_name = 'Changed' WHERE id = 4")
+  assert.equal((await (await request('/students?name=New%20Student')).json()).students.length, 0)
+  assert.equal((await (await request('/students?name=Changed%20Student')).json()).students[0].studentID, '4')
+  assert.equal((await request('/transcripts?name=Changed%20Student')).status, 200)
+  const { rows: [student] } = await database.query(`INSERT INTO student_dashboard.students
+    (first_name, last_name, email, major_id, enrollment_year)
+    VALUES ('No', 'Transcript', 'no.transcript@example.test', 1, 2026) RETURNING id`)
+  const missing = await request('/transcripts?name=No%20Transcript')
+  assert.equal(missing.status, 404)
+  assert.equal((await missing.json()).error, 'TRANSCRIPT_NOT_FOUND')
+  await database.query(await sql('004_transcript_samples.sql'))
+  assert.equal((await request(`/transcripts/${student.id}`)).status, 200)
+  await database.query(`INSERT INTO student_dashboard.students
+    (first_name, last_name, email, major_id, enrollment_year)
+    VALUES ('Avery', 'Morgan', 'duplicate@example.test', 1, 2026)`)
+  assert.equal((await (await request('/students?name=Avery%20Morgan')).json()).students.length, 2)
+  const duplicate = await request('/transcripts?name=Avery%20Morgan')
+  assert.equal(duplicate.status, 409)
+  assert.equal((await duplicate.json()).error, 'AMBIGUOUS_NAME')
 })
 
-test('mock status works without connecting to PostgreSQL and writes are not available', async () => {
-  const response = await fetch(`${baseURL}/api/status`)
-  assert.equal(response.status, 200)
-  assert.deepEqual(await response.json(), { status: 'ok', service: 'Mock transcript API', studentCount: 5 })
-  const post = await fetch(`${baseURL}/api/transcripts/1001`, { method: 'POST' })
-  assert.equal(post.status, 404)
-  const root = await fetch(baseURL)
-  assert.equal((await root.json()).message, 'CSC 425 API')
+test('validates names and IDs and safely handles SQL-like input', async () => {
+  for (const path of ['/transcripts', '/transcripts/abc', '/transcripts/0', '/transcripts/2147483648', '/transcripts?name=', '/transcripts?name=A&name=B', '/students?name=', '/transcripts?name=A&studentID=1']) {
+    assert.equal((await request(path)).status, 400, path)
+  }
+  assert.equal((await request('/transcripts/999999')).status, 404)
+  const result = await request(`/students?name=${encodeURIComponent("' OR 1=1 --")}`)
+  assert.deepEqual(await result.json(), { students: [] })
+})
+
+test('students with transcript records cannot be deleted; invalid grades are rejected', async () => {
+  const result = await request('/dashboard/students/1', { method: 'DELETE' })
+  assert.equal(result.status, 409)
+  assert.equal((await result.json()).error, 'STUDENT_HAS_TRANSCRIPT')
+  await assert.rejects(database.query("UPDATE student_dashboard.transcript_courses SET grade = 'Z' WHERE student_id = 1"), { code: '23514' })
+})
+
+test('database failure returns 503 without fixture fallback or internal error details', async () => {
+  const unavailable = express()
+  unavailable.use('/api', createAcademicRouter({ query: async () => { throw Object.assign(new Error('private database details'), { code: 'ECONNREFUSED' }) } }))
+  const failedServer = unavailable.listen(0, '127.0.0.1')
+  await once(failedServer, 'listening')
+  try {
+    for (const path of ['/students?name=Avery%20Morgan', '/transcripts?name=Avery%20Morgan']) {
+      const response = await fetch(`http://127.0.0.1:${failedServer.address().port}/api${path}`)
+      assert.equal(response.status, 503)
+      const data = await response.json()
+      assert.equal(data.error, 'DATABASE_UNAVAILABLE')
+      assert.ok(!data.message.includes('private'))
+    }
+  } finally {
+    await new Promise((resolve) => failedServer.close(resolve))
+  }
 })

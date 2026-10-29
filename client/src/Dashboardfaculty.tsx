@@ -1,3 +1,5 @@
+import AllStudents from './AllStudents'
+
 // This role component supplies content; App.css supplies the shared layout.
 // Keep these examples separate from live records until a data source is connected.
 function Dashboardfaculty() {
@@ -26,7 +28,9 @@ function Dashboardfaculty() {
       {/* className="dashboard-grid" connects to .dashboard-grid in App.css.
           Each named section is a card. tabIndex=-1 permits anchor focus without
           adding every card to the Tab sequence; links remain the normal stops. */}
+
       <div className="dashboard-grid">
+        <AllStudents />
         <section id="faculty-courses" className="dashboard-card" aria-labelledby="faculty-courses-heading" tabIndex={-1}>
           <h2 id="faculty-courses-heading">Courses</h2>
           <p className="status-label">Not connected</p>

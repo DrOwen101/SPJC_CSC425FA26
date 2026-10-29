@@ -1,0 +1,132 @@
+{
+  "database": "csc425_practice",
+  "studentId": 5,
+  "email": "casey.crud.1793116895848@example.test",
+  "checks": [
+    {
+      "step": "Create through dashboard; verify directly in PostgreSQL",
+      "rows": [
+        {
+          "id": 5,
+          "first_name": "Casey",
+          "last_name": "Rivera",
+          "email": "casey.crud.1793116895848@example.test"
+        }
+      ]
+    },
+    {
+      "step": "Reload page and retrieve the same ID through Axios",
+      "result": "passed"
+    },
+    {
+      "step": "Edit through dashboard; verify directly in PostgreSQL",
+      "rows": [
+        {
+          "id": 5,
+          "last_name": "Rivera-Santos",
+          "major_id": 2,
+          "enrollment_year": 2025,
+          "is_active": false
+        }
+      ]
+    },
+    {
+      "step": "Reload and retrieve edited values through dashboard",
+      "result": "passed"
+    },
+    {
+      "step": "Mobile layout at 390px: no page overflow",
+      "result": "passed"
+    },
+    {
+      "step": "Delete through dashboard; database has zero rows; retrieval returns 404; refreshed UI excludes record",
+      "rowCount": 0
+    },
+    {
+      "step": "Browser uncaught JavaScript errors",
+      "count": 0
+    }
+  ],
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/api/dashboard/students",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/dashboard/majors",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/dashboard/students",
+      "status": 201
+    },
+    {
+      "method": "GET",
+      "path": "/api/dashboard/majors",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/dashboard/students",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/dashboard/students/5",
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "path": "/api/dashboard/students/5",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/dashboard/majors",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/dashboard/students",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/dashboard/students/5",
+      "status": 200
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/dashboard/students/5",
+      "status": 204
+    },
+    {
+      "method": "GET",
+      "path": "/api/dashboard/students/5",
+      "status": 404
+    },
+    {
+      "method": "GET",
+      "path": "/api/dashboard/majors",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/dashboard/students",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/dashboard/students",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/dashboard/majors",
+      "status": 200
+    }
+  ]
+}

@@ -1,147 +1,80 @@
-# Mock Student Transcript API
+# Student database API
 
-A read-only classroom API with **five fictional students**. Students build their own frontend to request a transcript by `studentID` and display it. No database, API key, login, or additional packages are required for these endpoints.
+Student Records, Student lookup, and Transcript all read the same PostgreSQL students in `student_dashboard.students`. Lookup and transcript requests query PostgreSQL; the old hard-coded directory and transcript fixture have been removed.
 
-## Run the server
+## Setup
 
-From the repository root:
+Configure `server/.env` for your local PostgreSQL database as described in the [database walkthrough](database/README.md), then run from the repository root:
 
-```bash
-npm ci --prefix server
-npm start --prefix server
+```sh
+npm run db:setup --prefix server
+npm run dev
 ```
 
-For automatic restarts while editing, use `npm run dev --prefix server`. The existing root `npm run dev` also starts this API alongside the frontend. Run only one server on the same port.
+For an existing student database, add just the transcript table and sample records:
 
-The default address is `http://localhost:3000`. `PORT` overrides port 3000; `HOST` defaults to `0.0.0.0` so other devices can connect. A `.env` file is optional for the transcript API. If needed, copy `.env.example` to `.env` inside `server` and run the npm scripts above.
-
-Check the API in a browser or terminal:
-
-```bash
-curl http://localhost:3000/api/status
-curl http://localhost:3000/api/students
-curl http://localhost:3000/api/transcripts/1001
+```sh
+npm run db:transcripts --prefix server
 ```
 
-`/api/status` checks the mock API without PostgreSQL. The existing `/api/health` still checks PostgreSQL and can return 503 when that database is unavailable; this does not prevent transcript requests.
+This executes `003_transcripts.sql` and `004_transcript_samples.sql` in one transaction. Each student without any transcript courses receives six fictional courses across two terms. Repeated runs preserve existing transcript records and fill only students who still have none. Students added later have no transcript until courses are inserted or this command is run again. Samples are marked in the database and labeled in the UI.
 
-## Endpoints to give students
+The frontend uses relative `/api` requests through Vite's local development proxy, including when Vite chooses another port. For a separately hosted API, set `VITE_API_BASE_URL` and the server's `CLIENT_ORIGIN` to the frontend origin. These classroom endpoints require PostgreSQL and do not fall back to sample files when the database is unavailable.
 
-Replace `BASE_URL` with your server address, such as `http://localhost:3000` when running on the same computer.
+## Read endpoints
 
-| Method | URL | Result |
-| --- | --- | --- |
-| GET | `BASE_URL/api/students` | `{ "students": [...] }` with available IDs, names, and majors |
-| GET | `BASE_URL/api/transcripts/1001` | One complete student transcript |
-| GET | `BASE_URL/api/transcripts?studentID=1001` | The same transcript using a query parameter |
-| GET | `BASE_URL/api/status` | API availability and student count |
+| GET path | Result |
+| --- | --- |
+| `/api/students` | All saved students, ordered by database ID |
+| `/api/students?name=Avery%20Morgan` | Full-name matches from PostgreSQL |
+| `/api/transcripts?name=Avery%20Morgan` | Transcript for a unique first-and-last-name match |
+| `/api/transcripts/:studentID` | Transcript by actual database ID |
+| `/api/transcripts?studentID=1` | Equivalent ID query; use an ID from the student list |
+| `/api/status` | Database-backed directory status and student count |
+| `/api/health` | PostgreSQL connectivity |
 
-| studentID | Fictional student | Major |
-| --- | --- | --- |
-| `1001` | Avery Morgan | Computer Science |
-| `1002` | Jordan Bennett | Information Systems |
-| `1003` | Taylor Reed | Business Administration |
-| `1004` | Cameron Brooks | Mathematics |
-| `1005` | Riley Parker | Computer Science |
+Name searches ignore capitalization and repeated whitespace. Duplicate full names produce a clear message instead of selecting a student arbitrarily. Transcript errors distinguish missing students (`404 STUDENT_NOT_FOUND`), students without courses (`404 TRANSCRIPT_NOT_FOUND`), duplicate names (`409 AMBIGUOUS_NAME`), invalid searches (`400 INVALID_INPUT`), and unavailable database/schema (`503 DATABASE_UNAVAILABLE`).
 
-IDs are strings containing exactly four digits. A missing or malformed ID returns HTTP **400**. An unknown four-digit ID, such as `9999`, returns HTTP **404**:
+Directory responses contain `{ students: [...] }`, with `studentID` (a string containing the actual database ID), `firstName`, `lastName`, and `major`. Transcript responses retain student identity, institution, `semesters`, and cumulative `summary`. The legacy `isMockData` response field indicates that the saved courses include sample data; it does not indicate a fixture fallback. GPA is calculated from saved course credit hours and grades on the 4.0 scale, including plus/minus grades. F counts as attempted credit but earns no credit.
 
-```json
-{
-  "error": "STUDENT_NOT_FOUND",
-  "message": "No mock student was found with studentID 9999."
-}
-```
+The Transcript card starts empty and searches by **Student First Last Name**. The **GPA Calculator** remains an independent equal-weight calculator for manually entered grades. Alerts and Upcoming Courses are removed from the student dashboard.
 
-Requests are public and allow browser access from any origin. Use normal `fetch`; no credentials or `mode: 'no-cors'` are needed. The API provides no create, update, or delete operations.
+Students with saved transcript courses cannot be deleted through Student Records; the API returns `409 STUDENT_HAS_TRANSCRIPT` to preserve academic history. The [CRUD endpoint reference](database/README.md) covers all remaining Student Records operations.
 
-## Hard-coded student lookup data
+## Verification
 
-Edit the `mockStudents` array near the top of [`src/app.js`](src/app.js) to change the Student Lookup test data. `GET /api/students` returns `{ "students": [...] }` directly from that array. Each student has a string `studentID`, `firstName`, `lastName`, and `major`. No database setup or `.env` file is needed.
-
-Start the API with `npm start --prefix server` from the repository root, then open `http://localhost:3000/api/students`. Restart the server after editing the array, or use `npm run dev --prefix server` for automatic restarts. Search for a full name such as **Avery Morgan** or **Jordan Bennett** in the frontend.
-
-The transcript exercise has separate fixtures below. If you change a student's identity and want both exercises to stay consistent, update the matching transcript fixture too.
-
-## Transcript data
-
-The editable JSON object is in [`src/data/transcripts.json`](src/data/transcripts.json). Its `students` array contains exactly five transcripts, each with:
-
-- `studentID`, `firstName`, `lastName`, `major`, `institution`, and `isMockData`.
-- `semesters`: two completed terms, each containing four courses, `creditsAttempted`, `creditsEarned`, and `gpa`.
-- Each course contains `courseCode`, `courseTitle`, `creditHours`, and `grade`.
-- `summary`: overall `creditsAttempted`, `creditsEarned`, and `cumulativeGPA`.
-
-Grades were randomly selected once and saved, so repeated requests and server restarts return the same data. Restart the server after editing the JSON (or use the development watcher). If grades or credits change, update the stored summaries and run the tests to verify them.
-
-GPA uses A=4, B=3, C=2, D=1, F=0, weighted by credit hours and rounded to two decimal places. F grades count toward attempted credits and GPA but earn no credits. Cumulative GPA is calculated from all courses, not rounded semester averages. A frontend can use `.toFixed(2)` for display.
-
-## Frontend request example
-
-```javascript
-const API_BASE_URL = 'http://localhost:3000'; // Replace with the instructor's address.
-
-async function loadTranscript(studentID) {
-  const response = await fetch(
-    `${API_BASE_URL}/api/transcripts/${encodeURIComponent(studentID)}`
-  );
-  const data = await response.json();
-
-  if (!response.ok) {
-    throw new Error(data.message || 'Unable to load transcript.');
-  }
-
-  return data;
-}
-
-// Call this from a form submit handler; use the result to render your own UI.
-try {
-  const transcript = await loadTranscript('1001');
-  console.log(transcript.firstName, transcript.lastName);
-  console.log(transcript.semesters);
-  console.log(transcript.summary.cumulativeGPA.toFixed(2));
-} catch (error) {
-  console.error(error); // Show a friendly message in your frontend.
-}
-```
-
-Suggested practice: build a student ID form, a loading indicator, an error message, a table for each semester, and a cumulative GPA/credits summary. Use `/api/students` if you want a dropdown of available students.
-
-## Included React example
-
-The Lab 7 Student Dashboard imports and renders `<StudentLookup />` in [`Dashboardstudent.tsx`](../client/src/Dashboardstudent.tsx). [`StudentLookup.tsx`](../client/src/StudentLookup.tsx) owns the form, state, API request, and result rendering. It requests `/api/students` only after a full-name search and displays one matching student's ID, first name, last name, and major. Blank, missing, ambiguous, and failed searches display messages instead of records. [`studentLookupApi.ts`](../client/src/studentLookupApi.ts) supplies response types, validation, and name normalization; `StudentLookup.css` supplies the lookup styles.
-
-The dashboard also renders the Lab 6 [`TranscriptCard.tsx`](../client/src/TranscriptCard.tsx) for student ID searches and full transcripts. It operates independently of the Lab 7 name lookup:
-
-```tsx
-import TranscriptCard from './TranscriptCard'
-
-// Use inside a component's JSX:
-<TranscriptCard id="transcript" />
-```
-
-It loads student `1001` initially. Enter another ID and select **Load transcript** to request a different record. The example uses Axios with `async`/`await`, checks HTTP errors and JSON fields, and cancels requests on navigation or after a 15-second timeout.
-
-Run `npm run dev` from the repository root to start both applications. Open the frontend's Student tab. By default, the card calls port `3000` on the same hostname and protocol as the frontend. To connect to another API host, pass its base URL (without `/api`):
-
-```tsx
-<TranscriptCard apiBaseUrl="https://your-api.example.com" />
-```
-
-Alternatively, set `VITE_API_BASE_URL=https://your-api.example.com` in `client/.env.local` and restart Vite (or rebuild for production). The value is a public server address, not a secret. For an HTTPS frontend, use an HTTPS API. The optional `id` prop supports page anchors when mounting this standalone example.
-
-## Let classmates connect
-
-**Same classroom network:** keep this server running and share `http://YOUR_COMPUTER_LAN_IP:3000/api/transcripts/1001`. Replace the placeholder with your computer's actual network address. On their computers, `localhost` means their own computer. Allow incoming connections to port 3000 if your firewall prompts. Campus Wi-Fi must permit connections between devices; being on the same Wi-Fi alone does not guarantee access.
-
-**Public internet:** run the `server` folder on a Node.js host with install command `npm ci --omit=dev` and start command `npm start`. Configure the host's health check to `/api/status`. The server accepts the host's `PORT` environment variable. Share the host's HTTPS address followed by `/api/transcripts/1001`. An HTTPS frontend should use an HTTPS API address. No PostgreSQL service or database credentials are required for this exercise.
-
-Running locally does not create a public internet URL. Verify the chosen address from a student's device before distributing it to the class.
-
-## Verify
-
-```bash
+```sh
 npm test --prefix server
+npm run test:db --prefix server
+npm run build --prefix client
+npm run lint --prefix client
 ```
 
-Tests make real HTTP requests on a temporary local port and cover all five transcripts, GPA and credit totals, both lookup forms, invalid/unknown IDs, cross-origin requests, and database-independent status.
+Both API test suites require local PostgreSQL and permission to create disposable test databases. They remove only their generated databases. Transcript checks cover database-backed name searches, extra students outside the old fixtures, current database edits, repeatable sample insertion, weighted GPA including F, duplicate names, missing transcripts, constraints, and database failure without fallback.
+
+With Express and Vite running:
+
+```sh
+npm run test:dashboard --prefix server
+```
+
+The dashboard browser check searches each current database student through both modules, compares rendered transcript totals to the API, checks empty/unknown searches, and checks mobile layout. It expects transcript samples to have been seeded and defaults to `http://localhost:5173`; set `BROWSER_URL` if needed.
+
+## Reusable dashboard components
+
+The student dashboard imports and renders six independent React components from `client/src`:
+
+| Component | Responsibility | Optional props |
+| --- | --- | --- |
+| `StudentRecords` | Retrieve, create, edit, and delete a student | `id`, `selection: { studentId, requestKey }`, `onChange` |
+| `AllStudents` | Database student list, refresh, pagination, and collapse controls | `id`, `refreshKey`, `onSelect(studentId)` |
+| `StudentLookup` | Database search by full name | `id` |
+| `WeatherCard` | Weather request, loading/error state, and refresh | `id` |
+| `GpaCalculator` | Letter-grade entry and equal-weight GPA calculation | `id` |
+| `TranscriptCard` | Database transcript search and weighted GPA display | `id`, `apiBaseUrl` |
+
+Each component works with a simple import and render, such as `<GpaCalculator />` or `<AllStudents />`, on another application page. All application styles live in `client/src/App.css`, imported once by `client/src/main.tsx`. Components use classes from that shared stylesheet; a different application reusing them should load it once at its entry point. Components containing forms should be placed alongside other forms rather than nested inside an HTML `<form>`.
+
+All props are optional. Internal labels use React `useId()` so multiple instances do not create duplicate input/heading IDs. Supply distinct `id` props only when you need anchor links. The dashboard coordinates All Students and Student Records through props: `onSelect` requests a fresh record, and `onChange` increments the list's `refreshKey` after successful writes. The modules do not import each other or depend on the dashboard.
+
+With Vite and Express running, `npm run test:components --prefix server` renders two instances of every component outside the dashboard to check unique labels and independent state. Weather uses a deterministic test response for this check.

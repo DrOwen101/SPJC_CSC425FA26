@@ -3,7 +3,6 @@ import SPJCLogo from './assets/SPJCLogo.jpg'
 import Dashboardadmin from './Dashboardadmin'
 import Dashboardfaculty from './Dashboardfaculty'
 import Dashboardstudent from './Dashboardstudent'
-import './App.css'
 
 // A union type restricts role values to these three strings.
 type DashboardRole = 'student' | 'faculty' | 'admin'
@@ -12,7 +11,7 @@ type DashboardRole = 'student' | 'faculty' | 'admin'
 // These IDs must match the id attributes in the three dashboard components.
 function getRole(hash: string): DashboardRole | null {
   const id = hash.slice(1)
-  if (['student-dashboard', 'student-lookup', 'gpa', 'attendance', 'transcript', 'alerts', 'courses'].includes(id)) return 'student'
+  if (['student-dashboard', 'all-students', 'weather', 'student-records', 'student-lookup', 'gpa', 'attendance', 'transcript'].includes(id)) return 'student'
   if (['faculty-dashboard', 'faculty-courses', 'class-rosters', 'grading', 'faculty-alerts', 'teaching-schedule'].includes(id)) return 'faculty'
   if (['admin-dashboard', 'user-management', 'course-management', 'reports', 'admin-alerts', 'system-status'].includes(id)) return 'admin'
   return null
