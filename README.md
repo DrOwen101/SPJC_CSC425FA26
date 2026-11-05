@@ -27,7 +27,7 @@ Follow the [student branch workflow](CONTRIBUTING.md) for the commands, VS Code 
 
 ## Technology Overview
 
-For the database-free transcript frontend exercise, see the [Mock Student Transcript API guide](server/README.md). Run `npm start --prefix server` and request `http://localhost:3000/api/transcripts/1001`; five fictional students (`1001`–`1005`) are available.
+The backend stores the student directory and transcripts in PostgreSQL. See the [API and database setup guide](server/README.md) for the schema, sample data, and endpoints.
 
 | Technology | Purpose |
 | --- | --- |
@@ -161,7 +161,17 @@ Replace `replace_with_your_password` with your actual PostgreSQL password.
 
 Never commit `.env`. The repository's `.gitignore` should exclude it. The `.env.example` file may be committed because it contains field names but no real passwords.
 
-## 6. Start the Application
+## 6. Create the Tables and Load Sample Data
+
+From the repository root, initialize the tables and insert any missing sample records:
+
+```bash
+npm run db:setup --prefix server
+```
+
+This creates the `students` and `transcripts` tables and loads five fictional sample students from `server/src/data/transcripts.json`. It does not overwrite existing rows with the same student IDs.
+
+## 7. Start the Application
 
 From the repository root, start the frontend and backend together:
 
@@ -192,7 +202,7 @@ cd server
 npm run dev
 ```
 
-## 7. Verify the Development Environment
+## 8. Verify the Development Environment
 
 Complete each check before beginning an assignment:
 
@@ -263,6 +273,7 @@ Within `server`:
 | --- | --- |
 | `npm run dev` | Starts Express with automatic restart |
 | `npm start` | Starts Express normally |
+| `npm run db:setup` | Creates PostgreSQL tables and inserts missing sample records |
 
 ## Packages Used by the Starter
 
@@ -360,11 +371,15 @@ Stop the other development server with `Ctrl+C`, or close the application using 
 
 ### PostgreSQL password authentication failed
 
-Confirm the username and password in `server/.env`. The password must match the one created during PostgreSQL installation.
+PostgreSQL error `28P01` means the server was reached but rejected the configured username or password. Confirm `DB_USER` and `DB_PASSWORD` in `server/.env` match a PostgreSQL role and its password. Do not send passwords in chat or commit them. If you have lost the password, reset that role's password in PostgreSQL and update the local env file.
 
 ### The API cannot connect to PostgreSQL
 
-Confirm that PostgreSQL is running, the database is named `csc425fa26`, the port is `5432`, and all values in `server/.env` are correct.
+Confirm PostgreSQL is running and accepting connections on `DB_HOST` and `DB_PORT` (defaults are `localhost` and `5432`). Then verify `DB_NAME` exists and `DB_USER` can connect to it. Run `npm run db:setup --prefix server` after fixing the connection.
+
+### The API says a database or table does not exist
+
+Create the database named in `DB_NAME`, then run `npm run db:setup --prefix server` to create the tables and insert sample records.
 
 ### PowerShell blocks an npm script
 
