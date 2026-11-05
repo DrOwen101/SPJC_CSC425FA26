@@ -1,19 +1,20 @@
-# Mock Student Transcript API
+# PostgreSQL Student Transcript API
 
-A read-only classroom API with **five fictional students**. Students build their own frontend to request a transcript by `studentID` and display it. No database, API key, login, or additional packages are required for these endpoints.
+A read-only classroom API backed by PostgreSQL. The setup command creates the `students` and `transcripts` tables and loads five fictional sample students from `src/data/transcripts.json`.
 
 ## Run the server
+
+Create a PostgreSQL database first, copy `.env.example` to `server/.env`, and set the database name, user, and password there. `PORT` overrides port 3000; `HOST` defaults to `0.0.0.0` so other devices can connect. The server also recognizes the older `server/src/.env` location, but `server/.env` is preferred.
 
 From the repository root:
 
 ```bash
 npm ci --prefix server
+npm run db:setup --prefix server
 npm start --prefix server
 ```
 
 For automatic restarts while editing, use `npm run dev --prefix server`. The existing root `npm run dev` also starts this API alongside the frontend. Run only one server on the same port.
-
-The default address is `http://localhost:3000`. `PORT` overrides port 3000; `HOST` defaults to `0.0.0.0` so other devices can connect. A `.env` file is optional for the transcript API. If needed, copy `.env.example` to `.env` inside `server` and run the npm scripts above.
 
 Check the API in a browser or terminal:
 
@@ -23,7 +24,7 @@ curl http://localhost:3000/api/students
 curl http://localhost:3000/api/transcripts/1001
 ```
 
-`/api/status` checks the mock API without PostgreSQL. The existing `/api/health` still checks PostgreSQL and can return 503 when that database is unavailable; this does not prevent transcript requests.
+`/api/status`, `/api/students`, `/api/transcripts`, and `/api/health` require PostgreSQL. Database errors return HTTP **503**. Password authentication failures are reported as PostgreSQL error `28P01`; check `DB_USER` and `DB_PASSWORD` without sharing the password.
 
 ## Endpoints to give students
 
@@ -34,7 +35,7 @@ Replace `BASE_URL` with your server address, such as `http://localhost:3000` whe
 | GET | `BASE_URL/api/students` | `{ "students": [...] }` with available IDs, names, and majors |
 | GET | `BASE_URL/api/transcripts/1001` | One complete student transcript |
 | GET | `BASE_URL/api/transcripts?studentID=1001` | The same transcript using a query parameter |
-| GET | `BASE_URL/api/status` | API availability and student count |
+| GET | `BASE_URL/api/status` | Database-backed API availability and student count |
 
 | studentID | Fictional student | Major |
 | --- | --- | --- |
@@ -49,30 +50,30 @@ IDs are strings containing exactly four digits. A missing or malformed ID return
 ```json
 {
   "error": "STUDENT_NOT_FOUND",
-  "message": "No mock student was found with studentID 9999."
+  "message": "No student was found with studentID 9999."
 }
 ```
 
-Requests are public and allow browser access from any origin. Use normal `fetch`; no credentials or `mode: 'no-cors'` are needed. The API provides no create, update, or delete operations.
+Requests are read-only and allow browser access from any origin. Use normal `fetch`; no credentials or `mode: 'no-cors'` are needed. The API provides no create, update, or delete operations.
 
-## Hard-coded student lookup data
+## PostgreSQL data and sample records
 
-Edit the `mockStudents` array near the top of [`src/app.js`](src/app.js) to change the Student Lookup test data. `GET /api/students` returns `{ "students": [...] }` directly from that array. Each student has a string `studentID`, `firstName`, `lastName`, and `major`. No database setup or `.env` file is needed.
+`GET /api/students` reads the `students` table. It returns `{ "students": [...] }`, with each record containing a string `studentID`, `firstName`, `lastName`, and `major`.
 
-Start the API with `npm start --prefix server` from the repository root, then open `http://localhost:3000/api/students`. Restart the server after editing the array, or use `npm run dev --prefix server` for automatic restarts. Search for a full name such as **Avery Morgan** or **Jordan Bennett** in the frontend.
+`GET /api/transcripts/:studentID` joins the matching row in `students` to its row in `transcripts`. The semester course lists and summary totals are stored as PostgreSQL `jsonb`.
 
-The transcript exercise has separate fixtures below. If you change a student's identity and want both exercises to stay consistent, update the matching transcript fixture too.
+`npm run db:setup --prefix server` creates both tables and inserts only missing records from [`src/data/transcripts.json`](src/data/transcripts.json). Existing records are not overwritten. To change the database data, update it with SQL or edit the seed process deliberately; rerunning setup will not replace rows already present.
 
 ## Transcript data
 
-The editable JSON object is in [`src/data/transcripts.json`](src/data/transcripts.json). Its `students` array contains exactly five transcripts, each with:
+The seed source in [`src/data/transcripts.json`](src/data/transcripts.json) contains five sample transcripts, each with:
 
 - `studentID`, `firstName`, `lastName`, `major`, `institution`, and `isMockData`.
 - `semesters`: two completed terms, each containing four courses, `creditsAttempted`, `creditsEarned`, and `gpa`.
 - Each course contains `courseCode`, `courseTitle`, `creditHours`, and `grade`.
 - `summary`: overall `creditsAttempted`, `creditsEarned`, and `cumulativeGPA`.
 
-Grades were randomly selected once and saved, so repeated requests and server restarts return the same data. Restart the server after editing the JSON (or use the development watcher). If grades or credits change, update the stored summaries and run the tests to verify them.
+Grades were randomly selected once and saved. They are inserted into PostgreSQL by the setup command; changing the JSON does not overwrite already-seeded database rows. If grades or credits change, update the stored summaries and run the tests to verify them.
 
 GPA uses A=4, B=3, C=2, D=1, F=0, weighted by credit hours and rounded to two decimal places. F grades count toward attempted credits and GPA but earn no credits. Cumulative GPA is calculated from all courses, not rounded semester averages. A frontend can use `.toFixed(2)` for display.
 
@@ -134,7 +135,7 @@ Alternatively, set `VITE_API_BASE_URL=https://your-api.example.com` in `client/.
 
 **Same classroom network:** keep this server running and share `http://YOUR_COMPUTER_LAN_IP:3000/api/transcripts/1001`. Replace the placeholder with your computer's actual network address. On their computers, `localhost` means their own computer. Allow incoming connections to port 3000 if your firewall prompts. Campus Wi-Fi must permit connections between devices; being on the same Wi-Fi alone does not guarantee access.
 
-**Public internet:** run the `server` folder on a Node.js host with install command `npm ci --omit=dev` and start command `npm start`. Configure the host's health check to `/api/status`. The server accepts the host's `PORT` environment variable. Share the host's HTTPS address followed by `/api/transcripts/1001`. An HTTPS frontend should use an HTTPS API address. No PostgreSQL service or database credentials are required for this exercise.
+**Public internet:** deploy PostgreSQL and the server, configure the database environment variables, and run `npm run db:setup` once against the database. Configure the host's health check to `/api/health`. The server accepts the host's `PORT` environment variable. Share the host's HTTPS address followed by `/api/transcripts/1001`. An HTTPS frontend should use an HTTPS API address. Never include database credentials in frontend code or commit them.
 
 Running locally does not create a public internet URL. Verify the chosen address from a student's device before distributing it to the class.
 
@@ -144,4 +145,4 @@ Running locally does not create a public internet URL. Verify the chosen address
 npm test --prefix server
 ```
 
-Tests make real HTTP requests on a temporary local port and cover all five transcripts, GPA and credit totals, both lookup forms, invalid/unknown IDs, cross-origin requests, and database-independent status.
+Tests make real HTTP requests on a temporary local port and cover all five sample transcripts, GPA and credit totals, both lookup forms, invalid/unknown IDs, cross-origin requests, and database-backed status using a query stub.
