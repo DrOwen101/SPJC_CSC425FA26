@@ -3,6 +3,14 @@ import { readFileSync } from 'node:fs'
 import cors from 'cors'
 import express from 'express'
 import { checkDatabase } from './db.js'
+import { pool } from './db.js'
+import {
+  getAllStudents,
+  getStudentById,
+  createStudent,
+  updateStudent,
+  deleteStudent,
+} from './studentQueries.js'
 
 export const app = express()
 
@@ -133,6 +141,70 @@ app.get('/', (_request, response) => {
       databaseHealth: '/api/health',
     },
   })
+})
+
+// Query all students from the database and return them as JSON.
+app.get('/api/database/students', async (_request, response) => {
+  try {
+    const students = await getAllStudents()
+    response.json({ students })
+  } catch (error) {
+    console.error('Error fetching students from database:', error.message)
+    response.status(500).json({ error: 'DATABASE_ERROR', message: error.message })
+  }
+})
+
+// Get a specific student by ID from the database.
+app.get('/api/database/students/:id', async (request, response) => {
+  try {
+    const student = await getStudentById(request.params.id)
+    if (!student) {
+      return response.status(404).json({ error: 'STUDENT_NOT_FOUND', message: `No student found with ID ${request.params.id}` })
+    }
+    response.json({ student })
+  } catch (error) {
+    console.error('Error fetching student from database:', error.message)
+    response.status(500).json({ error: 'DATABASE_ERROR', message: error.message })
+  }
+})
+
+// Create a new student in the database.
+app.post('/api/database/students', async (request, response) => {
+  try {
+    const newStudent = await createStudent(request.body)
+    response.status(201).json({ student: newStudent })
+  } catch (error) {
+    console.error('Error creating student in database:', error.message)
+    response.status(500).json({ error: 'DATABASE_ERROR', message: error.message })
+  }
+})
+
+// Update an existing student in the database.
+app.put('/api/database/students/:id', async (request, response) => {
+  try {
+    const updatedStudent = await updateStudent(request.params.id, request.body)
+    if (!updatedStudent) {
+      return response.status(404).json({ error: 'STUDENT_NOT_FOUND', message: `No student found with ID ${request.params.id}` })
+    }
+    response.json({ student: updatedStudent })
+  } catch (error) {
+    console.error('Error updating student in database:', error.message)
+    response.status(500).json({ error: 'DATABASE_ERROR', message: error.message })
+  }
+})
+
+// Delete a student from the database.
+app.delete('/api/database/students/:id', async (request, response) => {
+  try {
+    const deletedStudent = await deleteStudent(request.params.id)
+    if (!deletedStudent) {
+      return response.status(404).json({ error: 'STUDENT_NOT_FOUND', message: `No student found with ID ${request.params.id}` })
+    }
+    response.json({ student: deletedStudent })
+  } catch (error) {
+    console.error('Error deleting student from database:', error.message)
+    response.status(500).json({ error: 'DATABASE_ERROR', message: error.message })
+  }
 })
 
 app.get('/api/health', async (_request, response) => {
