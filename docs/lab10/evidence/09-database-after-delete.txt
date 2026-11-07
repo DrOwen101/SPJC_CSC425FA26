@@ -1,0 +1,19 @@
+ current_database |              now
+------------------+-------------------------------
+ csc425_practice  | 2026-11-07 10:22:05.876798-06
+(1 row)
+
+ id | first_name | last_name | email
+----+------------+-----------+-------
+(0 rows)
+
+ matching_records
+------------------
+                0
+(1 row)
+
+ id | first_name | last_name |          email
+----+------------+-----------+-------------------------
+  1 | Morgan     | Vale      | morgan.vale@example.com
+  2 | Casey      | Finch     | casey.finch@example.com
+(2 rows)

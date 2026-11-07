@@ -2,6 +2,7 @@ import { useState, type SubmitEvent } from 'react'
 import WeatherCard from './WeatherCard'
 import StudentLookup from './StudentLookup'
 import TranscriptCard from './TranscriptCard'
+import StudentRecords from './StudentRecords'
 
 // Each letter grade maps to its value on a standard 4.0 GPA scale.
 const gradePoints: Record<string, number> = {
@@ -63,6 +64,7 @@ function Dashboardstudent() {
           Each href matches a section ID; .dashboard-nav styles the link list. */}
       <nav className="dashboard-nav" aria-label="Student sections">
         <ul>
+            <li><a href="#student-records">Student records</a></li>
             <li><a href="#gpa">GPA</a></li>
             {/* <li><a href="#attendance">Attendance</a></li> */}
             <li><a href="#student-lookup">Student lookup</a></li>
@@ -76,6 +78,7 @@ function Dashboardstudent() {
           Each named section is a card. tabIndex=-1 permits anchor focus without
           adding every card to the Tab sequence; links remain the normal stops. */}
       <div className="dashboard-grid">
+        <StudentRecords />
         {/* StudentLookup contains the Lab 7 form, request, state, and result.
             The dashboard imports and places it like any other React component. */}
         <StudentLookup />

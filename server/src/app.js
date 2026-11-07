@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs'
 import cors from 'cors'
 import express from 'express'
 import { checkDatabase } from './db.js'
+import { createDashboardRouter, dashboardErrorHandler } from './dashboardRoutes.js'
 
 export const app = express()
 
@@ -90,6 +91,10 @@ app.use('/api', teachingApi)
 
 app.use(cors({ origin: 'http://localhost:5173' }))
 app.use(express.json())
+
+app.use('/api/dashboard', createDashboardRouter())
+// Handles malformed JSON rejected before a dashboard route runs.
+app.use('/api/dashboard', dashboardErrorHandler)
 
 app.get('/', (_request, response) => {
   response.json({

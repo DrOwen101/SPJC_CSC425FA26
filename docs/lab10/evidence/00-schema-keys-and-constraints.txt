@@ -1,0 +1,39 @@
+                           Table "student_dashboard.majors"
+ Column |          Type          | Collation | Nullable |           Default
+--------+------------------------+-----------+----------+------------------------------
+ id     | integer                |           | not null | generated always as identity
+ code   | character varying(12)  |           | not null |
+ name   | character varying(100) |           | not null |
+Indexes:
+    "majors_pkey" PRIMARY KEY, btree (id)
+    "majors_code_key" UNIQUE CONSTRAINT, btree (code)
+    "majors_name_key" UNIQUE CONSTRAINT, btree (name)
+Check constraints:
+    "majors_code_check" CHECK (code::text ~ '^[A-Z][A-Z0-9_]*$'::text)
+    "majors_name_check" CHECK (length(btrim(name::text)) > 0)
+Referenced by:
+    TABLE "student_dashboard.students" CONSTRAINT "students_major_id_fkey" FOREIGN KEY (major_id) REFERENCES student_dashboard.majors(id) ON DELETE RESTRICT
+
+                                Table "student_dashboard.students"
+     Column      |           Type           | Collation | Nullable |           Default
+-----------------+--------------------------+-----------+----------+------------------------------
+ id              | integer                  |           | not null | generated always as identity
+ first_name      | character varying(80)    |           | not null |
+ last_name       | character varying(80)    |           | not null |
+ email           | character varying(254)   |           | not null |
+ major_id        | integer                  |           | not null |
+ enrollment_year | smallint                 |           | not null |
+ is_active       | boolean                  |           | not null | true
+ created_at      | timestamp with time zone |           | not null | CURRENT_TIMESTAMP
+ updated_at      | timestamp with time zone |           | not null | CURRENT_TIMESTAMP
+Indexes:
+    "students_pkey" PRIMARY KEY, btree (id)
+    "students_email_key" UNIQUE CONSTRAINT, btree (email)
+    "students_major_id_idx" btree (major_id)
+Check constraints:
+    "students_email_check" CHECK (email::text = lower(btrim(email::text)) AND email::text ~ '^[^[:space:]@]+@[^[:space:]@]+[.][^[:space:]@]+$'::text)
+    "students_enrollment_year_check" CHECK (enrollment_year >= 1900 AND enrollment_year <= 2100)
+    "students_first_name_check" CHECK (length(btrim(first_name::text)) > 0)
+    "students_last_name_check" CHECK (length(btrim(last_name::text)) > 0)
+Foreign-key constraints:
+    "students_major_id_fkey" FOREIGN KEY (major_id) REFERENCES student_dashboard.majors(id) ON DELETE RESTRICT

@@ -1,0 +1,29 @@
+.student-records { grid-column: 1 / -1; }
+.student-records h2 { margin-top: 0; }
+.student-records label { display: flex; flex-direction: column; gap: .3rem; font-weight: 650; }
+.student-records input, .student-records select {
+  min-height: 44px; min-width: 0; padding: .55rem .7rem; border: 1px solid #568069;
+  border-radius: .4rem; color: #123524; background: white; font: inherit;
+}
+.student-records button {
+  min-height: 44px; padding: .55rem .85rem; border: 1px solid #075c35; border-radius: .4rem;
+  color: white; background: #075c35; font: inherit; font-weight: 650; cursor: pointer;
+}
+.student-records button:disabled { opacity: .55; cursor: not-allowed; }
+.student-records .record-delete { background: #8e2525; border-color: #8e2525; }
+.record-fields { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; border: 0; padding: 0; margin: 0 0 1rem; }
+.record-fields legend { padding: 0; margin-bottom: .5rem; }
+.record-fields .record-checkbox { flex-direction: row; align-items: center; font-weight: 500; }
+.record-checkbox input { width: 20px; }
+.record-actions { display: flex; flex-wrap: wrap; gap: .6rem; margin-top: .5rem; }
+.record-lookup { padding-block: 1rem; border-block: 1px solid #b2ccbd; }
+.record-lookup input { width: 12rem; }
+.record-status, .record-result { background: #e4f3e9; padding: .8rem 1rem; border-radius: .4rem; }
+.record-result p { overflow-wrap: anywhere; margin-block: .4rem; }
+.record-table-wrap { overflow-x: auto; }
+.student-records table { width: 100%; border-collapse: collapse; text-align: left; }
+.student-records th, .student-records td { padding: .6rem; border-bottom: 1px solid #b2ccbd; }
+.record-requests { margin-top: 1.25rem; }
+.record-requests ol { max-height: 14rem; overflow: auto; padding-left: 1.5rem; font-size: .85rem; overflow-wrap: anywhere; }
+.record-requests time { color: #415b49; }
+@media (max-width: 750px) { .record-fields { grid-template-columns: 1fr; } }

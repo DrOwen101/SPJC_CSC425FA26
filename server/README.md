@@ -1,3 +1,7 @@
+## Lab 10 database CRUD
+
+The PostgreSQL Student records feature is documented in [Lab 10 setup](../docs/lab10/README.md) and the [endpoint inventory](../docs/lab10/ENDPOINTS.md). The mock exercises below remain separate.
+
 # Mock Student Transcript API
 
 A read-only classroom API with **five fictional students**. Students build their own frontend to request a transcript by `studentID` and display it. No database, API key, login, or additional packages are required for these endpoints.
