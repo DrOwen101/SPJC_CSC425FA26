@@ -47,7 +47,7 @@ Start the app:
 npm run dev
 ```
 
-Open `http://localhost:3000/api/health` (database connected), then `http://localhost:5173/#student-records`. The backend permits dashboard browser requests from `http://localhost:5173`; use that hostname and port. Run only one backend on port 3000 and one frontend on 5173. The existing root dev script runs both; alternatively use separate terminals with `npm run dev --prefix server` and `npm run dev --prefix client`.
+Open `http://localhost:3000/api/health` (database connected), then `http://localhost:5173/#student-records`. The backend permits dashboard browser requests from `localhost` or `127.0.0.1` on ports 5173 and 5174. Vite may select 5174 if 5173 is occupied; use the URL printed by Vite and refresh after starting the backend. Run only one backend on port 3000 and use the frontend URL printed by Vite. The existing root dev script runs both; alternatively use separate terminals with `npm run dev --prefix server` and `npm run dev --prefix client`.
 
 ## Relational design
 

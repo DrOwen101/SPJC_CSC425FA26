@@ -89,7 +89,14 @@ teachingApi.get('/transcripts/:studentID', getTranscript)
 // These handlers finish before the original starter API's CORS middleware.
 app.use('/api', teachingApi)
 
-app.use(cors({ origin: 'http://localhost:5173' }))
+// Vite can use 5174 when another local frontend already occupies 5173.
+// Keep access limited to the two explicit local development ports.
+app.use(cors({ origin: [
+  'http://localhost:5173',
+  'http://localhost:5174',
+  'http://127.0.0.1:5173',
+  'http://127.0.0.1:5174',
+] }))
 app.use(express.json())
 
 app.use('/api/dashboard', createDashboardRouter())

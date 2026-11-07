@@ -36,3 +36,11 @@ The demonstration began November 5 and resumed November 7 after the local app re
 ## Assistance disclosure and individual explanation
 
 Codex assisted with schema design, implementation, setup, documentation, terminal checks and browser verification. These evidence files record tool-assisted results. They do not claim that the student independently wrote or verified the work. Use [HAR preparation notes](HAR-PREPARATION.md) to understand the implementation, then answer the handout's individual questions in your own words and describe the work you actually performed independently.
+
+## Local browser port verification
+
+The backend was updated to permit the explicit local dashboard origins on ports 5173 and 5174 (localhost or 127.0.0.1). This fixes database requests being blocked by browser CORS checks when Vite chooses 5174. Other origins remain outside the allowlist.
+
+On November 7 the browser at http://localhost:5174/#student-records loaded all three majors and saved students Morgan Vale, Casey Finch and the user's manually inserted Samira Lane (ID 10). GET /api/dashboard/majors and GET /api/dashboard/students returned 200 at approximately 17:18:07 UTC. See evidence/10-local-port5174.jpg. This screenshot verifies the local connection fix, separately from the original ID 9 CRUD demonstration.
+
+server/test/dashboardCors.test.js checks reads and preflight for POST, PUT and DELETE on both supported ports and verifies that unrelated origins do not receive CORS access. No records were created, edited or deleted while checking this connection fix.
