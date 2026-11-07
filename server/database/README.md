@@ -218,3 +218,148 @@ I kept the original mock Student Lookup and Transcript endpoints from the earlie
 The new PostgreSQL functionality uses its own `/api/student-records` routes, so it does not interfere with the existing features.
 
 I also kept the Student Records section within the existing dashboard layout and added its styling to `App.css` so it matches the rest of the application.
+
+## Database Setup
+
+To run the Student Records feature, PostgreSQL needs to be installed and running.
+
+First, create a PostgreSQL database. For this project, I used `csc425_practice`, although any database name will work as long as it matches the name in the `.env` file.
+
+Next, copy `server/.env.example` to `server/.env` and enter the correct database information.
+
+Example configuration:
+
+```dotenv
+PORT=3000
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=csc425_practice
+DB_USER=postgres
+DB_PASSWORD=your_password_here
+```
+
+The `.env` file contains private connection information and should not be committed to GitHub.
+
+From the repository root, run these commands to create the tables and insert the sample data:
+
+```powershell
+psql -U postgres -d csc425_practice -f server/database/schema.sql
+psql -U postgres -d csc425_practice -f server/database/sample-data.sql
+```
+
+The `schema.sql` file creates the four related tables, while `sample-data.sql` adds fictional majors, students, courses, and enrollments.
+
+The `queries.sql` file contains additional SQL examples that can be run separately.
+
+After setting up the database, install the project dependencies if needed:
+
+```powershell
+npm run install:all
+```
+
+Start the frontend and backend from the repository root:
+
+```powershell
+npm run dev
+```
+
+The application can be accessed at:
+
+- Frontend: `http://localhost:5173`
+- Backend: `http://localhost:3000`
+- Student Records API: `http://localhost:3000/api/student-records`
+
+Open the Student Dashboard to access the Student Records section.
+
+## Additional CRUD Testing and Screenshots
+
+I also performed a complete CRUD test through the Student Dashboard to make sure the application and PostgreSQL were working together correctly.
+
+For this test, I used the same student record throughout the CREATE, READ, UPDATE, and DELETE operations.
+
+### 1. CREATE - Add a New Student
+
+I created a new fictional student using the Add Student form in the dashboard.
+
+After creating the student, PostgreSQL assigned a student ID, which I used for the rest of the test.
+
+**Dashboard screenshot after creating the student:**
+
+![Student created through dashboard](screenshots/create-student.png)
+
+I then checked PostgreSQL using the following query:
+
+```sql
+SELECT *
+FROM student_dashboard.students
+WHERE id = STUDENT_ID;
+```
+
+**PostgreSQL screenshot confirming the student was saved:**
+
+![Student creation verified in PostgreSQL](screenshots/create-database.png)
+
+### 2. READ - Retrieve the Student
+
+Next, I used the Retrieve by ID feature in the dashboard to search for the same student.
+
+The application retrieved the record from PostgreSQL and displayed the saved information.
+
+**Dashboard screenshot showing the retrieved student:**
+
+![Student retrieved through dashboard](screenshots/read-student.png)
+
+### 3. UPDATE - Edit the Student
+
+I selected Edit for the same student and changed their information, including their Active/Inactive status.
+
+After saving the changes, I retrieved the student again through the dashboard to make sure the updated information was displayed.
+
+**Dashboard screenshot showing the updated student:**
+
+![Updated student information in dashboard](screenshots/update-student.png)
+
+I also verified the changes directly in PostgreSQL:
+
+```sql
+SELECT id, first_name, last_name, email,
+       major_id, enrollment_year, is_active
+FROM student_dashboard.students
+WHERE id = STUDENT_ID;
+```
+
+**PostgreSQL screenshot confirming the updated information:**
+
+![Student update verified in PostgreSQL](screenshots/update-database.png)
+
+### 4. DELETE - Remove the Student
+
+Finally, I deleted the same student using the Delete button in the dashboard.
+
+After deleting the student, I used Retrieve by ID again to confirm that the application could no longer find the record.
+
+**Dashboard screenshot showing that the student no longer exists:**
+
+![Student deletion verified in dashboard](screenshots/delete-student.png)
+
+I also ran the following SQL query:
+
+```sql
+SELECT *
+FROM student_dashboard.students
+WHERE id = STUDENT_ID;
+```
+
+The expected result is zero rows, showing that the student was permanently removed from PostgreSQL.
+
+**PostgreSQL screenshot confirming the record was deleted:**
+
+![Student deletion verified in PostgreSQL](screenshots/delete-database.png)
+
+### Test Results
+
+After completing the test, I confirmed that the Student Dashboard was able to create, retrieve, update, and delete the same student record through the Express API.
+
+The PostgreSQL queries were used to verify that the information was actually being saved, updated, and deleted from the database.
+
+The same student ID was used throughout the demonstration to make sure each operation was performed on the correct record.
