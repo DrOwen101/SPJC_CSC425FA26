@@ -390,3 +390,347 @@ main, .dashboard-card {
     border: 1px solid CanvasText;
   }
 }
+
+/* STUDENT RECORDS - POSTGRESQL CRUD INTERFACE */
+
+/* Allow Student Records to use both dashboard grid columns. */
+.student-records {
+  grid-column: 1 / -1;
+  min-width: 0;
+}
+
+/* Header and record count */
+.student-records-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.student-records-header h2 {
+  margin-bottom: .25rem;
+}
+
+.student-records-header p {
+  margin: 0;
+  color: #476353;
+}
+
+.student-records-count {
+  padding: .4rem .85rem;
+  border: 1px solid #b2ccbd;
+  border-radius: 2rem;
+  background: #e0f2e7;
+  color: #075c35;
+  font-size: .9rem;
+  font-weight: 700;
+}
+
+/* Student table */
+.student-records-section-heading {
+  margin-bottom: .75rem;
+}
+
+.student-records-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid #b2ccbd;
+  border-radius: .65rem;
+  background: white;
+}
+
+.student-records-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.student-records-table th {
+  padding: .85rem 1rem;
+  background: #e0f2e7;
+  color: #075c35;
+  font-size: .85rem;
+  font-weight: 750;
+  white-space: nowrap;
+}
+
+.student-records-table td {
+  padding: .85rem 1rem;
+  border-top: 1px solid #e0eae3;
+  vertical-align: middle;
+  font-size: .9rem;
+}
+
+.student-records-table tbody tr:hover {
+  background: #f3faf5;
+}
+
+.student-records-table td strong {
+  display: block;
+  font-weight: 700;
+}
+
+.student-records-email {
+  display: block;
+  color: #476353;
+  font-size: .8rem;
+  overflow-wrap: anywhere;
+}
+
+/* Edit and Delete buttons */
+.student-records-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+}
+
+.student-records-actions button,
+.student-records-form-actions button {
+  min-height: 40px;
+  padding: .55rem .85rem;
+  border-radius: .45rem;
+  font: inherit;
+  font-size: .875rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.student-records-edit,
+.student-records-save {
+  border: 1px solid #075c35;
+  background: #075c35;
+  color: white;
+}
+
+.student-records-edit:hover,
+.student-records-save:hover {
+  background: #06472a;
+}
+
+.student-records-delete {
+  border: 1px solid #b75c5c;
+  background: white;
+  color: #a12323;
+}
+
+.student-records-delete:hover {
+  background: #fff0f0;
+}
+
+.student-records-cancel {
+  border: 1px solid #568069;
+  background: white;
+  color: #075c35;
+}
+
+.student-records-cancel:hover {
+  background: #e0f2e7;
+}
+
+.student-records button:disabled {
+  opacity: .6;
+  cursor: not-allowed;
+}
+
+/* Add/Edit student form */
+.student-records-form-section {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #b2ccbd;
+}
+
+.student-records-form-section > p {
+  margin: 0 0 1.25rem;
+  color: #476353;
+  font-size: .9rem;
+}
+
+.student-records-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem 1.25rem;
+}
+
+.student-records-field {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.student-records-field label {
+  margin-bottom: .35rem;
+  font-weight: 700;
+  font-size: .9rem;
+}
+
+.student-records-field input,
+.student-records-field select {
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  padding: .65rem .75rem;
+  border: 1px solid #568069;
+  border-radius: .45rem;
+  background: white;
+  color: #123524;
+  font: inherit;
+}
+
+.student-records-field input:focus,
+.student-records-field select:focus {
+  border-color: #075c35;
+}
+
+.student-records-form-actions {
+  display: flex;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: .65rem;
+  padding-bottom: 2px;
+}
+
+.student-records-form-actions button {
+  min-height: 44px;
+  padding-inline: 1.25rem;
+}
+
+/* Success message */
+.student-records-message {
+  padding: .75rem 1rem;
+  border: 1px solid #b2ccbd;
+  border-radius: .45rem;
+  background: #e0f2e7;
+  color: #075c35;
+  font-weight: 650;
+}
+
+/* Stack form fields on smaller screens. */
+@media (max-width: 650px) {
+  .student-records-form {
+    grid-template-columns: 1fr;
+  }
+
+  .student-records-table th,
+  .student-records-table td {
+    padding: .7rem .65rem;
+  }
+
+  .student-records-form-actions {
+    align-items: stretch;
+  }
+}
+
+
+/* Student Records: individual student lookup */
+.student-records-lookup {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: .75rem;
+  margin-bottom: 1.75rem;
+}
+
+.student-records-lookup label {
+  font-weight: 700;
+}
+
+.student-records-lookup input {
+  width: 110px;
+  min-height: 44px;
+  padding: .65rem .75rem;
+  border: 1px solid #568069;
+  border-radius: .45rem;
+  background: white;
+  color: #123524;
+  font: inherit;
+}
+
+/* Align the section heading with the student count */
+.student-records-section-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: .75rem;
+}
+
+/* Display active and inactive statuses */
+.student-records-status {
+  display: inline-block;
+  padding: .3rem .65rem;
+  border-radius: 1rem;
+  font-size: .8rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.student-records-status.active {
+  color: #075c35;
+  background: #e0f2e7;
+}
+
+.student-records-status.inactive {
+  color: #72501b;
+  background: #f8ecd3;
+}
+
+/* Selected student's information */
+.student-records-details {
+  margin-top: 1.5rem;
+  padding: 1.25rem;
+  border: 1px solid #b2ccbd;
+  border-radius: .65rem;
+  background: white;
+}
+
+.student-records-details-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem 1.5rem;
+  margin: 1rem 0 0;
+}
+
+.student-records-details dt {
+  font-weight: 700;
+  font-size: .9rem;
+}
+
+.student-records-details dd {
+  margin: .25rem 0 0;
+  overflow-wrap: anywhere;
+}
+
+/* Checkbox for changing student status */
+.student-records-status-field {
+  justify-content: center;
+}
+
+.student-records-checkbox {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  cursor: pointer;
+}
+
+.student-records-checkbox input {
+  width: 20px;
+  height: 20px;
+  min-height: 20px;
+  margin: 0;
+  accent-color: #075c35;
+  cursor: pointer;
+}
+
+.student-records-status-help {
+  margin-top: .4rem;
+  color: #476353;
+  font-size: .8rem;
+}
+
+@media (max-width: 650px) {
+  .student-records-details-grid {
+    grid-template-columns: 1fr;
+  }
+}
