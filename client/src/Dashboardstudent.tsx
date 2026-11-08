@@ -1,7 +1,9 @@
-import { useState, type SubmitEvent } from 'react'
+import React, { useState } from 'react'
+import type { FormEvent, JSX } from 'react'
 import WeatherCard from './WeatherCard'
 import StudentLookup from './StudentLookup'
 import TranscriptCard from './TranscriptCard'
+import EnrollmentLookup from './enrollmentlookup' // 👈 1. Import EnrollmentLookup
 
 // Each letter grade maps to its value on a standard 4.0 GPA scale.
 const gradePoints: Record<string, number> = {
@@ -22,13 +24,13 @@ const gradePoints: Record<string, number> = {
 
 // This role component supplies content; App.css supplies the shared layout.
 // The lookup uses the dummy API; the other cards remain classroom examples.
-function Dashboardstudent() {
+function Dashboardstudent(): JSX.Element {
   const [gradeEntry, setGradeEntry] = useState('')
   const [grades, setGrades] = useState<string[]>([])
   const [gpa, setGpa] = useState<number | null>(null)
   const [gradeError, setGradeError] = useState('')
 
-  function addGrade(event: SubmitEvent<HTMLFormElement>) {
+  function addGrade(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
 
     // Removing spaces and capitalizing lets entries such as "b +" become "B+".
@@ -63,23 +65,24 @@ function Dashboardstudent() {
           Each href matches a section ID; .dashboard-nav styles the link list. */}
       <nav className="dashboard-nav" aria-label="Student sections">
         <ul>
-            <li><a href="#gpa">GPA</a></li>
-            {/* <li><a href="#attendance">Attendance</a></li> */}
-            <li><a href="#student-lookup">Student lookup</a></li>
-            <li><a href="#transcript">Transcript</a></li>
-            <li><a href="#alerts">Alerts</a></li>
-            <li><a href="#courses">Upcoming Courses</a></li>
+          <li><a href="#gpa">GPA</a></li>
+          <li><a href="#student-lookup">Student lookup</a></li>
+          <li><a href="#enrollments-card">Enrollments</a></li> {/* Updated anchor target */}
+          <li><a href="#transcript">Transcript</a></li>
+          <li><a href="#alerts">Alerts</a></li>
+          <li><a href="#courses">Upcoming Courses</a></li>
         </ul>
       </nav>
 
-      {/* className="dashboard-grid" connects to .dashboard-grid in App.css.
-          Each named section is a card. tabIndex=-1 permits anchor focus without
-          adding every card to the Tab sequence; links remain the normal stops. */}
+      {/* className="dashboard-grid" connects to .dashboard-grid in App.css. */}
       <div className="dashboard-grid">
-        {/* StudentLookup contains the Lab 7 form, request, state, and result.
-            The dashboard imports and places it like any other React component. */}
         <StudentLookup />
+
+        {/* 2. Embedded Enrollment Lookup Card */}
+        <EnrollmentLookup />
+
         <WeatherCard />
+
         <section id="gpa" className="dashboard-card" aria-labelledby="gpa-heading" tabIndex={-1}>
           <h2 id="gpa-heading">GPA</h2>
           <p id="gpa-value" className="metric" aria-live="polite">
@@ -128,17 +131,15 @@ function Dashboardstudent() {
             Calculate GPA
           </button>
         </section>
-        {/* <section id="attendance" className="dashboard-card" aria-labelledby="attendance-heading" tabIndex={-1}>
-          <h2 id="attendance-heading">Attendance</h2>
-          <p className="metric">94%</p>
-          <p>Current attendance · sample value</p>
-        </section> */}
+
         <TranscriptCard id="transcript" />
+
         <section id="alerts" className="dashboard-card" aria-labelledby="alerts-heading" tabIndex={-1}>
           <h2 id="alerts-heading">Alerts</h2>
           <p className="status-label">Sample status: no new academic alerts</p>
           <p>Check here for academic reminders and notices. Live alerts are not connected.</p>
         </section>
+
         <section id="courses" className="dashboard-card" aria-labelledby="courses-heading" tabIndex={-1}>
           <h2 id="courses-heading">Upcoming Courses</h2>
           <p className="status-label">Not connected</p>

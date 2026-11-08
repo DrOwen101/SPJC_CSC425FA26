@@ -2,9 +2,13 @@ import 'dotenv/config'
 import { readFileSync } from 'node:fs'
 import cors from 'cors'
 import express from 'express'
-import { checkDatabase } from './db.js'
+import { pool, checkDatabase } from './db.js' // 👈 Added checkDatabase here
 
 export const app = express()
+
+// Global Middleware (Applies CORS & JSON parsing to ALL routes)
+app.use(cors())
+app.use(express.json())
 
 // Hard-coded data for the Student Lookup exercise. These are fictional people.
 // Students can edit this array to test their frontend without a database,
@@ -44,19 +48,18 @@ const mockStudents = [
 
 // The earlier transcript exercise keeps its course/grade fixtures in JSON.
 // It also works without a database. /api/students uses only the array above.
-const { students: transcripts } = JSON.parse(readFileSync(new URL('./data/transcripts.json', import.meta.url), 'utf8'))
+const { students: transcripts } = JSON.parse(
+  readFileSync(new URL('./data/transcripts.json', import.meta.url), 'utf8')
+)
 
-// Only the fictional API allows requests from any frontend origin.
+// Router for mock teaching endpoints
 const teachingApi = express.Router()
-teachingApi.use(['/status', '/students', '/transcripts'], cors({ methods: ['GET', 'HEAD', 'OPTIONS'] }))
 
 teachingApi.get('/status', (_request, response) => {
   response.json({ status: 'ok', service: 'Mock transcript API', studentCount: mockStudents.length })
 })
 
 teachingApi.get('/students', (_request, response) => {
-  // Express converts the JavaScript object to JSON for the React frontend.
-  // StudentLookup selects the matching full name from this returned array.
   response.json({ students: mockStudents })
 })
 
@@ -85,12 +88,10 @@ function getTranscript(request, response) {
 teachingApi.get('/transcripts', getTranscript)
 teachingApi.get('/transcripts/:studentID', getTranscript)
 
-// These handlers finish before the original starter API's CORS middleware.
+// Attach mock router under /api
 app.use('/api', teachingApi)
 
-app.use(cors({ origin: 'http://localhost:5173' }))
-app.use(express.json())
-
+// Base API Info Route
 app.get('/', (_request, response) => {
   response.json({
     message: 'CSC 425 API',
@@ -101,14 +102,21 @@ app.get('/', (_request, response) => {
       transcriptQuery: '/api/transcripts?studentID=1001',
       status: '/api/status',
       databaseHealth: '/api/health',
+      enrollments: '/api/enrollments',
     },
   })
 })
 
+// Database Health Check Endpoint
 app.get('/api/health', async (_request, response) => {
   try {
     const database = await checkDatabase()
-    response.json({ status: 'ok', database: 'connected', timestamp: database.current_time })
+    
+    if (database.status === 'connected') {
+      response.json({ status: 'ok', database: 'connected', timestamp: database.dbTime })
+    } else {
+      response.status(503).json({ status: 'error', database: 'disconnected', message: database.message })
+    }
   } catch (error) {
     console.error('Database health check failed:', error.message)
     response.status(503).json({ status: 'error', database: 'disconnected', message: error.message })
