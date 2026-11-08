@@ -3,32 +3,15 @@ import { readFileSync } from 'node:fs'
 import cors from 'cors'
 import express from 'express'
 import { checkDatabase } from './db.js'
+import { attendanceRouter } from './attendanceRoutes.js'
 
 export const app = express()
 
-const attendance = [
-  {
-    id: 1,
-    studentId: '1001',
-    studentName: 'Avery Morgan',
-    date: '2026-10-20',
-    status: 'present',
-  },
-  {
-    id: 2,
-    studentId: '1002',
-    studentName: 'Jordan Bennett',
-    date: '2026-10-20',
-    status: 'absent',
-  },
-  {
-    id: 3,
-    studentId: '1003',
-    studentName: 'Taylor Reed',
-    date: '2026-10-20',
-    status: 'late',
-  },
-]
+app.use(cors({ origin: 'http://localhost:5173' }))
+app.use(express.json())
+
+// Lab 10: PostgreSQL attendance CRUD routes.
+app.use('/api/attendance', attendanceRouter)
 
 // Fictional data for the Student Lookup exercise.
 const mockStudents = [
@@ -91,7 +74,6 @@ teachingApi.get('/students', (_request, response) => {
   response.json({ students: mockStudents })
 })
 
-// Support transcript requests using a path or query parameter.
 function getTranscript(request, response) {
   const studentID =
     request.params.studentID ?? request.query.studentID
@@ -126,40 +108,15 @@ teachingApi.get('/transcripts/:studentID', getTranscript)
 
 app.use('/api', teachingApi)
 
-app.use(cors({ origin: 'http://localhost:5173' }))
-app.use(express.json())
-
-// Return all attendance records.
-app.get('/api/attendance', (req, res) => {
-  res.status(200).json(attendance)
-})
-
-// Return one attendance record or a 404 JSON error.
-app.get('/api/attendance/:id', (req, res) => {
-  const attendanceId = Number(req.params.id)
-
-  const record = attendance.find((item) => {
-    return item.id === attendanceId
-  })
-
-  if (!record) {
-    return res.status(404).json({
-      error: 'Attendance record not found',
-    })
-  }
-
-  return res.status(200).json(record)
-})
-
 app.get('/', (_request, response) => {
   response.json({
     message: 'CSC 425 API',
-    description:
-      'Fictional student transcripts for frontend practice. No API key required.',
+    description: 'Fictional student data for coursework.',
     endpoints: {
       students: '/api/students',
       transcript: '/api/transcripts/1001',
       transcriptQuery: '/api/transcripts?studentID=1001',
+      attendance: '/api/attendance',
       status: '/api/status',
       databaseHealth: '/api/health',
     },
@@ -176,15 +133,12 @@ app.get('/api/health', async (_request, response) => {
       timestamp: database.current_time,
     })
   } catch (error) {
-    console.error(
-      'Database health check failed:',
-      error.message
-    )
+    console.error('Database health check failed:', error)
 
     response.status(503).json({
       status: 'error',
       database: 'disconnected',
-      message: error.message,
+      message: 'Unable to connect to the database',
     })
   }
 })

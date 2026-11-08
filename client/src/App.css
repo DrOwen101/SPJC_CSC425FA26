@@ -390,3 +390,76 @@ main, .dashboard-card {
     border: 1px solid CanvasText;
   }
 }
+#attendance .attendance-fields {
+  display: grid;
+  gap: 0.75rem;
+  min-width: 0;
+  margin: 0;
+  padding: 1rem;
+  border: 1px solid #63766b;
+  border-radius: 8px;
+}
+
+#attendance .attendance-fields label {
+  display: block;
+  font-weight: 600;
+}
+
+#attendance .attendance-fields input,
+#attendance .attendance-fields select {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  padding: 0.7rem;
+  border: 1px solid #718078;
+  border-radius: 6px;
+  background: #191d1b;
+  color: #fff;
+  font: inherit;
+}
+
+#attendance .attendance-fields small {
+  line-height: 1.5;
+}
+
+#attendance .attendance-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 0.5rem;
+}
+
+#attendance .attendance-actions button {
+  padding: 0.65rem 1rem;
+  border: 1px solid #718078;
+  border-radius: 6px;
+  background: #075c35;
+  color: #fff;
+  font: inherit;
+  cursor: pointer;
+}
+
+#attendance .attendance-actions button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+#attendance input:focus-visible,
+#attendance select:focus-visible,
+#attendance button:focus-visible {
+  outline: 3px solid #f5d76e;
+  outline-offset: 2px;
+}
+
+#attendance dl {
+  overflow-wrap: anywhere;
+}
+
+#attendance dt {
+  margin-top: 0.6rem;
+  font-weight: 600;
+}
+
+#attendance dd {
+  margin-left: 0;
+}
