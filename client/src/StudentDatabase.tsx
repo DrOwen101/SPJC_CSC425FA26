@@ -60,7 +60,7 @@ export default function StudentDatabase() {
             })
 
             console.log(response.data.student) 
-            setStudent(response.data.student)
+            loadStudent(response.data.student)
         } catch (requestError) {
             if (axios.isCancel(requestError)) {
                 setError('Request canceled')
@@ -96,7 +96,7 @@ export default function StudentDatabase() {
             })
 
             console.log(response.data.student)
-            setStudent(response.data.student)
+            loadStudent(response.data.student)
         } catch (requestError) {
             if (axios.isCancel(requestError)) {
                 setError('Request canceled')
@@ -109,24 +109,36 @@ export default function StudentDatabase() {
         }
     }
 
+    async function deleteStudent() {
+        if (!student) return
+
+        try {
+            await axios.delete(`http://localhost:3000/api/database/students/${student.id}`)
+            setStudent(null)
+        } catch (error) {
+            console.error('Error deleting student data:', error)
+            setError('Error deleting student data')
+        }
+    }
+
     async function updateStudent(event: SubmitEvent<HTMLFormElement>) {
         event.preventDefault()
         
-        if (!student) return 
+        if (!student) return
 
         try {
-            const response = await axios.put<StudentResponse>(`http://localhost:3000/api/database/students/${searchId}`, {
-                first_name: firstName,
-                last_name: lastName,
-                email: email,
-                major_code: major,
-                enrollment_year: Number(enrollmentYear),
-                is_active: isActive,
+            const response = await axios.put<StudentResponse>(`http://localhost:3000/api/database/students/${student.id}`, {
+                first_name: student.first_name,
+                last_name: student.last_name,
+                email: student.email,
+                major_code: student.major_code,
+                enrollment_year: student.enrollment_year,
+                is_active: student.is_active,
             },
         )
 
             console.log(response.data.student)
-            setStudent(response.data.student)
+            loadStudent(response.data.student)
         } catch (requestError) {
             if (axios.isCancel(requestError)) {
                 setError('Request canceled')
@@ -146,7 +158,7 @@ return (
                 onChange={(e) => setSearchId(e.target.value)}
                 placeholder="Enter student ID"
             />
-            <button type="submit">Search</button>
+            <button type="submit" disabled={isLoading}>Search</button>
         </form>
 
         {error && <p role="alert" style={{ color: 'red' }}>{error}</p>}
@@ -156,27 +168,32 @@ return (
         <div id="search-results">
             {student && (
                 <div>
-                    <input type="text" value={student.first_name}/>
-                    <input type="text" value={student.last_name}/>
-                    <input type="text" value={student.email}/>
-                    <input type="text" value={student.major_code}/>
-                    <input type="text" value={student.major_name}/>
-                    <input type="number" value={student.enrollment_year}/>
-                    <input type="checkbox" checked={student.is_active} onChange={(e) => setStudent({...student, is_active: e.target.checked})} />
-                    <button onClick={updateStudent}>Update Student</button>
+                    <form onSubmit={updateStudent}>
+                        <input type="text" value={student.first_name} onChange={(e) => setStudent({...student, first_name: e.target.value})} />
+                        <input type="text" value={student.last_name} onChange={(e) => setStudent({...student, last_name: e.target.value})} />
+                        <input type="text" value={student.email} onChange={(e) => setStudent({...student, email: e.target.value})} />
+                        <input type="text" value={student.major_code} onChange={(e) => setStudent({...student, major_code: e.target.value})} />
+                        <input type="text" value={student.major_name} readOnly />
+                        <input type="number" value={student.enrollment_year} onChange={(e) => setStudent({...student, enrollment_year: Number(e.target.value)})} />
+                        <input type="checkbox" checked={student.is_active} onChange={(e) => setStudent({...student, is_active: e.target.checked})} />
+                        <label htmlFor="is-active">Active</label>
+                        <button type="submit" disabled={isLoading}>Update Student</button>
+                        <button type="button" onClick={() => setStudent(null)}>Clear</button>
+                        <button type="button" onClick={deleteStudent} disabled={isLoading}>Delete Student</button>
+                    </form>
                 </div>
             )}
         </div>
         <form onSubmit={createStudent}>
             <h2>Create New Student</h2>
-            <input type="text" placeholder="First Name" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
-            <input type="text" placeholder="Last Name" value={lastName} onChange={(e) => setLastName(e.target.value)} />
-            <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
-            <input type="text" placeholder="Major" value={major} onChange={(e) => setMajor(e.target.value)} />
-            <input type="number" placeholder="Enrollment Year" value={enrollmentYear} onChange={(e) => setEnrollmentYear(e.target.value)} />
-            <input type="checkbox" id="is-active" checked={isActive} onChange={(e) => setIsActive(e.target.checked)} />
+            <input type="text" placeholder="First Name" onChange={(e) => setFirstName(e.target.value)} />
+            <input type="text" placeholder="Last Name" onChange={(e) => setLastName(e.target.value)} />
+            <input type="email" placeholder="Email" onChange={(e) => setEmail(e.target.value)} />
+            <input type="text" placeholder="Major" onChange={(e) => setMajor(e.target.value)} />
+            <input type="number" placeholder="Enrollment Year"  onChange={(e) => setEnrollmentYear(e.target.value)} />
+            <input type="checkbox" id="is-active" onChange={(e) => setIsActive(e.target.checked)} />
             <label htmlFor="is-active">Active</label>
-            <button type="submit">Create Student</button>
+            <button type="submit" disabled={isLoading}>Create Student</button>
         </form>
     </div>
 )

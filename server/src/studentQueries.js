@@ -20,16 +20,28 @@ export async function createStudent(student) {
 }
 
 export async function updateStudent(studentID, student) {
-    const { first_name, last_name, email, major_id, enrollment_year, is_active } = student
+    const { first_name, last_name, email, major_code, enrollment_year, is_active } = student
     const result = await pool.query(
-        'UPDATE student_records.students SET first_name = $1, last_name = $2, email = $3, major_id = $4, enrollment_year = $5, is_active = $6 WHERE id = $7 RETURNING *',
-        [first_name, last_name, email, major_id, enrollment_year, is_active, studentID]
+        `UPDATE student_records.students
+         SET first_name = $1,
+             last_name = $2,
+             email = $3,
+             major_id = (SELECT id FROM student_records.majors WHERE code = $4),
+             enrollment_year = $5,
+             is_active = $6
+         WHERE id = $7
+         RETURNING *`,
+        [first_name, last_name, email, major_code.trim().toUpperCase(), enrollment_year, is_active, studentID]
     )
-    return result.rows[0]
+    if (!result.rows[0]) {
+        return undefined
+    }
+
+    const updatedStudent = await getStudentById(studentID)
+    return updatedStudent
 }
 
 export async function deleteStudent(studentID) {
     const result = await pool.query('DELETE FROM student_records.students WHERE id = $1 RETURNING *', [studentID])
     return result.rows[0]
 }
-
