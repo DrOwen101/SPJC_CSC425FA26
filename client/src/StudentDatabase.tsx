@@ -1,5 +1,6 @@
 import {useEffect, useRef, useState, type SubmitEvent} from 'react'
 import axios from 'axios'
+import './StudentDatabase.css'
 
 type Student = {
     id: number
@@ -150,38 +151,46 @@ export default function StudentDatabase() {
     }
 
 return (
-    <div>
-        <h1>Student Records</h1>
-        <form onSubmit={lookupStudent}>
-            <input
-                value={searchId}
-                onChange={(e) => setSearchId(e.target.value)}
-                placeholder="Enter student ID"
-            />
-            <button type="submit" disabled={isLoading}>Search</button>
-        </form>
+    <section id="student-database" className="dashboard-card student-database">
+    <div className="student-database-container">
+        <h2>Student Records</h2>
+        <div className="student-database-controls">
+            <form onSubmit={lookupStudent}>
+                <input
+                    value={searchId}
+                    onChange={(e) => setSearchId(e.target.value)}
+                    placeholder="Enter student ID"
+                />
+                <button type="submit" disabled={isLoading}>Search</button>
+            </form>
+        </div>
 
         {error && <p role="alert" style={{ color: 'red' }}>{error}</p>}
 
-        {/* working on a way to combine search results with the create student form so that the user can edit the student record after searching for it. */}
-
-        <div id="search-results">
+        <div className="search-results">
             {student && (
-                <div>
-                    <form onSubmit={updateStudent}>
-                        <input type="text" value={student.first_name} onChange={(e) => setStudent({...student, first_name: e.target.value})} />
-                        <input type="text" value={student.last_name} onChange={(e) => setStudent({...student, last_name: e.target.value})} />
-                        <input type="text" value={student.email} onChange={(e) => setStudent({...student, email: e.target.value})} />
-                        <input type="text" value={student.major_code} onChange={(e) => setStudent({...student, major_code: e.target.value})} />
-                        <input type="text" value={student.major_name} readOnly />
-                        <input type="number" value={student.enrollment_year} onChange={(e) => setStudent({...student, enrollment_year: Number(e.target.value)})} />
-                        <input type="checkbox" checked={student.is_active} onChange={(e) => setStudent({...student, is_active: e.target.checked})} />
-                        <label htmlFor="is-active">Active</label>
-                        <button type="submit" disabled={isLoading}>Update Student</button>
-                        <button type="button" onClick={() => setStudent(null)}>Clear</button>
-                        <button type="button" onClick={deleteStudent} disabled={isLoading}>Delete Student</button>
-                    </form>
-                </div>
+                <form onSubmit={updateStudent}>
+                    <input type="text" value={student.first_name} onChange={(e) => setStudent({...student, first_name: e.target.value})} />
+                    <input type="text" value={student.last_name} onChange={(e) => setStudent({...student, last_name: e.target.value})} />
+                    <input type="text" value={student.email} onChange={(e) => setStudent({...student, email: e.target.value})} />
+                    <input type="text" value={student.major_code} onChange={(e) => setStudent({...student, major_code: e.target.value})} />
+                    <input type="text" value={student.major_name} readOnly />
+                    <input type="number" value={student.enrollment_year} onChange={(e) => setStudent({...student, enrollment_year: Number(e.target.value)})} />
+                    <div className="active-field">
+                        <input
+                            id="update-is-active"
+                            type="checkbox"
+                            checked={student.is_active}
+                            onChange={(e) =>
+                                setStudent({ ...student, is_active: e.target.checked })
+                            }
+                        />
+                        <label htmlFor="update-is-active">Active</label>
+                    </div>
+                    <button type="submit" disabled={isLoading}>Update Student</button>
+                    <button type="button" onClick={() => setStudent(null)}>Clear</button>
+                    <button type="button" onClick={deleteStudent} disabled={isLoading}>Delete Student</button>
+                </form>
             )}
         </div>
         <form onSubmit={createStudent}>
@@ -191,10 +200,18 @@ return (
             <input type="email" placeholder="Email" onChange={(e) => setEmail(e.target.value)} />
             <input type="text" placeholder="Major" onChange={(e) => setMajor(e.target.value)} />
             <input type="number" placeholder="Enrollment Year"  onChange={(e) => setEnrollmentYear(e.target.value)} />
-            <input type="checkbox" id="is-active" onChange={(e) => setIsActive(e.target.checked)} />
-            <label htmlFor="is-active">Active</label>
+            <div className="active-field">
+                <input
+                    id="create-is-active"
+                    type="checkbox"
+                    checked={isActive}
+                    onChange={(e) => setIsActive(e.target.checked)}
+                />
+                <label htmlFor="create-is-active">Active</label>
+            </div>
             <button type="submit" disabled={isLoading}>Create Student</button>
         </form>
     </div>
+</section>
 )
 }
