@@ -2,6 +2,8 @@ import { useState, type SubmitEvent } from 'react'
 import WeatherCard from './WeatherCard'
 import StudentLookup from './StudentLookup'
 import TranscriptCard from './TranscriptCard'
+import AllStudents from './AllStudents'
+import StudentRecords from './StudentRecords'
 
 // Each letter grade maps to its value on a standard 4.0 GPA scale.
 const gradePoints: Record<string, number> = {
@@ -27,6 +29,8 @@ function Dashboardstudent() {
   const [grades, setGrades] = useState<string[]>([])
   const [gpa, setGpa] = useState<number | null>(null)
   const [gradeError, setGradeError] = useState('')
+  const [refreshKey, setRefreshKey] = useState(0)
+  const [selection, setSelection] = useState<{ studentId: number; requestKey: number }>()
 
   function addGrade(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -80,6 +84,18 @@ function Dashboardstudent() {
             The dashboard imports and places it like any other React component. */}
         <StudentLookup />
         <WeatherCard />
+        <AllStudents
+          id="all-students"
+          refreshKey={refreshKey}
+          onSelect={(studentId) =>
+            setSelection((current) => ({ studentId, requestKey: (current?.requestKey ?? 0) + 1 }))
+          }
+        />
+        <StudentRecords
+          id="student-records"
+          selection={selection}
+          onChange={() => setRefreshKey((key) => key + 1)}
+        />
         <section id="gpa" className="dashboard-card" aria-labelledby="gpa-heading" tabIndex={-1}>
           <h2 id="gpa-heading">GPA</h2>
           <p id="gpa-value" className="metric" aria-live="polite">
