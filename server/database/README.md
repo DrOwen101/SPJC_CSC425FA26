@@ -292,7 +292,7 @@ I then checked PostgreSQL using the following query:
 ```sql
 SELECT *
 FROM student_dashboard.students
-WHERE id = STUDENT_ID;
+WHERE id = 14;
 ```
 
 **PostgreSQL screenshot confirming the student was saved:**
@@ -325,7 +325,7 @@ I also verified the changes directly in PostgreSQL:
 SELECT id, first_name, last_name, email,
        major_id, enrollment_year, is_active
 FROM student_dashboard.students
-WHERE id = STUDENT_ID;
+WHERE id = 14;
 ```
 
 **PostgreSQL screenshot confirming the updated information:**
@@ -334,25 +334,25 @@ WHERE id = STUDENT_ID;
 
 ### 4. DELETE - Remove the Student
 
-Finally, I deleted the same student using the Delete button in the dashboard.
+Finally, I deleted the same student, Morgan Carter (student ID 14), using the Delete button in the dashboard.
 
-After deleting the student, I used Retrieve by ID again to confirm that the application could no longer find the record.
+After deleting the student, the dashboard displayed a success message confirming that student ID 14 was deleted.
 
-**Dashboard screenshot showing that the student no longer exists:**
+**Dashboard screenshot showing the successful deletion message:**
 
 ![Student deletion verified in dashboard](screenshots/delete-student.png)
 
-I also ran the following SQL query:
+I also ran the following SQL query to confirm that the student was removed from PostgreSQL:
 
 ```sql
 SELECT *
 FROM student_dashboard.students
-WHERE id = STUDENT_ID;
+WHERE id = 14;
 ```
 
-The expected result is zero rows, showing that the student was permanently removed from PostgreSQL.
+The query returned zero rows, confirming that student ID 14 no longer existed in the database.
 
-**PostgreSQL screenshot confirming the record was deleted:**
+**PostgreSQL screenshot confirming that the query returned zero rows:**
 
 ![Student deletion verified in PostgreSQL](screenshots/delete-database.png)
 
@@ -362,4 +362,4 @@ After completing the test, I confirmed that the Student Dashboard was able to cr
 
 The PostgreSQL queries were used to verify that the information was actually being saved, updated, and deleted from the database.
 
-The same student ID was used throughout the demonstration to make sure each operation was performed on the correct record.
+The same student ID (14) was used throughout the demonstration to make sure each operation was performed on the correct record.
