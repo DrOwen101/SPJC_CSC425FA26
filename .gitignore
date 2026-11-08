@@ -1,8 +1,12 @@
+# Secrets and local overrides
+.env
+**/.env
+.env.*
+**/.env.*
+!.env.example
+!**/.env.example
+
+# Dependencies and generated files
 node_modules/
 dist/
-.env
-.env.*
-!.env.example
-.DS_Store
 *.log
-

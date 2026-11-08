@@ -3,6 +3,7 @@ import WeatherCard from './WeatherCard'
 import StudentLookup from './StudentLookup'
 import TranscriptCard from './TranscriptCard'
 import AttendanceCard from './AttendanceCard'
+import StudentManagementCard from './StudentManagementCard'
 
 // Each letter grade maps to its value on a standard 4.0 GPA scale.
 const gradePoints: Record<string, number> = {
@@ -68,6 +69,7 @@ function Dashboardstudent() {
             <li><a href="#attendance">Attendance</a></li>
             <li><a href="#student-lookup">Student lookup</a></li>
             <li><a href="#transcript">Transcript</a></li>
+            <li><a href="#management">Student Management</a></li>
             <li><a href="#alerts">Alerts</a></li>
             <li><a href="#courses">Upcoming Courses</a></li>
         </ul>
@@ -131,6 +133,9 @@ function Dashboardstudent() {
         </section>
         <AttendanceCard id="attendance" />
         <TranscriptCard id="transcript" />
+        <section id="management" className="dashboard-card">
+          <StudentManagementCard />
+        </section>
         <section id="alerts" className="dashboard-card" aria-labelledby="alerts-heading" tabIndex={-1}>
           <h2 id="alerts-heading">Alerts</h2>
           <p className="status-label">Sample status: no new academic alerts</p>
