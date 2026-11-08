@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs'
 import cors from 'cors'
 import express from 'express'
 import { checkDatabase } from './db.js'
+import { dashboardRouter } from './dashboardStudents.js'
 
 export const app = express()
 
@@ -101,6 +102,7 @@ app.get('/', (_request, response) => {
       transcriptQuery: '/api/transcripts?studentID=1001',
       status: '/api/status',
       databaseHealth: '/api/health',
+      dashboardStudents: '/api/dashboard/students',
     },
   })
 })
@@ -114,3 +116,6 @@ app.get('/api/health', async (_request, response) => {
     response.status(503).json({ status: 'error', database: 'disconnected', message: error.message })
   }
 })
+
+// Lab 10: student CRUD backed by PostgreSQL (see dashboardStudents.js).
+app.use('/api/dashboard', dashboardRouter)

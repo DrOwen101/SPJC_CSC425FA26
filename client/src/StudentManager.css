@@ -1,0 +1,91 @@
+/* Lab 10 student records card. Scoped so the other cards keep their own layout. */
+.student-manager {
+  grid-column: 1 / -1;
+}
+.student-manager-columns {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+  gap: 1.5rem;
+}
+.student-manager form {
+  display: flex;
+  flex-direction: column;
+  gap: .35rem;
+  max-width: 28rem;
+}
+.student-manager label {
+  font-weight: 700;
+  margin-top: .35rem;
+}
+.student-manager input:not([type="checkbox"]),
+.student-manager select,
+.student-manager button {
+  min-height: 44px;
+  padding: .55rem .7rem;
+  border: 1px solid #568069;
+  border-radius: .45rem;
+  font: inherit;
+}
+.student-manager input,
+.student-manager select {
+  color: #123524;
+  background: white;
+}
+.student-manager .student-manager-check {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+}
+.student-manager .student-manager-check input {
+  width: 1.2rem;
+  height: 1.2rem;
+}
+.student-manager button {
+  margin-top: .5rem;
+  color: white;
+  background: #075c35;
+  font-weight: 700;
+  cursor: pointer;
+}
+.student-manager button:hover:not(:disabled) {
+  background: #06482a;
+}
+.student-manager button:disabled {
+  opacity: .6;
+  cursor: not-allowed;
+}
+.student-manager .student-manager-delete {
+  background: #9b1c1c;
+}
+.student-manager .student-manager-delete:hover:not(:disabled) {
+  background: #7a1515;
+}
+.student-manager-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .65rem;
+}
+.student-manager-status {
+  margin-top: 1rem;
+  font-weight: 700;
+}
+.student-manager-error {
+  color: #9b1c1c;
+  font-weight: 700;
+}
+.student-manager-record {
+  border-top: 1px solid #b2ccbd;
+  padding-top: 1rem;
+}
+.student-manager-record dl {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr));
+  gap: 1rem;
+}
+.student-manager-record dt {
+  font-weight: 700;
+}
+.student-manager-record dd {
+  margin: .25rem 0 0;
+  overflow-wrap: anywhere;
+}

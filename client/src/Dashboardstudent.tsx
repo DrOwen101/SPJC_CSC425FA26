@@ -2,6 +2,7 @@ import { useState, type SubmitEvent } from 'react'
 import WeatherCard from './WeatherCard'
 import StudentLookup from './StudentLookup'
 import TranscriptCard from './TranscriptCard'
+import StudentManager from './StudentManager'
 
 // Each letter grade maps to its value on a standard 4.0 GPA scale.
 const gradePoints: Record<string, number> = {
@@ -66,6 +67,7 @@ function Dashboardstudent() {
             <li><a href="#gpa">GPA</a></li>
             {/* <li><a href="#attendance">Attendance</a></li> */}
             <li><a href="#student-lookup">Student lookup</a></li>
+            <li><a href="#student-records">Student records</a></li>
             <li><a href="#transcript">Transcript</a></li>
             <li><a href="#alerts">Alerts</a></li>
             <li><a href="#courses">Upcoming Courses</a></li>
@@ -79,6 +81,8 @@ function Dashboardstudent() {
         {/* StudentLookup contains the Lab 7 form, request, state, and result.
             The dashboard imports and places it like any other React component. */}
         <StudentLookup />
+        {/* Lab 10: students saved in PostgreSQL through the Express /api/dashboard routes. */}
+        <StudentManager id="student-records" />
         <WeatherCard />
         <section id="gpa" className="dashboard-card" aria-labelledby="gpa-heading" tabIndex={-1}>
           <h2 id="gpa-heading">GPA</h2>
