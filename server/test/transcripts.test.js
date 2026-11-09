@@ -2,6 +2,7 @@ import assert from 'node:assert/strict'
 import { once } from 'node:events'
 import { after, before, test } from 'node:test'
 import { app } from '../src/app.js'
+import { pool } from '../src/db.js'
 
 let server
 let baseURL
@@ -18,11 +19,14 @@ after(async () => {
   }
 })
 
-test('lists exactly five students and serves consistent transcripts with correct GPA totals', async () => {
-  const response = await fetch(`${baseURL}/api/students`)
-  assert.equal(response.status, 200)
-  const { students } = await response.json()
-  assert.deepEqual(students.map((student) => student.studentID), ['1001', '1002', '1003', '1004', '1005'])
+test('serves consistent transcripts for all five students with correct GPA totals', async () => {
+  const students = [
+    { studentID: '1001', firstName: 'Avery', lastName: 'Morgan', major: 'Computer Science' },
+    { studentID: '1002', firstName: 'Jordan', lastName: 'Bennett', major: 'Information Systems' },
+    { studentID: '1003', firstName: 'Taylor', lastName: 'Reed', major: 'Business Administration' },
+    { studentID: '1004', firstName: 'Cameron', lastName: 'Brooks', major: 'Mathematics' },
+    { studentID: '1005', firstName: 'Riley', lastName: 'Parker', major: 'Computer Science' },
+  ]
   const gradePoints = { A: 4, B: 3, C: 2, D: 1, F: 0 }
 
   for (const student of students) {
@@ -67,6 +71,167 @@ test('lists exactly five students and serves consistent transcripts with correct
     const queryResult = await fetch(`${baseURL}/api/transcripts?studentID=${student.studentID}`)
     assert.equal(queryResult.status, 200)
     assert.deepEqual(await queryResult.json(), transcript)
+  }
+})
+
+test('searches students by full name using the database', async (t) => {
+  let query
+  t.mock.method(pool, 'query', async (...args) => {
+    query = args
+    return {
+      rows: [{ studentID: '1001', firstName: 'Avery', lastName: 'Morgan', major: 'Computer Science', institution: 'CSC 425 Demo University' }],
+    }
+  })
+
+  const response = await fetch(`${baseURL}/api/students?name=%20Avery%20Morgan%20`)
+  assert.equal(response.status, 200)
+  assert.deepEqual(await response.json(), {
+    students: [{ studentID: '1001', firstName: 'Avery', lastName: 'Morgan', major: 'Computer Science', institution: 'CSC 425 Demo University' }],
+  })
+  assert.equal(query[1][0], 'Avery Morgan')
+  assert.match(query[0], /LOWER\(BTRIM\(firstName \|\| ' ' \|\| lastName\)\)/)
+  assert.match(query[0], /\$1/)
+  assert.match(query[0], /firstName AS "firstName"/)
+  assert.match(query[0], /lastName AS "lastName"/)
+})
+
+test('creates student records through the database route', async (t) => {
+  let query
+  t.mock.method(pool, 'query', async (...args) => {
+    query = args
+    return {
+      rows: [{ studentID: '1006', firstName: 'Casey', lastName: 'Diaz', major: '', institution: '' }],
+    }
+  })
+
+  const response = await fetch(`${baseURL}/api/db/students`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({
+      studentID: 1006,
+      firstName: ' Casey ',
+      lastName: 'Diaz',
+      major: null,
+      institution: null,
+    }),
+  })
+  assert.equal(response.status, 201)
+  assert.deepEqual(await response.json(), {
+    studentID: '1006',
+    firstName: 'Casey',
+    lastName: 'Diaz',
+    major: '',
+    institution: '',
+  })
+  assert.deepEqual(query[1], [1006, 'Casey', 'Diaz', null, null])
+  assert.match(query[0], /firstName AS "firstName"/)
+  assert.match(query[0], /lastName AS "lastName"/)
+})
+
+test('validates new student data and reports duplicate IDs', async (t) => {
+  let queryCalled = false
+  let duplicateError = false
+  t.mock.method(pool, 'query', async () => {
+    queryCalled = true
+    if (duplicateError) throw Object.assign(new Error('duplicate key'), { code: '23505' })
+    return { rows: [] }
+  })
+
+  const invalid = await fetch(`${baseURL}/api/db/students`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ studentID: 0, firstName: '', lastName: 'Diaz' }),
+  })
+  assert.equal(invalid.status, 400)
+  assert.deepEqual(await invalid.json(), { error: 'INVALID_STUDENT_DATA' })
+  assert.equal(queryCalled, false)
+
+  duplicateError = true
+  const duplicate = await fetch(`${baseURL}/api/db/students`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ studentID: 1001, firstName: 'Avery', lastName: 'Morgan' }),
+  })
+  assert.equal(duplicate.status, 409)
+  assert.deepEqual(await duplicate.json(), { error: 'STUDENT_ALREADY_EXISTS' })
+})
+
+test('updates a student record through the database route', async (t) => {
+  let query
+  t.mock.method(pool, 'query', async (...args) => {
+    query = args
+    return {
+      rowCount: 1,
+      rows: [{ studentID: '1001', firstName: 'Avery Jane', lastName: 'Morgan', major: 'Computer Science', institution: 'CSC 425 Demo University' }],
+    }
+  })
+
+  const response = await fetch(`${baseURL}/api/db/students/1001`, {
+    method: 'PUT',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({
+      firstName: ' Avery Jane ',
+      lastName: 'Morgan',
+      major: 'Computer Science',
+      institution: 'CSC 425 Demo University',
+    }),
+  })
+  assert.equal(response.status, 200)
+  assert.equal((await response.json()).firstName, 'Avery Jane')
+  assert.deepEqual(query[1], ['Avery Jane', 'Morgan', 'Computer Science', 'CSC 425 Demo University', 1001])
+})
+
+test('validates update data and returns not found for missing students', async (t) => {
+  let queryCalled = false
+  t.mock.method(pool, 'query', async (...args) => {
+    queryCalled = true
+    return { rowCount: 0, rows: [] }
+  })
+
+  const invalid = await fetch(`${baseURL}/api/db/students/1001`, {
+    method: 'PUT',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ firstName: '', lastName: 'Morgan', major: null, institution: null }),
+  })
+  assert.equal(invalid.status, 400)
+  assert.deepEqual(await invalid.json(), { error: 'INVALID_STUDENT_DATA' })
+  assert.equal(queryCalled, false)
+
+  const missing = await fetch(`${baseURL}/api/db/students/9999`, {
+    method: 'PUT',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ firstName: 'Avery', lastName: 'Morgan', major: null, institution: null }),
+  })
+  assert.equal(missing.status, 404)
+  assert.deepEqual(await missing.json(), { error: 'STUDENT_NOT_FOUND' })
+})
+
+test('deletes a student record and reports missing or enrolled students', async (t) => {
+  let deleteResult = { rowCount: 1, rows: [{ studentID: 1001 }] }
+  t.mock.method(pool, 'query', async () => {
+    if (deleteResult instanceof Error) throw deleteResult
+    return deleteResult
+  })
+
+  const deleted = await fetch(`${baseURL}/api/db/students/1001`, { method: 'DELETE' })
+  assert.equal(deleted.status, 204)
+
+  deleteResult = { rowCount: 0, rows: [] }
+  const missing = await fetch(`${baseURL}/api/db/students/9999`, { method: 'DELETE' })
+  assert.equal(missing.status, 404)
+  assert.deepEqual(await missing.json(), { error: 'STUDENT_NOT_FOUND' })
+
+  deleteResult = Object.assign(new Error('foreign key violation'), { code: '23503' })
+  const enrolled = await fetch(`${baseURL}/api/db/students/1002`, { method: 'DELETE' })
+  assert.equal(enrolled.status, 409)
+  assert.deepEqual(await enrolled.json(), { error: 'STUDENT_HAS_ENROLLMENTS' })
+})
+
+test('requires a valid full name for database student search', async () => {
+  for (const path of ['/api/students', '/api/students?name=', '/api/students?name=   ', '/api/students?name=A&name=B']) {
+    const response = await fetch(`${baseURL}${path}`)
+    assert.equal(response.status, 400, path)
+    assert.deepEqual(await response.json(), { error: 'INVALID_NAME' })
   }
 })
 

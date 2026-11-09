@@ -19,11 +19,11 @@ Check the API in a browser or terminal:
 
 ```bash
 curl http://localhost:3000/api/status
-curl http://localhost:3000/api/students
+curl "http://localhost:3000/api/students?name=Avery%20Morgan"
 curl http://localhost:3000/api/transcripts/1001
 ```
 
-`/api/status` checks the mock API without PostgreSQL. The existing `/api/health` still checks PostgreSQL and can return 503 when that database is unavailable; this does not prevent transcript requests.
+`/api/status` and transcript routes use mock data without PostgreSQL. The Student Lookup endpoint reads from PostgreSQL, and `/api/health` checks the database connection.
 
 ## Endpoints to give students
 
@@ -31,7 +31,7 @@ Replace `BASE_URL` with your server address, such as `http://localhost:3000` whe
 
 | Method | URL | Result |
 | --- | --- | --- |
-| GET | `BASE_URL/api/students` | `{ "students": [...] }` with available IDs, names, and majors |
+| GET | `BASE_URL/api/students?name=Avery%20Morgan` | `{ "students": [...] }` matching the full name in PostgreSQL |
 | GET | `BASE_URL/api/transcripts/1001` | One complete student transcript |
 | GET | `BASE_URL/api/transcripts?studentID=1001` | The same transcript using a query parameter |
 | GET | `BASE_URL/api/status` | API availability and student count |
@@ -53,13 +53,15 @@ IDs are strings containing exactly four digits. A missing or malformed ID return
 }
 ```
 
-Requests are public and allow browser access from any origin. Use normal `fetch`; no credentials or `mode: 'no-cors'` are needed. The API provides no create, update, or delete operations.
+The mock status and transcript endpoints are read-only. The Student Lookup UI can update and delete records through the database routes below.
 
-## Hard-coded student lookup data
+## Student Lookup database
 
-Edit the `mockStudents` array near the top of [`src/app.js`](src/app.js) to change the Student Lookup test data. `GET /api/students` returns `{ "students": [...] }` directly from that array. Each student has a string `studentID`, `firstName`, `lastName`, and `major`. No database setup or `.env` file is needed.
+`GET /api/students` requires a `name` query parameter and searches the PostgreSQL `students` table case-insensitively by full name. It returns matching IDs, names, majors, and institutions as `{ "students": [...] }`. Configure `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, and `DB_PASSWORD` in `server/.env`, then create and seed the database tables. See [`src/data/transcripts.sql`](src/data/transcripts.sql) for the provided schema and fictional seed data. `/api/health` can confirm that the backend connects to PostgreSQL.
 
-Start the API with `npm start --prefix server` from the repository root, then open `http://localhost:3000/api/students`. Restart the server after editing the array, or use `npm run dev --prefix server` for automatic restarts. Search for a full name such as **Avery Morgan** or **Jordan Bennett** in the frontend.
+For example, `GET http://localhost:3000/api/students?name=Avery%20Morgan` searches for Avery Morgan. A missing or invalid name returns HTTP 400; no match returns `{ "students": [] }`.
+
+The lookup displays a selected student as an editable form. **Create New Record** opens a form that uses `POST /api/db/students` with a numeric student ID, first and last names, and optional major and institution. `PUT /api/db/students/:studentID` updates the fields; `DELETE /api/db/students/:studentID` deletes the record. Creation returns HTTP 409 for a duplicate ID. Deletion returns HTTP 409 if enrollment rows still reference the student.
 
 The transcript exercise has separate fixtures below. If you change a student's identity and want both exercises to stay consistent, update the matching transcript fixture too.
 
@@ -105,11 +107,11 @@ try {
 }
 ```
 
-Suggested practice: build a student ID form, a loading indicator, an error message, a table for each semester, and a cumulative GPA/credits summary. Use `/api/students` if you want a dropdown of available students.
+Suggested practice: build a student ID form, a loading indicator, an error message, a table for each semester, and a cumulative GPA/credits summary. Student names can be searched through `/api/students?name=...`.
 
 ## Included React example
 
-The Lab 7 Student Dashboard imports and renders `<StudentLookup />` in [`Dashboardstudent.tsx`](../client/src/Dashboardstudent.tsx). [`StudentLookup.tsx`](../client/src/StudentLookup.tsx) owns the form, state, API request, and result rendering. It requests `/api/students` only after a full-name search and displays one matching student's ID, first name, last name, and major. Blank, missing, ambiguous, and failed searches display messages instead of records. [`studentLookupApi.ts`](../client/src/studentLookupApi.ts) supplies response types, validation, and name normalization; `StudentLookup.css` supplies the lookup styles.
+The Lab 7 Student Dashboard imports and renders `<StudentLookup />` in [`Dashboardstudent.tsx`](../client/src/Dashboardstudent.tsx). [`StudentLookup.tsx`](../client/src/StudentLookup.tsx) owns the form, state, API request, and result rendering. It requests `/api/students?name=...` only after a full-name search and displays one matching student's ID, first name, last name, and major from PostgreSQL. Blank, missing, ambiguous, and failed searches display messages instead of records. [`studentLookupApi.ts`](../client/src/studentLookupApi.ts) supplies response types, validation, and name normalization; `StudentLookup.css` supplies the lookup styles.
 
 The dashboard also renders the Lab 6 [`TranscriptCard.tsx`](../client/src/TranscriptCard.tsx) for student ID searches and full transcripts. It operates independently of the Lab 7 name lookup:
 

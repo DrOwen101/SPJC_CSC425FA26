@@ -36,17 +36,103 @@
 .student-lookup-controls button:hover {
   background: #06482a;
 }
-.student-lookup-result {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
-  gap: 1rem;
+.student-lookup .student-lookup-create-toggle {
+  min-height: 0;
+  margin-top: .5rem;
+  padding: .2rem 0;
+  border: 0;
+  color: #075c35;
+  background: transparent;
+  font-size: .875rem;
+  font-weight: 700;
+  text-decoration: underline;
+  cursor: pointer;
+}
+.student-lookup .student-lookup-create-toggle:hover {
+  color: #06482a;
+  background: transparent;
+}
+.student-lookup .student-lookup-create-toggle:disabled {
+  cursor: wait;
+  opacity: .7;
+}
+.student-lookup-controls button:disabled,
+.student-lookup-actions button:disabled {
+  cursor: wait;
+  opacity: .7;
+}
+.student-lookup-edit {
+  margin-top: 1.25rem;
   border-top: 1px solid #b2ccbd;
   padding-top: 1rem;
 }
-.student-lookup-result dt {
+.student-lookup-edit h3 {
+  margin: 0 0 1rem;
+}
+.student-lookup-fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+  gap: 1rem;
+}
+.student-lookup-fields label {
   font-weight: 700;
 }
-.student-lookup-result dd {
-  margin: .25rem 0 0;
-  overflow-wrap: anywhere;
+.student-lookup-fields input {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  margin-top: .35rem;
+  padding: .65rem .75rem;
+  border: 1px solid #568069;
+  border-radius: .45rem;
+  color: #123524;
+  background: white;
+  font: inherit;
+}
+.student-lookup-fields input[readonly] {
+  background: #edf3ef;
+}
+.student-lookup-fields input:focus-visible,
+.student-lookup-controls input:focus-visible,
+.student-lookup-actions button:focus-visible,
+.student-lookup-controls button:focus-visible {
+  outline: 3px solid #e1a823;
+  outline-offset: 2px;
+}
+.student-lookup-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .65rem;
+  margin-top: 1rem;
+}
+.student-lookup-actions button {
+  min-height: 44px;
+  padding: .65rem .9rem;
+  border: 1px solid #075c35;
+  border-radius: .45rem;
+  color: white;
+  background: #075c35;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+.student-lookup-actions button:hover {
+  background: #06482a;
+}
+.student-lookup-actions .student-lookup-delete {
+  border-color: #9c2525;
+  background: #9c2525;
+}
+.student-lookup-actions .student-lookup-delete:hover {
+  background: #771b1b;
+}
+.student-lookup-actions .student-lookup-cancel {
+  border-color: #568069;
+  color: #123524;
+  background: white;
+}
+.student-lookup-actions .student-lookup-cancel:hover {
+  background: #edf3ef;
 }

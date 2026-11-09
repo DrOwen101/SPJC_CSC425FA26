@@ -2,16 +2,13 @@ import 'dotenv/config'
 import { readFileSync } from 'node:fs'
 import cors from 'cors'
 import express from 'express'
-import { checkDatabase } from './db.js'
-import pool from './db.js'
+import { checkDatabase, pool } from './db.js'
 
 export const app = express()
 
 app.use(express.json())
 
-// Hard-coded data for the Student Lookup exercise. These are fictional people.
-// Students can edit this array to test their frontend without a database,
-// SQL queries, credentials, or a .env file. Keep student IDs as strings.
+// The status endpoint reports the size of the mock transcript fixture.
 const mockStudents = [
   {
     studentID: '1001',
@@ -45,8 +42,7 @@ const mockStudents = [
   },
 ]
 
-// The earlier transcript exercise keeps its course/grade fixtures in JSON.
-// It also works without a database. /api/students uses only the array above.
+// The transcript exercise keeps its course/grade fixtures in JSON.
 const { students: transcripts } = JSON.parse(readFileSync(new URL('./data/transcripts.json', import.meta.url), 'utf8'))
 
 // Only the fictional API allows requests from any frontend origin.
@@ -57,10 +53,31 @@ teachingApi.get('/status', (_request, response) => {
   response.json({ status: 'ok', service: 'Mock transcript API', studentCount: mockStudents.length })
 })
 
-teachingApi.get('/students', (_request, response) => {
-  // Express converts the JavaScript object to JSON for the React frontend.
-  // StudentLookup selects the matching full name from this returned array.
-  response.json({ students: mockStudents })
+teachingApi.get('/students', async (request, response) => {
+  const name = request.query.name
+
+  if (typeof name !== 'string' || !name.trim() || name.trim().length > 101) {
+    return response.status(400).json({ error: 'INVALID_NAME' })
+  }
+
+  try {
+    const result = await pool.query(
+      `SELECT studentID::text AS "studentID",
+              firstName AS "firstName",
+              lastName AS "lastName",
+              COALESCE(major, '') AS "major",
+              COALESCE(institution, '') AS "institution"
+       FROM students
+       WHERE LOWER(BTRIM(firstName || ' ' || lastName)) = LOWER(BTRIM($1))
+       ORDER BY studentID`,
+      [name.trim()],
+    )
+
+    return response.json({ students: result.rows })
+  } catch (error) {
+    console.error('Student lookup failed:', error)
+    return response.status(500).json({ error: 'INTERNAL_SERVER_ERROR' })
+  }
 })
 
 // Support both a path parameter and a query parameter for classroom examples.
@@ -159,22 +176,35 @@ app.get('/api/db/students/:studentID/classes', async (request, response) => {
 
 // Route to create a new student in the SQL database
 app.post('/api/db/students', async (request, response) => {
-  const { studentID, firstName, lastName, major, institution } = request.body
+  const body = request.body
+  const { studentID, firstName, lastName, major, institution } = body && typeof body === 'object' ? body : {}
 
-  if (!studentID || !firstName || !lastName || !major || !institution) {
-    return response.status(400).json({ error: 'MISSING_FIELDS' })
+  if (
+    !Number.isSafeInteger(studentID) || studentID < 1 || studentID > 2147483647
+    || typeof firstName !== 'string' || !firstName.trim() || firstName.trim().length > 50
+    || typeof lastName !== 'string' || !lastName.trim() || lastName.trim().length > 50
+    || (major !== null && major !== undefined && (typeof major !== 'string' || major.length > 50))
+    || (institution !== null && institution !== undefined && (typeof institution !== 'string' || institution.length > 50))
+  ) {
+    return response.status(400).json({ error: 'INVALID_STUDENT_DATA' })
   }
 
   try {
     const result = await pool.query(
-      'INSERT INTO students (studentID, firstName, lastName, major, institution) VALUES ($1, $2, $3, $4, $5) RETURNING *',
-      [studentID, firstName, lastName, major, institution],
+      `INSERT INTO students (studentID, firstName, lastName, major, institution)
+       VALUES ($1, $2, $3, $4, $5)
+       RETURNING studentID::text AS "studentID",
+                 firstName AS "firstName",
+                 lastName AS "lastName",
+                 COALESCE(major, '') AS "major",
+                 COALESCE(institution, '') AS "institution"`,
+      [studentID, firstName.trim(), lastName.trim(), major?.trim() || null, institution?.trim() || null],
     )
 
     return response.status(201).json(result.rows[0])
   }
   catch (error) {
-    if (error.code === '23505') { // Unique violation error code in PostgreSQL
+    if (error.code === '23505') {
       return response.status(409).json({ error: 'STUDENT_ALREADY_EXISTS' })
     }
     console.error('Error creating student:', error)
@@ -186,17 +216,38 @@ app.post('/api/db/students', async (request, response) => {
 // Route to update an existing student in the SQL database
 app.put('/api/db/students/:studentID', async (request, response) => {
   const studentID = Number(request.params.studentID)
-  const { firstName, lastName, major, institution } = request.body
+  const body = request.body
+  const { firstName, lastName, major, institution } = body && typeof body === 'object' ? body : {}
 
   if (!Number.isSafeInteger(studentID)) {
     return response.status(400).json({ error: 'INVALID_STUDENT_ID' })
   }
 
+  if (
+    typeof firstName !== 'string' || !firstName.trim() || firstName.trim().length > 50
+    || typeof lastName !== 'string' || !lastName.trim() || lastName.trim().length > 50
+    || (major !== null && (typeof major !== 'string' || major.length > 50))
+    || (institution !== null && (typeof institution !== 'string' || institution.length > 50))
+  ) {
+    return response.status(400).json({ error: 'INVALID_STUDENT_DATA' })
+  }
+
   try {
     const result = await pool.query(
-      'UPDATE students SET firstName = $1, lastName = $2, major = $3, institution = $4 WHERE studentID = $5 RETURNING *',
-      [firstName, lastName, major, institution, studentID],
+      `UPDATE students
+       SET firstName = $1, lastName = $2, major = $3, institution = $4
+       WHERE studentID = $5
+       RETURNING studentID::text AS "studentID",
+                 firstName AS "firstName",
+                 lastName AS "lastName",
+                 COALESCE(major, '') AS "major",
+                 COALESCE(institution, '') AS "institution"`,
+      [firstName.trim(), lastName.trim(), major?.trim() || null, institution?.trim() || null, studentID],
     )
+    if (result.rowCount === 0) {
+      return response.status(404).json({ error: 'STUDENT_NOT_FOUND' })
+    }
+
     return response.status(200).json(result.rows[0])
   }
   catch (error) {
@@ -219,15 +270,18 @@ app.delete('/api/db/students/:studentID', async (request, response) => {
       'DELETE FROM students WHERE studentID = $1 RETURNING *',
       [studentID],
     )
+    if (result.rowCount === 0) {
+      return response.status(404).json({ error: 'STUDENT_NOT_FOUND' })
+    }
+
     return response.status(204).json()
   }
   catch(error) {
+    if (error.code === '23503') {
+      return response.status(409).json({ error: 'STUDENT_HAS_ENROLLMENTS' })
+    }
     console.error('Error deleting student:', error)
     return response.status(500).json({ error: 'INTERNAL_SERVER_ERROR' })
-  }
-
-  if (result.rowCount === 0) {
-    return response.status(404).json({ error: 'STUDENT_NOT_FOUND' })
   }
 })
 
