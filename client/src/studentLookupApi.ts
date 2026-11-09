@@ -1,13 +1,13 @@
 // These fields match GET /api/students in server/src/app.js. The directory
 // response does not include the semester/GPA fields from the transcript route.
 export type Student = {
-  studentID: string
-  firstName: string
-  lastName: string
-  major: string
+  id: number
+  name: string
 }
 
-export type StudentsResponse = { students: Student[] }
+export type StudentsResponse = { 
+  students: Student[]
+}
 
 // Ignore capitalization and leading/trailing spaces, but require a full name.
 export function normalizeName(name: string): string {
@@ -19,10 +19,9 @@ export function normalizeName(name: string): string {
 export function isStudentsResponse(value: unknown): value is StudentsResponse {
   if (typeof value !== 'object' || value === null || !('students' in value)) return false
   return Array.isArray(value.students) && value.students.every((student: unknown) =>
-    typeof student === 'object' && student !== null
-    && 'studentID' in student && typeof student.studentID === 'string'
-    && 'firstName' in student && typeof student.firstName === 'string'
-    && 'lastName' in student && typeof student.lastName === 'string'
-    && 'major' in student && typeof student.major === 'string',
+    typeof student === 'object' && 
+    student !== null &&
+   'id' in student && typeof student.id === 'number' &&
+   'name' in student && typeof student.name === 'string'
   )
 }

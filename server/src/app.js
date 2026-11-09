@@ -2,9 +2,10 @@ import 'dotenv/config'
 import { readFileSync } from 'node:fs'
 import cors from 'cors'
 import express from 'express'
-import { checkDatabase } from './db.js'
+import { checkDatabase, pool } from './db.js'
 
 export const app = express()
+app.use(express.json())
 
 const attendance = [
   { id: 1, studentId: '1001', studentName: 'Avery Morgan', date: '2026-10-20', status: 'present' },
@@ -50,17 +51,93 @@ const { students: transcripts } = JSON.parse(readFileSync(new URL('./data/transc
 
 // Only the fictional API allows requests from any frontend origin.
 const teachingApi = express.Router()
-teachingApi.use(['/status', '/students', '/transcripts'], cors({ methods: ['GET', 'HEAD', 'OPTIONS'] }))
+teachingApi.use(['/status', '/students', '/transcripts'], cors({ methods: ['GET', 'POST', 'PUT', 'DELETE', 'HEAD', 'OPTIONS'] }))
 
 teachingApi.get('/status', (_request, response) => {
   response.json({ status: 'ok', service: 'Mock transcript API', studentCount: mockStudents.length })
 })
 
-teachingApi.get('/students', (_request, response) => {
-  // Express converts the JavaScript object to JSON for the React frontend.
-  // StudentLookup selects the matching full name from this returned array.
-  response.json({ students: mockStudents })
+teachingApi.get('/students', async (_request, response) => {
+  try {
+    const result = await pool.query(
+        'SELECT id, name FROM students ORDER BY id'
+    )
+
+    response.json({ students: result.rows })
+  } catch (error) {
+    console.error('Error getting students:', error.message)
+    response.status(500).json({ error: 'Database error' })
+  }
 })
+
+teachingApi.post('/students', async (request, response) => {
+  try {
+    const { id, name } = request.body;
+
+    if (!Number.isInteger(id) || typeof name !== 'string' || !name.trim()) {
+      return response.status(400).json({ error: 'Valid ID and name are required' });
+    }
+
+    const result = await pool.query(
+      'INSERT INTO students (id, name) VALUES ($1, $2) RETURNING *',
+      [id, name.trim()]
+    );
+
+    response.status(201).json(result.rows[0]);
+  } catch (error) {
+    console.error('Error adding student:', error);
+    response.status(500).json({ error: 'Database error' });
+  }
+});
+
+teachingApi.put('/students/:id', async (request, response) => {
+  try {
+    const id = Number(request.params.id);
+    const { name } = request.body;
+
+    if (!Number.isInteger(id) || typeof name !== 'string' || !name.trim()) {
+      return response.status(400).json({ error: 'Valid ID and name are required' });
+    }
+
+    const result = await pool.query(
+      'UPDATE students SET name = $1 WHERE id = $2 RETURNING *',
+      [name.trim(), id]
+    );
+
+    if (result.rows.length === 0) {
+      return response.status(404).json({ error: 'Student not found' });
+    }
+
+    response.json(result.rows[0]);
+  } catch (error) {
+    console.error('Error updating student:', error);
+    response.status(500).json({ error: 'Database error' });
+  }
+});
+
+teachingApi.delete('/students/:id', async (request, response) => {
+  try {
+    const id = Number(request.params.id);
+
+    if (!Number.isInteger(id)) {
+      return response.status(400).json({ error: 'Valid ID required' });
+    }
+
+    const result = await pool.query(
+      'DELETE FROM students WHERE id = $1 RETURNING *',
+      [id]
+    );
+
+    if (result.rows.length === 0) {
+      return response.status(404).json({ error: 'Student not found' });
+    }
+
+    response.json(result.rows[0]);
+  } catch (error) {
+    console.error('Error deleting student:', error);
+    response.status(500).json({ error: 'Database error' });
+  }
+});
 
 // Support both a path parameter and a query parameter for classroom examples.
 function getTranscript(request, response) {
@@ -91,7 +168,7 @@ teachingApi.get('/transcripts/:studentID', getTranscript)
 app.use('/api', teachingApi)
 
 app.use(cors({ origin: 'http://localhost:5173' }))
-app.use(express.json())
+
 
 app.get('/', (_request, response) => {
   response.json({

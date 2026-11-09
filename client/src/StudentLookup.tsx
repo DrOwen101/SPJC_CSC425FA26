@@ -21,6 +21,11 @@ function StudentLookup() {
   const [lookupError, setLookupError] = useState('')
   const [inputError, setInputError] = useState('')
 
+  const [studentId, setStudentId] = useState('')
+  const [studentName, setStudentName] = useState('')
+  const [crudMessage, setCrudMessage] = useState('')
+  const [crudLoading, setCrudLoading] = useState(false)
+
   // A ref keeps the active controller between renders without updating the UI.
   // Every submission (even an invalid one) cancels the previous request.
   const activeRequest = useRef<AbortController | null>(null)
@@ -68,7 +73,7 @@ function StudentLookup() {
       // filter (rather than find) lets us detect ambiguous duplicate names.
       const requestedName = normalizeName(name)
       const matches = response.data.students.filter((candidate) =>
-        normalizeName(`${candidate.firstName} ${candidate.lastName}`) === requestedName,
+        normalizeName(candidate.name) === requestedName,
       )
       if (matches.length === 0) {
         setLookupError(`Student not found: “${name}”. Check the full name and try again.`)
@@ -99,6 +104,82 @@ function StudentLookup() {
       if (!controller.signal.aborted) setIsLoading(false)
     }
   }
+
+async function createStudent() {
+  const id = Number(studentId)
+  const name = studentName.trim()
+
+  if (!Number.isInteger(id) || id <= 0 || !name) {
+    setCrudMessage('Enter a valid student ID and name.')
+    return
+  }
+
+  setCrudLoading(true)
+  setCrudMessage('')
+
+  try {
+    const response = await axios.post(
+      apiBaseUrl.replace(/\/$/, '') + '/api/students',
+      { id, name }
+    )
+    setStudent(response.data)
+    setCrudMessage('Student created successfully!')
+  } catch {
+    setCrudMessage('Unable to create student.')
+  } finally {
+    setCrudLoading(false)
+  }
+} 
+
+async function updateStudent() {
+  const id = Number(studentId)
+  const name = studentName.trim()
+
+  if (!Number.isInteger(id) || id <= 0 || !name) {
+    setCrudMessage('Enter a valid student ID and name.')
+    return
+  }
+
+  setCrudLoading(true)
+  setCrudMessage('')
+
+  try {
+    const response = await axios.put(
+      apiBaseUrl.replace(/\/$/, '') + '/api/students/' + id,
+      { name }
+    )
+    setStudent(response.data)
+    setCrudMessage('Student updated successfully!')
+  } catch {
+    setCrudMessage('Unable to update student.')
+  } finally {
+    setCrudLoading(false)
+  }
+}
+
+async function deleteStudent() {
+  const id = Number(studentId)
+
+  if (!Number.isInteger(id) || id <= 0) {
+    setCrudMessage('Enter a valid student ID.')
+    return
+  }
+
+  setCrudLoading(true)
+  setCrudMessage('')
+
+  try {
+    await axios.delete(
+      apiBaseUrl.replace(/\/$/, '') + '/api/students/' + id
+    )
+    setStudent(null)
+    setCrudMessage('Student deleted successfully!')
+  } catch {
+    setCrudMessage('Unable to delete student.')
+  } finally {
+    setCrudLoading(false)
+  }
+}
 
   // Derive the status from existing state so there is no extra state to keep
   // synchronized. The submitted name stays separate from the editable input.
@@ -135,6 +216,40 @@ function StudentLookup() {
           <button type="submit">Search</button>
         </div>
       </form>
+
+      <div className="student-crud">
+  <h3>Manage Students</h3>
+
+  <label htmlFor="crud-student-id">Student ID</label>
+  <input
+    id="crud-student-id"
+    type="number"
+    value={studentId}
+    onChange={(event) => setStudentId(event.target.value)}
+  />
+
+  <label htmlFor="crud-student-name">Student Name</label>
+  <input
+    id="crud-student-name"
+    type="text"
+    value={studentName}
+    onChange={(event) => setStudentName(event.target.value)}
+  />
+
+<div className="student-crud-buttons">
+    <button type="button" onClick={createStudent} disabled={crudLoading}>
+      Create
+    </button>
+    <button type="button" onClick={updateStudent} disabled={crudLoading}>
+      Update
+    </button>
+    <button type="button" onClick={deleteStudent} disabled={crudLoading}>
+      Delete
+    </button>
+  </div>
+
+  <p role="status">{crudMessage}</p>
+</div>
       {inputError && <p id="lookup-input-error" className="field-error" role="alert">{inputError}</p>}
       {/* The live region announces changes without moving keyboard focus. */}
       <p role="status">{statusMessage}</p>
@@ -142,10 +257,8 @@ function StudentLookup() {
       {/* Render labeled values, never the response collection or raw JSON. */}
       {student && (
         <dl className="student-lookup-result">
-          <div><dt>Student ID</dt><dd>{student.studentID}</dd></div>
-          <div><dt>First name</dt><dd>{student.firstName}</dd></div>
-          <div><dt>Last name</dt><dd>{student.lastName}</dd></div>
-          <div><dt>Major</dt><dd>{student.major}</dd></div>
+          <div><dt>Student</dt><dd>{student.id}</dd></div>
+          <div><dt>Name</dt><dd>{student.name}</dd></div> 
         </dl>
       )}
     </section>
