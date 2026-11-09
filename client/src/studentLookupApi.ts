@@ -26,3 +26,26 @@ export function isStudentsResponse(value: unknown): value is StudentsResponse {
     && 'major' in student && typeof student.major === 'string',
   )
 }
+
+export type Enrollment = {
+  courseName: string
+}
+
+export type EnrollmentsResponse = {
+  enrollments: Enrollment[]
+}
+
+export function isEnrollmentsResponse(value: unknown): value is EnrollmentsResponse {
+  if(
+    typeof value !== 'object' 
+        || value === null
+        || !('enrollments' in value)
+        || !Array.isArray(value.enrollments)
+  ) return false
+  return value.enrollments.every((item: unknown) =>
+    typeof item === 'object'
+    && item !== null
+    && 'courseName' in item
+    && typeof item.courseName === 'string'
+  )
+}

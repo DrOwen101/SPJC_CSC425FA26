@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type SubmitEvent } from 'react'
 import axios from 'axios'
-import { isStudentsResponse, normalizeName, type Student } from './studentLookupApi'
+import { isEnrollmentsResponse, isStudentsResponse, normalizeName, type Enrollment, type Student } from './studentLookupApi'
 import './StudentLookup.css'
 
 // This is the same Express API used by the Lab 6 transcript example.
@@ -17,9 +17,16 @@ function StudentLookup() {
   const [isLoading, setIsLoading] = useState(false)
   // null means there is no record to display. setStudent updates React state
   // and causes the component to render again with the selected student.
+  const [enrollment, setEnrollment] = useState<Enrollment[]>([])
   const [student, setStudent] = useState<Student | null>(null)
   const [lookupError, setLookupError] = useState('')
   const [inputError, setInputError] = useState('')
+  const [newStudent, setNewStudent] = useState<Student>({
+    studentID: '',
+    firstName: '',
+    lastName: '',
+    major: '',
+  })
 
   // A ref keeps the active controller between renders without updating the UI.
   // Every submission (even an invalid one) cancels the previous request.
@@ -36,6 +43,7 @@ function StudentLookup() {
     // Clear ALL previous outcomes immediately, including after a blank search.
     setRequestedStudent(name)
     setStudent(null)
+    setEnrollment([])
     setLookupError('')
     setInputError('')
     setIsLoading(false)
@@ -75,7 +83,17 @@ function StudentLookup() {
       } else if (matches.length > 1) {
         setLookupError(`More than one student matches “${name}”. Please clarify which student you mean with your instructor before continuing.`)
       } else {
-        setStudent(matches[0]) // Store only the one matching record for rendering.
+        const matchedStudent = matches[0]
+        const enrollmentsResponse = await axios.get<unknown>(
+          `${apiBaseUrl.replace(/\/$/, '')}/api/enrollments/${encodeURIComponent(matchedStudent.studentID)}`,
+          { signal: controller.signal, timeout: 15000 },
+        )
+        if (controller.signal.aborted) return
+        if (!isEnrollmentsResponse(enrollmentsResponse.data)) {
+          throw new Error('The enrollment service returned unexpected data. Please try again.')
+        }
+        setEnrollment(enrollmentsResponse.data.enrollments)
+        setStudent(matchedStudent)
       }
     } catch (error) {
       // Cancellation is expected on another search or navigation. An old error
@@ -99,6 +117,57 @@ function StudentLookup() {
       if (!controller.signal.aborted) setIsLoading(false)
     }
   }
+
+  async function addStudent(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    try {
+      const { data } = await axios.post<Student>(
+        `${apiBaseUrl.replace(/\/$/, '')}/api/students`,
+        newStudent,
+      )
+      setStudent(data)
+      setRequestedStudent(`${data.firstName} ${data.lastName}`)
+      setSearchName(`${data.firstName} ${data.lastName}`)
+      setNewStudent({ studentID: '', firstName: '', lastName: '', major: '' })
+      setLookupError('')
+    } catch {
+      setLookupError('Unable to add student. Please try again.')
+    }
+  }
+
+  async function saveStudent(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    if(!student) return
+    try {
+      await axios.put(
+        `${apiBaseUrl.replace(/\/$/, '')}/api/students/${student.studentID}`,
+        student,
+      )
+      const { data } = await axios.get<{students: Student[]}>(
+        `${apiBaseUrl.replace(/\/$/, '')}/api/students`,
+      )
+      const savedStudent = data.students.find((item) => item.studentID === student.studentID)
+      if (savedStudent) setStudent(savedStudent)
+      setLookupError(savedStudent ? '' : 'Unable to save student. Please try again.')
+    } catch {
+      setLookupError('Unable to save student. Please try again.')
+    }
+  }
+
+  async function removeStudent() {
+    if(!student) return
+    try{
+      await axios.delete(
+        `${apiBaseUrl.replace(/\/$/, '')}/api/students/${student.studentID}`
+      )
+      setStudent(null)
+      setEnrollment([])
+      setLookupError('Student successfully removed.')
+    } catch {
+      setLookupError('Unable to remove student. Please try again.')
+    }
+  }
+  
 
   // Derive the status from existing state so there is no extra state to keep
   // synchronized. The submitted name stays separate from the editable input.
@@ -141,14 +210,64 @@ function StudentLookup() {
       {lookupError && <p className="field-error" role="alert">{lookupError}</p>}
       {/* Render labeled values, never the response collection or raw JSON. */}
       {student && (
+        <>
         <dl className="student-lookup-result">
           <div><dt>Student ID</dt><dd>{student.studentID}</dd></div>
           <div><dt>First name</dt><dd>{student.firstName}</dd></div>
           <div><dt>Last name</dt><dd>{student.lastName}</dd></div>
           <div><dt>Major</dt><dd>{student.major}</dd></div>
         </dl>
+
+        <h3>Enrollments</h3>
+        {enrollment.length === 0 ? (
+          <p>No enrollments found.</p>
+        ) : (
+          <ul>
+            {enrollment.map((item, index) => (
+              <li key={`${item.courseName}-${index}`}>{item.courseName}</li>
+            ))}
+          </ul>
+        )}
+
+        </>
       )}
+      {student && (
+        <form onSubmit={saveStudent}>
+          <h3>Edit student</h3>
+          <label>
+            Student ID
+            <input value={student.studentID} readOnly />
+          </label>
+          {(['firstName', 'lastName', 'major'] as const).map((field) => (
+            <label key={field}>
+              {field}
+              <input
+                required
+                value={student[field]}
+                onChange={(event) => setStudent({ ...student, [field]: event.target.value })}
+              />
+            </label>
+          ))}
+          <button type="submit">Save Student</button>
+          <button type="button" onClick={removeStudent}>Delete Student</button>
+        </form>
+      )}
+      <form onSubmit={addStudent}>
+        <h3>Add Student</h3>
+        {(['studentID', 'firstName', 'lastName', 'major'] as const).map((field) => (
+          <label key = {field}>
+            {field}
+            <input
+            required
+            value={newStudent[field]}
+            onChange={(event) => setNewStudent({ ...newStudent, [field]: event.target.value })}
+            />
+          </label>
+        ))}
+        <button type="submit">Add Student</button>
+      </form>
     </section>
+
   )
 }
 
