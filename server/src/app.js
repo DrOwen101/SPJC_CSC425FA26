@@ -2,7 +2,7 @@ import 'dotenv/config'
 import { readFileSync } from 'node:fs'
 import cors from 'cors'
 import express from 'express'
-import { checkDatabase } from './db.js'
+import { checkDatabase, pool } from './db.js'
 
 export const app =  express()
 
@@ -135,5 +135,205 @@ app.get('/api/health', async (_request, response) => {
   } catch (error) {
     console.error('Database health check failed:', error.message)
     response.status(503).json({ status: 'error', database: 'disconnected', message: error.message })
+  }
+})
+
+app.get('/api/student-records', async (request, response) => {
+  const { studentID } = request.query
+
+  if (studentID !== undefined && (typeof studentID !== 'string' || !/^\d{4}$/.test(studentID))) {
+    return response.status(400).json({
+      error: 'INVALID_STUDENT_ID',
+      message: 'studentID must be a four-digit ID, for example 9101.',
+    })
+  }
+
+  try {
+    const result = await pool.query(
+      `SELECT
+        r.record_id AS "recordId",
+        s.student_id AS "studentID",
+        s.first_name AS "firstName",
+        s.last_name AS "lastName",
+        r.term,
+        r.course_code AS "courseCode",
+        r.grade,
+        r.credit_hours AS "creditHours"
+      FROM academic_records AS r
+      JOIN students AS s ON s.student_id = r.student_id
+      WHERE ($1::varchar IS NULL OR s.student_id = $1)
+      ORDER BY s.student_id, r.record_id`,
+      [studentID ?? null],
+    )
+
+    return response.status(200).json({ records: result.rows })
+  } catch (error) {
+    console.error('Student records query failed:', error.message)
+    return response.status(500).json({
+      error: 'DATABASE_QUERY_FAILED',
+      message: 'Unable to load student records.',
+    })
+  }
+})
+
+const validGrades = ['A+', 'A', 'A-', 'B+', 'B', 'B-', 'C+', 'C', 'C-', 'D+', 'D', 'D-', 'F']
+
+function isValidCourseRecord({ term, courseCode, grade, creditHours }) {
+  return typeof term === 'string'
+    && term.trim().length > 0
+    && term.trim().length <= 20
+    && typeof courseCode === 'string'
+    && courseCode.trim().length > 0
+    && courseCode.trim().length <= 12
+    && validGrades.includes(grade)
+    && Number.isInteger(creditHours)
+    && creditHours >= 1
+    && creditHours <= 6
+}
+
+app.post('/api/student-records', async (request, response) => {
+  const { studentID, term, courseCode, grade, creditHours } = request.body ?? {}
+
+  if (
+    typeof studentID !== 'string'
+    || !/^\d{4}$/.test(studentID)
+    || !isValidCourseRecord({ term, courseCode, grade, creditHours })
+  ) {
+    return response.status(400).json({
+      error: 'INVALID_RECORD',
+      message: 'Provide a four-digit studentID, a term (up to 20 characters), a courseCode (up to 12 characters), a valid letter grade, and creditHours from 1 to 6.',
+    })
+  }
+
+  try {
+    const insertResult = await pool.query(
+      `INSERT INTO academic_records (student_id, term, course_code, grade, credit_hours)
+       VALUES ($1, $2, $3, $4, $5)
+       RETURNING record_id`,
+      [studentID, term.trim(), courseCode.trim(), grade, creditHours],
+    )
+
+    const record = await pool.query(
+      `SELECT
+        r.record_id AS "recordId",
+        s.student_id AS "studentID",
+        s.first_name AS "firstName",
+        s.last_name AS "lastName",
+        r.term,
+        r.course_code AS "courseCode",
+        r.grade,
+        r.credit_hours AS "creditHours"
+       FROM academic_records AS r
+       JOIN students AS s ON s.student_id = r.student_id
+       WHERE r.record_id = $1`,
+      [insertResult.rows[0].record_id],
+    )
+
+    return response.status(201).json({ record: record.rows[0] })
+  } catch (error) {
+    if (error.code === '23503') {
+      return response.status(404).json({
+        error: 'STUDENT_NOT_FOUND',
+        message: `No student exists with studentID ${studentID}.`,
+      })
+    }
+    if (error.code === '23505') {
+      return response.status(409).json({
+        error: 'DUPLICATE_RECORD',
+        message: 'That student already has a record for this course and term.',
+      })
+    }
+
+    console.error('Student record creation failed:', error.message)
+    return response.status(500).json({
+      error: 'DATABASE_QUERY_FAILED',
+      message: 'Unable to create the student record.',
+    })
+  }
+})
+
+app.put('/api/student-records/:id', async (request, response) => {
+  const recordId = request.params.id
+  const { term, courseCode, grade, creditHours } = request.body ?? {}
+
+  if (!isValidCourseRecord({ term, courseCode, grade, creditHours })) {
+    return response.status(400).json({
+      error: 'INVALID_RECORD',
+      message: 'Provide a valid record ID, term, course code, letter grade, and credit hours from 1 to 6.',
+    })
+  }
+
+  try {
+    const updateResult = await pool.query(
+      `UPDATE academic_records
+       SET term = $1, course_code = $2, grade = $3, credit_hours = $4
+       WHERE record_id = $5
+       RETURNING record_id`,
+      [term.trim(), courseCode.trim(), grade, creditHours, recordId],
+    )
+
+    if (updateResult.rowCount === 0) {
+      return response.status(404).json({
+        error: 'RECORD_NOT_FOUND',
+        message: `No course record exists with record ID ${recordId}.`,
+      })
+    }
+
+    const record = await pool.query(
+      `SELECT
+        r.record_id AS "recordId",
+        s.student_id AS "studentID",
+        s.first_name AS "firstName",
+        s.last_name AS "lastName",
+        r.term,
+        r.course_code AS "courseCode",
+        r.grade,
+        r.credit_hours AS "creditHours"
+       FROM academic_records AS r
+       JOIN students AS s ON s.student_id = r.student_id
+       WHERE r.record_id = $1`,
+      [recordId],
+    )
+
+    return response.status(200).json({ record: record.rows[0] })
+  } catch (error) {
+    if (error.code === '23505') {
+      return response.status(409).json({
+        error: 'DUPLICATE_RECORD',
+        message: 'That student already has a record for this course and term.',
+      })
+    }
+
+    console.error('Student record update failed:', error.message)
+    return response.status(500).json({
+      error: 'DATABASE_QUERY_FAILED',
+      message: 'Unable to update the student record.',
+    })
+  }
+})
+
+app.delete('/api/student-records/:id', async (request, response) => {
+  const recordId = request.params.id
+
+  try {
+    const result = await pool.query(
+      'DELETE FROM academic_records WHERE record_id = $1',
+      [recordId],
+    )
+
+    if (result.rowCount === 0) {
+      return response.status(404).json({
+        error: 'RECORD_NOT_FOUND',
+        message: `No course record exists with record ID ${recordId}.`,
+      })
+    }
+
+    return response.status(204).end()
+  } catch (error) {
+    console.error('Student record deletion failed:', error.message)
+    return response.status(500).json({
+      error: 'DATABASE_QUERY_FAILED',
+      message: 'Unable to delete the student record.',
+    })
   }
 })
