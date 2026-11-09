@@ -277,13 +277,12 @@ function StudentLookup() {
   } else if (student) {
     statusMessage = `Showing the result for ${requestedStudent}.`
   } else if (!requestedStudent) {
-    statusMessage = 'No student requested yet.'
+    statusMessage = ''
   }
 
   return (
     <section id="student-lookup" className="dashboard-card student-lookup" aria-labelledby="lookup-heading" tabIndex={-1}>
       <h2 id="lookup-heading">Student lookup</h2>
-      <p id="lookup-help">Enter a student’s full name to find and edit the database record.</p>
       <form onSubmit={searchStudents} noValidate>
         <label htmlFor="student-name">Student full name</label>
         <div className="student-lookup-controls">
