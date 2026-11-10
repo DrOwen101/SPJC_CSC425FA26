@@ -5,8 +5,7 @@ import { isTranscript, type Transcript } from './transcriptApi'
 
 // By default, connect to the API on the same computer as the frontend.
 // For a separately hosted API, set VITE_API_BASE_URL or pass apiBaseUrl.
-const defaultApiBaseUrl = import.meta.env.VITE_API_BASE_URL
-  || `${window.location.protocol}//${window.location.hostname}:3000`
+const defaultApiBaseUrl = import.meta.env.VITE_API_BASE_URL || ''
 
 type TranscriptCardProps = {
   id?: string

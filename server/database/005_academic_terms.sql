@@ -1,0 +1,40 @@
+INSERT INTO student_dashboard.academic_terms
+  (code, name, starts_on, ends_on,
+   registration_opens_at, registration_closes_at)
+VALUES
+  ('FA2026', 'Fall 2026',
+   DATE '2026-08-17',
+   DATE '2026-12-18',
+   TIMESTAMPTZ '2026-04-01 09:00:00-05',
+   TIMESTAMPTZ '2026-08-16 23:59:59-05'),
+
+   ('FA2025', 'Fall 2025',
+   DATE '2025-08-17',
+   DATE '2025-12-18',
+   TIMESTAMPTZ '2026-04-01 09:00:00-05',
+   TIMESTAMPTZ '2026-08-16 23:59:59-05'),
+
+   ('FA2024', 'Fall 2024',
+   DATE '2024-08-17',
+   DATE '2024-12-18',
+   TIMESTAMPTZ '2026-04-01 09:00:00-05',
+   TIMESTAMPTZ '2026-08-16 23:59:59-05'),
+
+    ('SP2026', 'Spring 2026',
+   DATE '2026-01-17',
+   DATE '2026-05-18',
+   TIMESTAMPTZ '2026-04-01 09:00:00-05',
+   TIMESTAMPTZ '2026-08-16 23:59:59-05'),
+
+   ('SP2025', 'Spring 2025',
+   DATE '2025-01-17',
+   DATE '2025-05-18',
+   TIMESTAMPTZ '2026-04-01 09:00:00-05',
+   TIMESTAMPTZ '2026-08-16 23:59:59-05'),
+
+   ('SP2024', 'Spring 2024',
+   DATE '2024-01-17',
+   DATE '2024-05-18',
+   TIMESTAMPTZ '2026-04-01 09:00:00-05',
+   TIMESTAMPTZ '2026-08-16 23:59:59-05')
+ON CONFLICT (code) DO NOTHING;
