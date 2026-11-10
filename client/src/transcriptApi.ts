@@ -19,7 +19,6 @@ export type Transcript = {
   lastName: string
   major: string
   institution: string
-  isMockData: boolean
   semesters: Semester[]
   summary: {
     creditsAttempted: number
@@ -62,7 +61,6 @@ export function isTranscript(value: unknown): value is Transcript {
     && typeof value.lastName === 'string'
     && typeof value.major === 'string'
     && typeof value.institution === 'string'
-    && typeof value.isMockData === 'boolean'
     && isObject(value.summary)
     && isNumber(value.summary.creditsAttempted)
     && isNumber(value.summary.creditsEarned)

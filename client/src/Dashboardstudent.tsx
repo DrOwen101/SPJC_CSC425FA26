@@ -1,4 +1,5 @@
 import { useState, type SubmitEvent } from 'react'
+import axios from 'axios'
 import WeatherCard from './WeatherCard'
 import StudentLookup from './StudentLookup'
 import TranscriptCard from './TranscriptCard'
@@ -20,13 +21,36 @@ const gradePoints: Record<string, number> = {
   F: 0,
 }
 
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL
+  || `${window.location.protocol}//${window.location.hostname}:3000`
+
+type AttendanceRecord = {
+  id: number
+  studentID: string
+  student: string
+  date: string
+  status: 'present' | 'absent' | 'late'
+}
+
 // This role component supplies content; App.css supplies the shared layout.
-// The lookup uses the dummy API; the other cards remain classroom examples.
+// Student lookup and transcript data come from the Express/PostgreSQL API.
 function Dashboardstudent() {
   const [gradeEntry, setGradeEntry] = useState('')
   const [grades, setGrades] = useState<string[]>([])
   const [gpa, setGpa] = useState<number | null>(null)
   const [gradeError, setGradeError] = useState('')
+  const [attendanceForm, setAttendanceForm] = useState({
+    studentID: '1001',
+    date: '2026-11-09',
+    status: 'present' as AttendanceRecord['status'],
+  })
+  const [savedAttendance, setSavedAttendance] = useState<AttendanceRecord | null>(null)
+  const [attendanceError, setAttendanceError] = useState('')
+  const [isSavingAttendance, setIsSavingAttendance] = useState(false)
+  const [deleteAttendanceID, setDeleteAttendanceID] = useState('6')
+  const [deletedAttendance, setDeletedAttendance] = useState<AttendanceRecord | null>(null)
+  const [deleteError, setDeleteError] = useState('')
+  const [isDeletingAttendance, setIsDeletingAttendance] = useState(false)
 
   function addGrade(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -50,6 +74,70 @@ function Dashboardstudent() {
     setGpa(totalPoints / grades.length)
   }
 
+  async function saveAttendance(event: SubmitEvent<HTMLFormElement>) {
+    event.preventDefault()
+    setAttendanceError('')
+    setSavedAttendance(null)
+    setIsSavingAttendance(true)
+
+    try {
+      const response = await axios.post<AttendanceRecord>(
+        `${apiBaseUrl.replace(/\/$/, '')}/api/attendance`,
+        attendanceForm,
+        { timeout: 15000 },
+      )
+      setSavedAttendance(response.data)
+    } catch (error) {
+      if (axios.isAxiosError<{ message?: string }>(error)) {
+        setAttendanceError(
+          error.response?.data?.message
+            || (error.response
+              ? `Saving attendance failed (HTTP ${error.response.status}).`
+              : 'Unable to reach the student API. Check that the server is running.'),
+        )
+      } else {
+        setAttendanceError('Unable to save the attendance record.')
+      }
+    } finally {
+      setIsSavingAttendance(false)
+    }
+  }
+
+  async function deleteAttendance(event: SubmitEvent<HTMLFormElement>) {
+    event.preventDefault()
+    setDeleteError('')
+    setDeletedAttendance(null)
+    setIsDeletingAttendance(true)
+
+    const recordID = deleteAttendanceID.trim()
+    if (!/^[1-9]\d*$/.test(recordID)) {
+      setDeleteError('Enter a positive attendance record ID.')
+      setIsDeletingAttendance(false)
+      return
+    }
+
+    try {
+      const deleteResponse = await axios.delete<AttendanceRecord>(
+        `${apiBaseUrl.replace(/\/$/, '')}/api/attendance/${recordID}`,
+        { timeout: 15000 },
+      )
+      setDeletedAttendance(deleteResponse.data)
+    } catch (error) {
+      if (axios.isAxiosError<{ message?: string }>(error)) {
+        setDeleteError(
+          error.response?.data?.message
+            || (error.response
+              ? `Deleting attendance failed (HTTP ${error.response.status}).`
+              : 'Unable to reach the student API. Check that the server is running.'),
+        )
+      } else {
+        setDeleteError('Unable to delete the attendance record.')
+      }
+    } finally {
+      setIsDeletingAttendance(false)
+    }
+  }
+
   return (
     <main id="student-dashboard" className="dashboard" aria-labelledby="student-title" tabIndex={-1}>
       {/* One h1 names the page. Each card below has an h2 for heading navigation. */}
@@ -64,7 +152,7 @@ function Dashboardstudent() {
       <nav className="dashboard-nav" aria-label="Student sections">
         <ul>
             <li><a href="#gpa">GPA</a></li>
-            {/* <li><a href="#attendance">Attendance</a></li> */}
+            <li><a href="#attendance">Attendance</a></li>
             <li><a href="#student-lookup">Student lookup</a></li>
             <li><a href="#transcript">Transcript</a></li>
             <li><a href="#alerts">Alerts</a></li>
@@ -80,6 +168,90 @@ function Dashboardstudent() {
             The dashboard imports and places it like any other React component. */}
         <StudentLookup />
         <WeatherCard />
+        <section id="attendance" className="dashboard-card" aria-labelledby="attendance-heading" tabIndex={-1}>
+          <h2 id="attendance-heading">Record attendance</h2>
+          <p>Save a student attendance entry to PostgreSQL through the Express API.</p>
+          <form className="gpa-form" onSubmit={saveAttendance}>
+            <label htmlFor="attendance-student-id">Student ID</label>
+            <div className="gpa-entry-row">
+              <input
+                id="attendance-student-id"
+                name="studentID"
+                type="text"
+                inputMode="numeric"
+                pattern="\d{4}"
+                maxLength={4}
+                value={attendanceForm.studentID}
+                onChange={(event) => setAttendanceForm({ ...attendanceForm, studentID: event.target.value })}
+                required
+              />
+            </div>
+            <label htmlFor="attendance-date">Date</label>
+            <div className="gpa-entry-row">
+              <input
+                id="attendance-date"
+                name="date"
+                type="date"
+                value={attendanceForm.date}
+                onChange={(event) => setAttendanceForm({ ...attendanceForm, date: event.target.value })}
+                required
+              />
+            </div>
+            <label htmlFor="attendance-status">Status</label>
+            <div className="gpa-entry-row">
+              <select
+                id="attendance-status"
+                name="status"
+                value={attendanceForm.status}
+                onChange={(event) => {
+                  const status = event.target.value
+                  if (status === 'present' || status === 'absent' || status === 'late') {
+                    setAttendanceForm({ ...attendanceForm, status })
+                  }
+                }}
+              >
+                <option value="present">Present</option>
+                <option value="absent">Absent</option>
+                <option value="late">Late</option>
+              </select>
+              <button type="submit" disabled={isSavingAttendance}>
+                {isSavingAttendance ? 'Saving…' : 'Save attendance'}
+              </button>
+            </div>
+          </form>
+          {attendanceError && <p className="field-error" role="alert">{attendanceError}</p>}
+          {savedAttendance && (
+            <p className="status-label" role="status">
+              Saved in PostgreSQL: record #{savedAttendance.id}, {savedAttendance.student} ({savedAttendance.studentID}),
+              {` ${savedAttendance.date} · ${savedAttendance.status}`}
+            </p>
+          )}
+          <form className="gpa-form" onSubmit={deleteAttendance}>
+            <label htmlFor="delete-attendance-id">Delete attendance record by ID</label>
+            <div className="gpa-entry-row">
+              <input
+                id="delete-attendance-id"
+                name="recordID"
+                type="number"
+                min="1"
+                step="1"
+                value={deleteAttendanceID}
+                onChange={(event) => setDeleteAttendanceID(event.target.value)}
+                required
+              />
+              <button type="submit" disabled={isDeletingAttendance}>
+                {isDeletingAttendance ? 'Deleting…' : 'Delete record'}
+              </button>
+            </div>
+          </form>
+          {deleteError && <p className="field-error" role="alert">{deleteError}</p>}
+          {deletedAttendance && (
+            <p className="status-label" role="status">
+              Deleted record #{deletedAttendance.id}: {deletedAttendance.student} ({deletedAttendance.studentID}),
+              {` ${deletedAttendance.date} · ${deletedAttendance.status}`}
+            </p>
+          )}
+        </section>
         <section id="gpa" className="dashboard-card" aria-labelledby="gpa-heading" tabIndex={-1}>
           <h2 id="gpa-heading">GPA</h2>
           <p id="gpa-value" className="metric" aria-live="polite">
@@ -128,11 +300,6 @@ function Dashboardstudent() {
             Calculate GPA
           </button>
         </section>
-        {/* <section id="attendance" className="dashboard-card" aria-labelledby="attendance-heading" tabIndex={-1}>
-          <h2 id="attendance-heading">Attendance</h2>
-          <p className="metric">94%</p>
-          <p>Current attendance · sample value</p>
-        </section> */}
         <TranscriptCard id="transcript" />
         <section id="alerts" className="dashboard-card" aria-labelledby="alerts-heading" tabIndex={-1}>
           <h2 id="alerts-heading">Alerts</h2>

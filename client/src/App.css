@@ -260,7 +260,7 @@ main, .dashboard-card {
   flex-wrap: wrap;
   gap: .65rem;
 }
-.gpa-entry-row input {
+.gpa-entry-row input, .gpa-entry-row select {
   flex: 1 1 9rem;
   min-width: 0;
   min-height: 44px;

@@ -53,7 +53,7 @@ function TranscriptCard({ id, apiBaseUrl = defaultApiBaseUrl }: TranscriptCardPr
         // Axios rejects HTTP errors (such as 404) as well as network failures.
         if (axios.isAxiosError(requestError)) {
           const status = requestError.response?.status
-          if (status === 404) error = `No mock student was found with student ID ${request.studentID}. Try 1001–1005.`
+          if (status === 404) error = `No student was found with student ID ${request.studentID}.`
           else if (status) error = `The transcript request failed (HTTP ${status}). Please try again.`
           else error = 'Unable to reach the transcript service. Check your connection and try again.'
         } else if (requestError instanceof Error) {
@@ -98,7 +98,7 @@ function TranscriptCard({ id, apiBaseUrl = defaultApiBaseUrl }: TranscriptCardPr
     <section id={id} className="transcript-card" aria-labelledby={`${labelId}-heading`} tabIndex={-1}>
      {/* // ASSIGNMENT DELIVERABLE CODE FOR LAB 6 */}
       <h2 id={`${labelId}-heading`}>Transcript</h2>
-      <p>Explore fictional student records for this classroom exercise.</p>
+      <p>Explore fictional student records stored in the academic database.</p>
 
       <form onSubmit={handleSubmit} noValidate>
         <label htmlFor={`${labelId}-student-id`}>Student ID</label>
@@ -119,7 +119,7 @@ function TranscriptCard({ id, apiBaseUrl = defaultApiBaseUrl }: TranscriptCardPr
           />
           <button type="submit" disabled={isLoading}>{isLoading ? 'Loading…' : 'Load transcript'}</button>
         </div>
-        <p id={`${labelId}-help`} className="transcript-card-help">Available mock student IDs: 1001–1005.</p>
+        <p id={`${labelId}-help`} className="transcript-card-help">Enter a four-digit student ID to retrieve its saved transcript.</p>
         {inputError && <p id={`${labelId}-input-error`} className="transcript-card-error" role="alert">{inputError}</p>}
       </form>
 
@@ -132,7 +132,7 @@ function TranscriptCard({ id, apiBaseUrl = defaultApiBaseUrl }: TranscriptCardPr
             <h3>{transcript.firstName} {transcript.lastName}</h3>
             <p>{transcript.institution}</p>
             <p>Student ID: {transcript.studentID} · {transcript.major}</p>
-            {transcript.isMockData && <p className="transcript-card-help">Mock transcript · Not an official academic record</p>}
+            <p className="transcript-card-help">Fictional practice transcript · Not an official academic record</p>
           </header>
 
           {transcript.semesters.map((semester) => (
