@@ -201,24 +201,19 @@ api.post('/attendance', async (request, response) => {
   const result = await pool.query(`
     INSERT INTO attendance_records (student_id, attendance_date, status)
     VALUES ($1, $2, $3)
-    ON CONFLICT (student_id, attendance_date) DO NOTHING
+    ON CONFLICT (student_id, attendance_date)
+    DO UPDATE SET status = EXCLUDED.status
     RETURNING id, student_id, to_char(attendance_date, 'YYYY-MM-DD') AS attendance_date, status
   `, [Number(studentID), date, status])
-  if (result.rowCount === 0) {
-    return response.status(409).json({
-      error: 'ATTENDANCE_ALREADY_EXISTS',
-      message: `An attendance record already exists for student ${studentID} on ${date}.`,
-    })
-  }
 
   const record = result.rows[0]
   const student = studentResult.rows[0]
-  console.info('Attendance record created', {
+  console.info('Attendance record saved', {
     id: record.id,
     studentID: String(record.student_id),
     date: record.attendance_date,
   })
-  response.status(201).json({
+  response.json({
     id: record.id,
     studentID: String(record.student_id),
     student: `${student.first_name} ${student.last_name}`,
