@@ -1,6 +1,5 @@
 import { useEffect, useId, useState } from 'react'
 import axios from 'axios'
-import './WeatherCard.css'
 
 // Open-Meteo is free for noncommercial teaching use and needs no API key.
 // Change these values together to use another location.
@@ -11,35 +10,10 @@ type WeatherResponse = {
   current?: { temperature_2m?: number }
 }
 
-// Example 1: Axios returns a Promise. .then() runs when it resolves.
-// Axios parses JSON automatically and puts the body in response.data.
-function loadWithAxios(signal: AbortSignal): Promise<WeatherResponse> {
-  return axios.get<WeatherResponse>(weatherUrl, { signal })
-    .then((response) => response.data)
-}
-
-// Example 2: An async function also returns a Promise. await pauses this
-// function until a Promise settles; it does not freeze the page.
-async function loadWithFetch(signal: AbortSignal): Promise<WeatherResponse> {
-  const response = await fetch(weatherUrl, { signal })
-
-  // Unlike Axios, fetch does not reject automatically for HTTP error statuses.
-  if (!response.ok) {
-    throw new Error(`Weather request failed (HTTP ${response.status}).`)
-  }
-
-  // Fetch needs this second asynchronous step to parse JSON into an object.
-  const data: WeatherResponse = await response.json()
-  return data
-}
-
-// Keep both teaching examples available in code without a screen control.
-const weatherRequests = { axios: loadWithAxios, fetch: loadWithFetch }
-
-// Reuse with only an import and <WeatherCard />. Requests, state, and styles
-// belong to this component; the parent does not need to manage the weather.
-function WeatherCard() {
-  const id = useId() // Unique labels even when a page has multiple cards.
+// Weather calls an external API directly. Student data uses our Express API.
+// Both features use Axios with async/await for their HTTP requests.
+function WeatherCard({ id }: { id?: string }) {
+  const labelId = useId() // Unique labels even when a page has multiple cards.
   const [refreshCount, setRefreshCount] = useState(0)
   const [temperature, setTemperature] = useState<number | null>(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -62,9 +36,11 @@ function WeatherCard() {
     // async function inside the effect and then call it.
     async function loadWeather() {
       try {
-        // For the Fetch lesson, change weatherRequests.axios to
-        // weatherRequests.fetch. Only one example sends a request.
-        const data = await weatherRequests.axios(controller.signal)
+        // Axios parses the JSON response and stores it in response.data.
+        const response = await axios.get<WeatherResponse>(weatherUrl, {
+          signal: controller.signal,
+        })
+        const data = response.data
 
         // TypeScript describes the expected shape, but the actual API response
         // still needs checking. Zero degrees is a valid temperature.
@@ -100,8 +76,8 @@ function WeatherCard() {
   }, [refreshCount]) // Fetch on mount or refresh.
 
   return (
-    <section className="weather-card" aria-labelledby={`${id}-heading`}>
-      <h2 id={`${id}-heading`}>Weather</h2>
+    <section id={id} tabIndex={-1} className="weather-card" aria-labelledby={`${labelId}-heading`}>
+      <h2 id={`${labelId}-heading`}>Weather</h2>
       <p>{location.name}</p>
       <div role="status" aria-live="polite" aria-busy={isLoading}>
         <p className="weather-card-temperature">
