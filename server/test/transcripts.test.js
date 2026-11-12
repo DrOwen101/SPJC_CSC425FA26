@@ -1,12 +1,41 @@
 import assert from 'node:assert/strict'
 import { once } from 'node:events'
 import { after, before, test } from 'node:test'
+import { readFileSync } from 'node:fs'
 import { app } from '../src/app.js'
+import { pool } from '../src/db.js'
 
 let server
 let baseURL
+const originalQuery = pool.query
+const { students: fixtureStudents } = JSON.parse(
+  readFileSync(new URL('../src/data/transcripts.json', import.meta.url), 'utf8'),
+)
 
 before(async () => {
+  pool.query = async (text, values = []) => {
+    if (text.includes('SELECT NOW() AS current_time')) {
+      return { rows: [{ current_time: new Date().toISOString() }] }
+    }
+    if (text.includes('COUNT(*)::int AS count FROM students')) {
+      return { rows: [{ count: fixtureStudents.length }] }
+    }
+    if (text.includes('FROM students') && text.includes('ORDER BY student_id')) {
+      return {
+        rows: fixtureStudents.map(({ studentID, firstName, lastName, major }) => ({
+          studentID,
+          firstName,
+          lastName,
+          major,
+        })),
+      }
+    }
+    if (text.includes('JOIN transcripts t') && text.includes('WHERE s.student_id = $1')) {
+      const student = fixtureStudents.find(({ studentID }) => studentID === values[0])
+      return { rows: student ? [student] : [] }
+    }
+    throw new Error(`Unexpected SQL in API test: ${text}`)
+  }
   server = app.listen(0, '127.0.0.1')
   await once(server, 'listening')
   baseURL = `http://127.0.0.1:${server.address().port}`
@@ -16,6 +45,7 @@ after(async () => {
   if (server?.listening) {
     await new Promise((resolve, reject) => server.close((error) => error ? reject(error) : resolve()))
   }
+  pool.query = originalQuery
 })
 
 test('lists exactly five students and serves consistent transcripts with correct GPA totals', async () => {
@@ -95,10 +125,20 @@ test('supports frontend origins and preflight, including error responses', async
   assert.match(preflight.headers.get('access-control-allow-methods'), /GET/)
 })
 
-test('mock status works without connecting to PostgreSQL and writes are not available', async () => {
+test('database status reports student count and writes are not available', async () => {
   const response = await fetch(`${baseURL}/api/status`)
   assert.equal(response.status, 200)
-  assert.deepEqual(await response.json(), { status: 'ok', service: 'Mock transcript API', studentCount: 5 })
+  assert.deepEqual(await response.json(), {
+    status: 'ok',
+    service: 'PostgreSQL student transcript API',
+    studentCount: 5,
+  })
+  const health = await fetch(`${baseURL}/api/health`)
+  assert.equal(health.status, 200)
+  const healthBody = await health.json()
+  assert.equal(healthBody.status, 'ok')
+  assert.equal(healthBody.database, 'connected')
+  assert.equal(typeof healthBody.timestamp, 'string')
   const post = await fetch(`${baseURL}/api/transcripts/1001`, { method: 'POST' })
   assert.equal(post.status, 404)
   const root = await fetch(baseURL)
