@@ -4,6 +4,10 @@ import cors from 'cors'
 import express from 'express'
 import { checkDatabase } from './db.js'
 import { studentRecordsRouter } from './studentRecordsRoutes.js'
+import session from 'express-session'
+import connectPgSimple from 'connect-pg-simple'
+import { pool } from './db.js'
+import { authRouter, loadSessionUser } from './authRoutes.js'
 
 export const app = express()
 
@@ -89,8 +93,43 @@ teachingApi.get('/transcripts/:studentID', getTranscript)
 // These handlers finish before the original starter API's CORS middleware.
 app.use('/api', teachingApi)
 
-app.use(cors({ origin: 'http://localhost:5173' }))
+app.use(cors({
+  origin: 'http://localhost:5173',
+  credentials: true,
+}))
+
 app.use(express.json())
+
+// Store authenticated user sessions in PostgreSQL.
+const PgSession = connectPgSimple(session)
+
+if (!process.env.SESSION_SECRET) {
+  throw new Error('SESSION_SECRET is missing from server/.env')
+}
+
+app.use(session({
+  store: new PgSession({
+    pool,
+    schemaName: 'auth',
+    tableName: 'session',
+    createTableIfMissing: true,
+  }),
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    maxAge: 1000 * 60 * 60 * 2,
+  },
+}))
+
+// Identify the logged-in user for subsequent API routes.
+app.use(loadSessionUser)
+
+// Authentication endpoints.
+app.use('/api/auth', authRouter)
 
 // PostgreSQL backed student CRUD endpoints
 app.use('/api/student-records', studentRecordsRouter)
