@@ -8,6 +8,7 @@ import session from 'express-session'
 import connectPgSimple from 'connect-pg-simple'
 import { pool } from './db.js'
 import { authRouter, loadSessionUser } from './authRoutes.js'
+import { facultyRouter } from './facultyRoutes.js'
 
 export const app = express()
 
@@ -130,6 +131,8 @@ app.use(loadSessionUser)
 
 // Authentication endpoints.
 app.use('/api/auth', authRouter)
+
+app.use('/api/faculty', facultyRouter)
 
 // PostgreSQL backed student CRUD endpoints
 app.use('/api/student-records', studentRecordsRouter)

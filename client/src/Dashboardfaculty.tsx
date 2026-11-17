@@ -1,5 +1,7 @@
 // This role component supplies content; App.css supplies the shared layout.
 // Keep these examples separate from live records until a data source is connected.
+import FacultyRoster from './FacultyRoster'
+
 function Dashboardfaculty() {
   return (
     <main id="faculty-dashboard" className="dashboard" aria-labelledby="faculty-title" tabIndex={-1}>
@@ -36,15 +38,7 @@ function Dashboardfaculty() {
             <li>Enrollment and course materials</li>
           </ul>
         </section>
-        <section id="class-rosters" className="dashboard-card" aria-labelledby="class-rosters-heading" tabIndex={-1}>
-          <h2 id="class-rosters-heading">Class Rosters</h2>
-          <p className="status-label">Not connected</p>
-          <p>Student lists will appear here when enrollment records are available.</p>
-          <ul className="detail-list">
-            <li>Students organized by course and section</li>
-            <li>Attendance records for each class</li>
-          </ul>
-        </section>
+        <FacultyRoster />
         <section id="grading" className="dashboard-card" aria-labelledby="grading-heading" tabIndex={-1}>
           <h2 id="grading-heading">Grading</h2>
           <p className="status-label">Not connected</p>
