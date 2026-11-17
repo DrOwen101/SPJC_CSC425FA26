@@ -10,6 +10,16 @@ export async function getStudentById(studentID) {
     return result.rows[0]
 }
 
+export async function getStudentByEmail(email) {
+    const result = await pool.query('SELECT s.*, m.code AS major_code, m.name AS major_name FROM student_records.students s JOIN student_records.majors m ON s.major_id = m.id WHERE s.email = $1', [email])
+    return result.rows[0]
+}
+
+export async function getStudentByName(firstName, lastName) {
+    const result = await pool.query('SELECT s.*, m.code AS major_code, m.name AS major_name FROM student_records.students s JOIN student_records.majors m ON s.major_id = m.id WHERE LOWER(s.first_name) = LOWER($1) AND LOWER(s.last_name) = LOWER($2)', [firstName, lastName])
+    return result.rows[0]
+}
+
 export async function createStudent(student) {
     const { first_name, last_name, email, major_code, enrollment_year, is_active } = student
     const result = await pool.query(

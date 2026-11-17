@@ -1,3 +1,5 @@
+import AlertsDatabase from './alertsDatabase'
+
 // This role component supplies content; App.css supplies the shared layout.
 // Keep these examples separate from live records until a data source is connected.
 function Dashboardfaculty() {
@@ -54,11 +56,7 @@ function Dashboardfaculty() {
             <li>Grades and student feedback</li>
           </ul>
         </section>
-        <section id="faculty-alerts" className="dashboard-card" aria-labelledby="faculty-alerts-heading" tabIndex={-1}>
-          <h2 id="faculty-alerts-heading">Alerts</h2>
-          <p className="status-label">Live alerts unavailable</p>
-          <p>Teaching reminders, schedule changes, and department announcements will appear here when notifications are connected.</p>
-        </section>
+        <AlertsDatabase />
         <section id="teaching-schedule" className="dashboard-card" aria-labelledby="teaching-schedule-heading" tabIndex={-1}>
           <h2 id="teaching-schedule-heading">Teaching Schedule</h2>
           <p className="status-label">Not connected</p>

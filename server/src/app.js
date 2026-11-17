@@ -11,6 +11,12 @@ import {
   updateStudent,
   deleteStudent,
 } from './studentQueries.js'
+import {
+  getAllAlerts,
+  getAlertById,
+  createAlert,
+  markAlertRead
+} from './alertQueries.js'
 
 export const app = express()
 
@@ -214,5 +220,37 @@ app.get('/api/health', async (_request, response) => {
   } catch (error) {
     console.error('Database health check failed:', error.message)
     response.status(503).json({ status: 'error', database: 'disconnected', message: error.message })
+  }
+})
+
+//get all alerts from database and put them into a json
+app.get('/api/database/alerts_db', async (_request, response) => {
+  try {
+    const alerts = await getAllAlerts()
+    response.json({ alerts })
+  } catch (error) {
+    console.error('Error fetching students from database:', error.message)
+    response.status(500).json({ error: 'DATABASE_ERROR', message: error.message })
+  }
+})
+
+app.patch('/api/database/alerts/:id/read', async (request, response) => {
+  try {
+    const alert = await markAlertRead(request.params.id)
+
+    if (!alert) {
+      return response.status(404).json({
+        error: 'ALERT_NOT_FOUND',
+        message: 'Alert not found',
+      })
+    }
+
+    response.json({ alert })
+  } catch (error) {
+    console.error('Error marking alert as read:', error.message)
+    response.status(500).json({
+      error: 'DATABASE_ERROR',
+      message: error.message,
+    })
   }
 })
