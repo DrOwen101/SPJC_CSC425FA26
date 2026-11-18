@@ -20,3 +20,16 @@ CREATE TABLE IF NOT EXISTS enrollments (
         REFERENCES students(student_id)
         ON DELETE CASCADE
 );
+
+CREATE TABLE IF NOT EXISTS teachingSchedule (
+    schedule_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    teacher_id VARCHAR(4) NOT NULL,
+    course_code VARCHAR(20) NOT NULL,
+    day_of_week VARCHAR(10) NOT NULL,
+    start_time TIME NOT NULL,
+    end_time TIME NOT NULL,
+    room VARCHAR(20),
+
+    CONSTRAINT valid_class_time
+        CHECK (end_time > start_time)
+);

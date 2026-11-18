@@ -1,5 +1,11 @@
 // This role component supplies content; App.css supplies the shared layout.
 // Keep these examples separate from live records until a data source is connected.
+
+import StudentManagementCard from './StudentManagementCard'
+import WeatherCard from './WeatherCard'
+import ChessGame from './chessGame'
+import TeachingSchedule from './TeacherSchedule'
+
 function Dashboardfaculty() {
   return (
     <main id="faculty-dashboard" className="dashboard" aria-labelledby="faculty-title" tabIndex={-1}>
@@ -17,9 +23,12 @@ function Dashboardfaculty() {
         <ul>
             <li><a href="#faculty-courses">Courses</a></li>
             <li><a href="#class-rosters">Class Rosters</a></li>
+            <li><a href="#management-card">Student Management</a></li>
             <li><a href="#grading">Grading</a></li>
             <li><a href="#faculty-alerts">Alerts</a></li>
             <li><a href="#teaching-schedule">Teaching Schedule</a></li>
+            <li><a href="#weather-card">Weather Information</a></li>
+            <li><a href="#chess-game">Chess</a></li>
         </ul>
       </nav>
 
@@ -45,6 +54,9 @@ function Dashboardfaculty() {
             <li>Attendance records for each class</li>
           </ul>
         </section>
+        <section id="management-card" className="dashboard-card" aria-labelledby="management-heading" tabIndex={-1}>
+          <StudentManagementCard />
+        </section>
         <section id="grading" className="dashboard-card" aria-labelledby="grading-heading" tabIndex={-1}>
           <h2 id="grading-heading">Grading</h2>
           <p className="status-label">Not connected</p>
@@ -60,13 +72,13 @@ function Dashboardfaculty() {
           <p>Teaching reminders, schedule changes, and department announcements will appear here when notifications are connected.</p>
         </section>
         <section id="teaching-schedule" className="dashboard-card" aria-labelledby="teaching-schedule-heading" tabIndex={-1}>
-          <h2 id="teaching-schedule-heading">Teaching Schedule</h2>
-          <p className="status-label">Not connected</p>
-          <p>Class meetings and office hours will appear here.</p>
-          <ul className="detail-list">
-            <li>Day, time, and room or online location</li>
-            <li>Office hours and student appointments</li>
-          </ul>
+          <TeachingSchedule />
+        </section>
+        <section id="weather-card" className="dashboard-card" aria-labelledby="weather-card-heading" tabIndex={-1}>
+          <WeatherCard />
+        </section>
+        <section id="chess-game" className="dashboard-card" aria-labelledby="weather-card-heading" tabIndex={-1}>
+          <ChessGame />
         </section>
       </div>
     </main>

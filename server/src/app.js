@@ -10,6 +10,9 @@ export const app = express()
 app.use(cors({ origin: 'http://localhost:5173' }))
 app.use(express.json())
 
+const result = await pool.query("SELECT current_user");
+console.log("Connected as:", result.rows[0].current_user);
+
 const attendance = [
   {
     id: 1,
@@ -314,3 +317,36 @@ app.get('/api/attendance/:studentId', (request, response) => {
   response.status(200).json(record)
 })
 
+// GET all scheduled classes
+app.get("/api/teaching-schedule", async (req, res) => {
+    try {
+        const result = await pool.query(`
+            SELECT
+                schedule_id,
+                teacher_id,
+                course_code,
+                day_of_week,
+                start_time,
+                end_time,
+                room
+            FROM public.teaching_schedule 
+            ORDER BY
+                CASE day_of_week
+                    WHEN 'Monday' THEN 1
+                    WHEN 'Tuesday' THEN 2
+                    WHEN 'Wednesday' THEN 3
+                    WHEN 'Thursday' THEN 4
+                    WHEN 'Friday' THEN 5
+                    ELSE 6
+                END,
+                start_time
+        `);
+
+        res.json(result.rows);
+    } catch (error) {
+        console.error("Error fetching teaching schedule:", error);
+        res.status(500).json({
+            error: "Failed to fetch teaching schedule"
+        });
+    }
+});
