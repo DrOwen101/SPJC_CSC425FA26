@@ -10,6 +10,9 @@
   },
   "devDependencies": {
     "concurrently": "^9.2.1"
+  },
+  "dependencies": {
+    "@svar-ui/react-core": "^2.6.2",
+    "@svar-ui/react-tasklist": "^2.6.2"
   }
 }
-

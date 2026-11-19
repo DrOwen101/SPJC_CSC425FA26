@@ -1,6 +1,7 @@
 import AlertsDatabase from './alertsDatabase'
 import StudentDbFac from './StudentDbFac'
 import WeatherCardFac from './WeatherCardFac'
+import TaskList from './taskList'
 
 // This role component supplies content; App.css supplies the shared layout.
 // Keep these examples separate from live records until a data source is connected.
@@ -32,6 +33,7 @@ function Dashboardfaculty() {
         <WeatherCardFac />
         <AlertsDatabase />
         <StudentDbFac />
+        <TaskList />
       </div>
 
       {/* className="dashboard-grid" connects to .dashboard-grid in App.css.
