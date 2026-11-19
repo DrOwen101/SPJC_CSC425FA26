@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type SubmitEvent } from 'react'
 import axios from 'axios'
 import { isStudentsResponse, normalizeName, type Student } from './studentLookupApi'
-import './StudentLookup.css'
+import StudentSearchForm from './StudentSearchForm'
 
 // This is the same Express API used by the Lab 6 transcript example.
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL
@@ -115,27 +115,9 @@ function StudentLookup() {
     <section id="student-lookup" className="dashboard-card student-lookup" aria-labelledby="lookup-heading" tabIndex={-1}>
       <h2 id="lookup-heading">Student lookup</h2>
       <p id="lookup-help">Enter a student’s full name, then select Search. These are fictional classroom records.</p>
-      <form onSubmit={searchStudents} noValidate>
-        <label htmlFor="student-name">Student full name</label>
-        <div className="student-lookup-controls">
-          <input
-            id="student-name"
-            name="studentName"
-            type="text"
-            autoComplete="off"
-            value={searchName}
-            onChange={(event) => {
-              setSearchName(event.target.value)
-              setInputError('')
-            }}
-            aria-describedby={inputError ? 'lookup-help lookup-input-error' : 'lookup-help'}
-            aria-invalid={inputError ? true : undefined}
-          />
-          {/* Remain usable while loading: a new search cancels the old one. */}
-          <button type="submit">Search</button>
-        </div>
-      </form>
-      {inputError && <p id="lookup-input-error" className="field-error" role="alert">{inputError}</p>}
+      <StudentSearchForm inputId="student-name" helpId="lookup-help" value={searchName}
+        label="Student full name" inputError={inputError} onSubmit={searchStudents}
+        onChange={(value) => { setSearchName(value); setInputError('') }} />
       {/* The live region announces changes without moving keyboard focus. */}
       <p role="status">{statusMessage}</p>
       {lookupError && <p className="field-error" role="alert">{lookupError}</p>}

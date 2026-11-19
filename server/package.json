@@ -7,7 +7,9 @@
     "dev": "nodemon src/index.js",
     "start": "node src/index.js",
     "test": "node --test",
-    "test:db": "node scripts/verify-crud.mjs"
+    "test:db": "node scripts/verify-crud.mjs",
+    "setup:faculty": "node scripts/setup-faculty.mjs",
+    "test:faculty": "node scripts/verify-faculty.mjs"
   },
   "dependencies": {
     "cors": "^2.8.5",

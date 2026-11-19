@@ -1,0 +1,108 @@
+.faculty-dashboard .faculty-account {
+  margin: 1rem 0;
+}
+
+.faculty-card {
+  grid-column: 1 / -1;
+  min-width: 0;
+}
+
+.faculty-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: .75rem;
+  margin-bottom: .85rem;
+}
+
+.faculty-controls label {
+  display: grid;
+  gap: .3rem;
+  min-width: 0;
+  max-width: 100%;
+  font-weight: 700;
+}
+
+.faculty-account-row {
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0;
+}
+
+.faculty-dashboard button,
+.faculty-dashboard input,
+.faculty-dashboard select {
+  min-height: 44px;
+  max-width: 100%;
+  padding: .5rem .7rem;
+  border: 1px solid #568069;
+  border-radius: .45rem;
+  font: inherit;
+}
+
+.faculty-dashboard input,
+.faculty-dashboard select {
+  background: white;
+  color: #123524;
+}
+
+.faculty-dashboard button {
+  color: white;
+  background: #075c35;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.faculty-dashboard button:disabled {
+  opacity: .65;
+  cursor: default;
+}
+
+.faculty-dashboard table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  text-align: left;
+}
+
+.faculty-dashboard th,
+.faculty-dashboard td {
+  padding: .55rem .7rem;
+  border-bottom: 1px solid #b2ccbd;
+}
+
+.faculty-dashboard thead {
+  background: #e0f2e7;
+}
+
+.faculty-dashboard caption {
+  padding: .5rem 0;
+  text-align: left;
+  font-weight: 700;
+}
+
+.faculty-dashboard .transcript-card-table-scroll {
+  margin: .4rem 0 .75rem;
+}
+
+.faculty-dashboard button + .status-label,
+.faculty-dashboard form + .status-label {
+  margin-top: .9rem;
+}
+
+@media (max-width: 650px) {
+  .faculty-dashboard .dashboard-grid,
+  .faculty-controls label {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .faculty-controls label {
+    width: 100%;
+  }
+
+  .faculty-controls input,
+  .faculty-controls select {
+    min-width: 0;
+    width: 100%;
+  }
+}

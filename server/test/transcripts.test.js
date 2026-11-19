@@ -18,14 +18,14 @@ after(async () => {
   }
 })
 
-test('lists exactly five students and serves consistent transcripts with correct GPA totals', async () => {
+test('lists six lookup students and serves five consistent transcripts with correct GPA totals', async () => {
   const response = await fetch(`${baseURL}/api/students`)
   assert.equal(response.status, 200)
   const { students } = await response.json()
-  assert.deepEqual(students.map((student) => student.studentID), ['1001', '1002', '1003', '1004', '1005'])
+  assert.deepEqual(students.map((student) => student.studentID), ['1001', '1002', '1003', '1004', '1005', '1006'])
   const gradePoints = { A: 4, B: 3, C: 2, D: 1, F: 0 }
 
-  for (const student of students) {
+  for (const student of students.filter(({ studentID }) => studentID !== '1006')) {
     const result = await fetch(`${baseURL}/api/transcripts/${student.studentID}`)
     assert.equal(result.status, 200)
     assert.match(result.headers.get('content-type'), /application\/json/)
@@ -98,7 +98,7 @@ test('supports frontend origins and preflight, including error responses', async
 test('mock status works without connecting to PostgreSQL and writes are not available', async () => {
   const response = await fetch(`${baseURL}/api/status`)
   assert.equal(response.status, 200)
-  assert.deepEqual(await response.json(), { status: 'ok', service: 'Mock transcript API', studentCount: 5 })
+  assert.deepEqual(await response.json(), { status: 'ok', service: 'Mock transcript API', studentCount: 6 })
   const post = await fetch(`${baseURL}/api/transcripts/1001`, { method: 'POST' })
   assert.equal(post.status, 404)
   const root = await fetch(baseURL)

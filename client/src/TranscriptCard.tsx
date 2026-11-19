@@ -1,6 +1,7 @@
 import { useEffect, useId, useState, type SubmitEvent } from 'react'
 import axios from 'axios'
 import './TranscriptCard.css'
+import RecordTable from './RecordTable'
 import { isTranscript, type Transcript } from './transcriptApi'
 
 // By default, connect to the API on the same computer as the frontend.
@@ -137,24 +138,17 @@ function TranscriptCard({ id, apiBaseUrl = defaultApiBaseUrl }: TranscriptCardPr
 
           {transcript.semesters.map((semester) => (
             <div className="transcript-card-semester" key={semester.term}>
-              {/* A caption names each table; column headers describe its cells.
-                  The focusable wrapper allows keyboard scrolling on phones. */}
-              <div className="transcript-card-table-scroll" role="region" aria-label={`${semester.term} courses`} tabIndex={0}>
-                <table>
-                  <caption>{semester.term}</caption>
-                  <thead><tr><th scope="col">Course</th><th scope="col">Title</th><th scope="col">Credits</th><th scope="col">Grade</th></tr></thead>
-                  <tbody>
-                    {semester.courses.map((course) => (
-                      <tr key={course.courseCode}>
-                        <th scope="row">{course.courseCode}</th>
-                        <td>{course.courseTitle}</td>
-                        <td>{course.creditHours}</td>
-                        <td>{course.grade}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+              <RecordTable caption={semester.term} regionLabel={`${semester.term} courses`}
+                columns={['Course', 'Title', 'Credits', 'Grade']}>
+                {semester.courses.map((course) => (
+                  <tr key={course.courseCode}>
+                    <th scope="row">{course.courseCode}</th>
+                    <td>{course.courseTitle}</td>
+                    <td>{course.creditHours}</td>
+                    <td>{course.grade}</td>
+                  </tr>
+                ))}
+              </RecordTable>
               <p className="transcript-card-term-summary">Term GPA: <strong>{semester.gpa.toFixed(2)}</strong> · Credits attempted: {semester.creditsAttempted} · Credits earned: {semester.creditsEarned}</p>
             </div>
           ))}
