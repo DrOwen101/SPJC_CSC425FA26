@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, type FormEvent } from 'react'
 import axios from 'axios'
+import './alertsDb.css'
 
 type Alert = {
     id: number
@@ -12,7 +13,42 @@ type Alert = {
 function AlertsDatabase() {
     const [alerts, setAlerts] = useState<Alert[]>([])
     const [isLoading, setIsLoading] = useState(false)
+    const [isSubmitting, setIsSubmitting] = useState(false)
     const [error, setError] = useState('')
+    const [subject, setSubject] = useState('')
+    const [message, setMessage] = useState('')
+
+    async function createAlert(event: FormEvent<HTMLFormElement>) {
+        event.preventDefault()
+
+        setIsSubmitting(true)
+        setError('')
+
+        try {
+            const response = await axios.post<{ alert: Alert }>(
+                'http://localhost:3000/api/database/alerts',
+                {
+                    subject: subject.trim(),
+                    message: message.trim(),
+                }
+            )
+
+            setAlerts((currentAlerts) => [
+                response.data.alert,
+                ...currentAlerts,
+            ])
+            setSubject('')
+            setMessage('')
+        } catch (requestError) {
+            if (axios.isAxiosError(requestError) && requestError.response) {
+                setError(requestError.response.data.message ?? 'Unable to add the alert.')
+            } else {
+                setError('Unable to add the alert.')
+            }
+        } finally {
+            setIsSubmitting(false)
+        }
+    }
 
     async function markAsRead(alertId: number) {
     try {
@@ -68,18 +104,50 @@ function AlertsDatabase() {
     }, [])
 
     return (
-        <section>
+        <section id="faculty-alerts" className="dashboard-card alerts-database">
             <h2>Current Alerts</h2>
+
+            <form className="alerts-database-form" onSubmit={createAlert}>
+                <div>
+                    <label htmlFor="alert-subject">Subject</label>
+                    <input
+                        id="alert-subject"
+                        name="subject"
+                        value={subject}
+                        onChange={(event) => setSubject(event.target.value)}
+                        maxLength={100}
+                        required
+                    />
+                </div>
+
+                <div>
+                    <label htmlFor="alert-message">Message</label>
+                    <textarea
+                        id="alert-message"
+                        name="message"
+                        value={message}
+                        onChange={(event) => setMessage(event.target.value)}
+                        maxLength={255}
+                        rows={3}
+                        required
+                    />
+                </div>
+
+                <button type="submit" disabled={isSubmitting}>
+                    {isSubmitting ? 'Adding alert...' : 'Add Alert'}
+                </button>
+            </form>
 
             {isLoading && <p>Loading alerts...</p>}
 
-            {error && <p style={{ color: 'red' }}>{error}</p>}
+            {error && <p className="alerts-database-error" role="alert">{error}</p>}
 
             {!isLoading && !error && alerts.length === 0 && (
                 <p>No current alerts.</p>
             )}
 
             {alerts.length > 0 && (
+                <div className="alerts-database-table-wrapper">
                 <table>
                     <caption>Current alerts</caption>
                     <thead>
@@ -112,6 +180,7 @@ function AlertsDatabase() {
                         ))}
                     </tbody>
                 </table>
+                </div>
             )}
         </section>
     )

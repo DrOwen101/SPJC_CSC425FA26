@@ -1,4 +1,6 @@
 import AlertsDatabase from './alertsDatabase'
+import StudentDbFac from './StudentDbFac'
+import WeatherCardFac from './WeatherCardFac'
 
 // This role component supplies content; App.css supplies the shared layout.
 // Keep these examples separate from live records until a data source is connected.
@@ -17,18 +19,25 @@ function Dashboardfaculty() {
           Each href matches a section ID; .dashboard-nav styles the link list. */}
       <nav className="dashboard-nav" aria-label="Faculty sections">
         <ul>
-            <li><a href="#faculty-courses">Courses</a></li>
-            <li><a href="#class-rosters">Class Rosters</a></li>
-            <li><a href="#grading">Grading</a></li>
             <li><a href="#faculty-alerts">Alerts</a></li>
-            <li><a href="#teaching-schedule">Teaching Schedule</a></li>
+            <li><a href="#student-records">Student Records</a></li>
+            {/* <li><a href="#faculty-courses">Courses</a></li> */}
+            {/* <li><a href="#class-rosters">Class Rosters</a></li> */}
+            {/* <li><a href="#grading">Grading</a></li> */}
+            {/* <li><a href="#teaching-schedule">Teaching Schedule</a></li> */}
         </ul>
       </nav>
+
+      <div className="dashboard-grid">
+        <WeatherCardFac />
+        <AlertsDatabase />
+        <StudentDbFac />
+      </div>
 
       {/* className="dashboard-grid" connects to .dashboard-grid in App.css.
           Each named section is a card. tabIndex=-1 permits anchor focus without
           adding every card to the Tab sequence; links remain the normal stops. */}
-      <div className="dashboard-grid">
+      {/* <div className="dashboard-grid">
         <section id="faculty-courses" className="dashboard-card" aria-labelledby="faculty-courses-heading" tabIndex={-1}>
           <h2 id="faculty-courses-heading">Courses</h2>
           <p className="status-label">Not connected</p>
@@ -56,7 +65,6 @@ function Dashboardfaculty() {
             <li>Grades and student feedback</li>
           </ul>
         </section>
-        <AlertsDatabase />
         <section id="teaching-schedule" className="dashboard-card" aria-labelledby="teaching-schedule-heading" tabIndex={-1}>
           <h2 id="teaching-schedule-heading">Teaching Schedule</h2>
           <p className="status-label">Not connected</p>
@@ -66,7 +74,7 @@ function Dashboardfaculty() {
             <li>Office hours and student appointments</li>
           </ul>
         </section>
-      </div>
+      </div> */}
     </main>
   )
 }

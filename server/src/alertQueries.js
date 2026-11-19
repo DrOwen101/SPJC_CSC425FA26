@@ -11,10 +11,10 @@ export async function getAlertById(alertID) {
 }
 
 export async function createAlert(alert) {
-    const { subject, message, is_active } = alert;
+    const { subject, message } = alert;
     const result = await pool.query(
-        'INSERT INTO alerts_db.alerts (subject, message, is_active) VALUES ($1, $2, $3) RETURNING *',
-        [subject, message, is_active]
+        'INSERT INTO alerts_db.alerts (subject, message) VALUES ($1, $2) RETURNING *',
+        [subject, message]
     );
     return result.rows[0];
 }

@@ -234,6 +234,33 @@ app.get('/api/database/alerts_db', async (_request, response) => {
   }
 })
 
+app.post('/api/database/alerts', async (request, response) => {
+  try {
+    const subject = typeof request.body.subject === 'string'
+      ? request.body.subject.trim()
+      : ''
+    const message = typeof request.body.message === 'string'
+      ? request.body.message.trim()
+      : ''
+
+    if (!subject || !message) {
+      return response.status(400).json({
+        error: 'INVALID_ALERT',
+        message: 'Subject and message are required.',
+      })
+    }
+
+    const alert = await createAlert({ subject, message })
+    response.status(201).json({ alert })
+  } catch (error) {
+    console.error('Error creating alert:', error.message)
+    response.status(500).json({
+      error: 'DATABASE_ERROR',
+      message: error.message,
+    })
+  }
+})
+
 app.patch('/api/database/alerts/:id/read', async (request, response) => {
   try {
     const alert = await markAlertRead(request.params.id)
