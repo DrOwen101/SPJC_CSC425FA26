@@ -97,6 +97,144 @@ app.delete('/api/enrollments', async (req, res) => {
   }
 })
 
+// Enforce faculty-only permissions on the backend
+function requireFaculty(req, res, next) {
+  const role = req.user?.role || req.headers['x-user-role']
+  if (role !== 'faculty') {
+    return res.status(403).json({
+      error: 'FORBIDDEN',
+      message: 'Faculty permissions are required to perform this action.',
+    })
+  }
+  next()
+}
+
+// Deliverable 1 (Repurposed Enrollment): Update student enrollment status
+app.patch('/api/enrollments', requireFaculty, async (req, res) => {
+  const { studentId, classId, status } = req.body
+  if (!studentId || !classId || !status) {
+    return res.status(400).json({ message: 'studentId, classId, and status are required.' })
+  }
+
+  try {
+    const result = await pool.query(
+      `UPDATE enrollment SET status = $1
+       WHERE student_id = $2 AND class_id = $3
+       RETURNING student_id AS "studentId", class_id AS "classId", status;`,
+      [status, parseInt(studentId, 10), parseInt(classId, 10)]
+    )
+    if (result.rowCount === 0) {
+      return res.status(404).json({ message: 'Enrollment record not found.' })
+    }
+    res.json(result.rows[0])
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to update enrollment status.' })
+  }
+})
+
+// Deliverable 2 (Repurposed Transcript): Advisor Notes
+app.get('/api/advising-notes/:studentId', requireFaculty, async (req, res) => {
+  try {
+    const result = await pool.query(
+      'SELECT note_id AS "noteId", advisor_name AS "advisorName", note_text AS "noteText", created_at AS "createdAt" FROM advising_notes WHERE student_id = $1 ORDER BY created_at DESC',
+      [req.params.studentId]
+    )
+    res.json(result.rows)
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to load advising notes.' })
+  }
+})
+
+app.post('/api/advising-notes', requireFaculty, async (req, res) => {
+  const { studentId, advisorName = 'Faculty Advisor', noteText } = req.body
+  if (!studentId || !noteText?.trim()) {
+    return res.status(400).json({ message: 'Student ID and note text are required.' })
+  }
+
+  try {
+    const result = await pool.query(
+      `INSERT INTO advising_notes (student_id, advisor_name, note_text)
+       VALUES ($1, $2, $3)
+       RETURNING note_id AS "noteId", advisor_name AS "advisorName", note_text AS "noteText", created_at AS "createdAt";`,
+      [studentId, advisorName, noteText.trim()]
+    )
+    res.status(201).json(result.rows[0])
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to save advising note.' })
+  }
+})
+
+// Deliverable 3 (New Faculty Feature - Design): Grade Entry
+app.get('/api/faculty/grades', requireFaculty, async (_req, res) => {
+  try {
+    const result = await pool.query(
+      'SELECT grade_id AS "gradeId", student_id AS "studentId", class_id AS "classId", letter_grade AS "letterGrade", feedback FROM faculty_grades ORDER BY submitted_at DESC'
+    )
+    res.json(result.rows)
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to load submitted grades.' })
+  }
+})
+
+app.post('/api/faculty/grades', requireFaculty, async (req, res) => {
+  const { studentId, classId, letterGrade, feedback = '' } = req.body
+  if (!studentId || !classId || !letterGrade) {
+    return res.status(400).json({ message: 'Student ID, Class ID, and Letter Grade are required.' })
+  }
+
+  try {
+    const result = await pool.query(
+      `INSERT INTO faculty_grades (student_id, class_id, letter_grade, feedback)
+       VALUES ($1, $2, $3, $4)
+       RETURNING grade_id AS "gradeId", student_id AS "studentId", class_id AS "classId", letter_grade AS "letterGrade", feedback;`,
+      [studentId.trim(), classId.trim(), letterGrade.trim().toUpperCase(), feedback.trim()]
+    )
+    res.status(201).json(result.rows[0])
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to submit grade.' })
+  }
+})
+
+// Deliverable 4 (New Faculty Feature - Design): Teaching Schedule & Office Hours
+app.get('/api/faculty/schedule', async (_req, res) => {
+  try {
+    const result = await pool.query(
+      'SELECT schedule_id AS "scheduleId", course_code AS "courseCode", entry_type AS "entryType", day_time AS "dayTime", location FROM teaching_schedule ORDER BY schedule_id ASC'
+    )
+    res.json(result.rows)
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to load teaching schedule.' })
+  }
+})
+
+app.post('/api/faculty/schedule', requireFaculty, async (req, res) => {
+  const { courseCode, entryType, dayTime, location } = req.body
+  if (!courseCode || !entryType || !dayTime || !location) {
+    return res.status(400).json({ message: 'All schedule fields are required.' })
+  }
+
+  try {
+    const result = await pool.query(
+      `INSERT INTO teaching_schedule (course_code, entry_type, day_time, location)
+       VALUES ($1, $2, $3, $4)
+       RETURNING schedule_id AS "scheduleId", course_code AS "courseCode", entry_type AS "entryType", day_time AS "dayTime", location;`,
+      [courseCode.trim(), entryType, dayTime.trim(), location.trim()]
+    )
+    res.status(201).json(result.rows[0])
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to add schedule entry.' })
+  }
+})
+
+app.delete('/api/faculty/schedule/:id', requireFaculty, async (req, res) => {
+  try {
+    await pool.query('DELETE FROM teaching_schedule WHERE schedule_id = $1', [req.params.id])
+    res.json({ message: 'Schedule item removed.' })
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to remove schedule item.' })
+  }
+})
+
 // -------------------------------------------------------------
 // Startup Helpers
 // -------------------------------------------------------------
