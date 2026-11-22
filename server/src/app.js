@@ -208,3 +208,56 @@ app.get('/api/attendance/:id', (req, res) => {
 
   res.status(200).json(record)
 })
+
+const faculty = express.Router()
+faculty.use(cors({ origin: 'http://localhost:5173', allowedHeaders: ['Content-Type', 'x-faculty-token'], methods: ['GET', 'POST', 'OPTIONS'] }))
+faculty.use((req, res, next) => {
+  const expected = process.env.FACULTY_DEMO_TOKEN
+  if (!expected || req.get('x-faculty-token') !== expected) {
+    return res.status(403).json({ error: 'Faculty access required' })
+  }
+  next()
+})
+// Faculty roster reuses the student directory data with a faculty-only endpoint.
+faculty.get('/students', async (_req, res) => {
+  try {
+    const result = await pool.query('SELECT id, name FROM students ORDER BY name')
+    res.json({ students: result.rows })
+  } catch (e) { console.error(e); res.status(500).json({ error: 'Database error' }) }
+})
+// Faculty transcript viewer reuses the existing classroom transcript fixture.
+faculty.get('/transcripts/:studentID', (req, res) => getTranscript(req, res))
+faculty.get('/grades', async (_req, res) => {
+  try {
+    const result = await pool.query('SELECT id, student_id, course, grade FROM faculty_grades ORDER BY id DESC')
+    res.json(result.rows)
+  } catch (e) { console.error(e); res.status(500).json({ error: 'Database error' }) }
+})
+faculty.post('/grades', async (req, res) => {
+  const { studentId, course, grade } = req.body
+  if (!Number.isInteger(studentId) || typeof course !== 'string' || !course.trim() ||
+      !['A','B','C','D','F'].includes(grade)) return res.status(400).json({ error: 'Valid student ID, course, and grade required' })
+  try {
+    const result = await pool.query(
+      `INSERT INTO faculty_grades (student_id, course, grade) VALUES ($1,$2,$3)
+       ON CONFLICT (student_id, course) DO UPDATE SET grade=EXCLUDED.grade RETURNING *`,
+      [studentId, course.trim(), grade])
+    res.status(201).json(result.rows[0])
+  } catch (e) { console.error(e); res.status(500).json({ error: 'Database error or student ID not found' }) }
+})
+faculty.get('/announcements', async (_req, res) => {
+  try {
+    const result = await pool.query('SELECT id, course, message, created_at FROM faculty_announcements ORDER BY id DESC')
+    res.json(result.rows)
+  } catch (e) { console.error(e); res.status(500).json({ error: 'Database error' }) }
+})
+faculty.post('/announcements', async (req, res) => {
+  const { course, message } = req.body
+  if (typeof course !== 'string' || !course.trim() || typeof message !== 'string' || !message.trim())
+    return res.status(400).json({ error: 'Course and message required' })
+  try {
+    const result = await pool.query('INSERT INTO faculty_announcements (course, message) VALUES ($1,$2) RETURNING *', [course.trim(), message.trim()])
+    res.status(201).json(result.rows[0])
+  } catch (e) { console.error(e); res.status(500).json({ error: 'Database error' }) }
+})
+app.use('/api/faculty', faculty)
