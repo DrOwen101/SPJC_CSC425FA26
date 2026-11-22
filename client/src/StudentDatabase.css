@@ -1,5 +1,5 @@
 .student-database {
-    grid-column: 1 / 1;
+    grid-column: 2 / -1;
 }
 
 .student-database label {
@@ -64,4 +64,10 @@
 .active-field input {
     width: auto;
     min-height: auto;
+}
+
+@media (max-width: 650px) {
+    .student-database {
+        grid-column: 1 / -1;
+    }
 }

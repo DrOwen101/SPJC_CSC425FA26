@@ -1,7 +1,7 @@
 import AlertsDatabase from './alertsDatabase'
 import StudentDbFac from './StudentDbFac'
 import WeatherCardFac from './WeatherCardFac'
-import TaskList from './taskList'
+import TaskList from './TaskList'
 
 // This role component supplies content; App.css supplies the shared layout.
 // Keep these examples separate from live records until a data source is connected.
@@ -20,8 +20,8 @@ function Dashboardfaculty() {
           Each href matches a section ID; .dashboard-nav styles the link list. */}
       <nav className="dashboard-nav" aria-label="Faculty sections">
         <ul>
-          <li><a href="#weather-card">Weather</a></li>
           <li><a href="#faculty-alerts">Alerts</a></li>
+          <li><a href="#weather-card">Weather</a></li>
           <li><a href="#student-records">Student Records</a></li>
           <li><a href="#task-list">Task List</a></li>
             {/* <li><a href="#faculty-courses">Courses</a></li> */}
@@ -32,8 +32,8 @@ function Dashboardfaculty() {
       </nav>
 
       <div className="dashboard-grid">
-        <WeatherCardFac />
         <AlertsDatabase />
+        <WeatherCardFac />
         <StudentDbFac />
         <TaskList />
       </div>

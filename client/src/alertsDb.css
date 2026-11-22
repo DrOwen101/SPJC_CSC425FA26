@@ -1,11 +1,10 @@
-.alerts-database,
-.alerts-database * {
-  box-sizing: border-box;
+.alerts-database {
+  grid-column: 1 / -1;
 }
 
 .alerts-database {
   min-width: 0;
-  padding: 1.5rem;
+  padding: 1.25rem;
   border: 1px solid #b2ccbd;
   border-radius: .85rem;
   background: #f3faf5;
@@ -89,7 +88,7 @@
 
 .alerts-database table {
   width: 100%;
-  min-width: 34rem;
+  min-width: 28rem;
   border-collapse: collapse;
   background: white;
   text-align: left;

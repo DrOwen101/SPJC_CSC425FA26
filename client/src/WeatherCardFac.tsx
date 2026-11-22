@@ -100,7 +100,7 @@ function WeatherCardFac() {
   }, [refreshCount]) // Fetch on mount or refresh.
 
   return (
-    <section className="weather-card" aria-labelledby={`${id}-heading`}>
+    <section id="weather-card" className="weather-card dashboard-card" aria-labelledby={`${id}-heading`} tabIndex={-1}>
       <h2 id={`${id}-heading`}>Weather</h2>
       <p>{location.name}</p>
       <div role="status" aria-live="polite" aria-busy={isLoading}>
