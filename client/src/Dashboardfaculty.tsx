@@ -263,9 +263,11 @@ if (!isFacultyAuthenticated) {
   Logout
 </button>
         <p>Find course information, student rosters, and grading tasks in one place.</p>
-        <p className="demo-note">
-  Course project preview. Class rosters are connected to live database records.
-  Other faculty features are under development.
+   <p className="demo-note">
+  Faculty Dashboard — Connected to PostgreSQL.
+  Manage faculty courses, view student rosters, update grades,
+  and maintain academic advising notes.
+  Faculty access is protected through authentication.
 </p>
       </header>
 
