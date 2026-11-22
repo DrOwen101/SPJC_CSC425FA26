@@ -8,13 +8,45 @@ import './App.css'
 // A union type restricts role values to these three strings.
 type DashboardRole = 'student' | 'faculty' | 'admin'
 
-// Match both page links and section links, so refresh and Back/Forward work.
-// These IDs must match the id attributes in the three dashboard components.
 function getRole(hash: string): DashboardRole | null {
   const id = hash.slice(1)
-  if (['student-dashboard', 'student-lookup', 'gpa', 'attendance', 'transcript', 'alerts', 'courses'].includes(id)) return 'student'
-  if (['faculty-dashboard', 'faculty-courses', 'class-rosters', 'grading', 'faculty-alerts', 'teaching-schedule'].includes(id)) return 'faculty'
-  if (['admin-dashboard', 'user-management', 'course-management', 'reports', 'admin-alerts', 'system-status'].includes(id)) return 'admin'
+
+  const studentSections = [
+    'student-dashboard',
+    'student-lookup',
+    'student-records',
+    'gpa',
+    'attendance',
+    'transcript',
+    'alerts',
+    'courses',
+  ]
+
+  const facultySections = [
+    'faculty-dashboard',
+    'faculty-courses',
+    'class-rosters',
+    'attendance-entry',
+    'grading',
+    'grade-summary',
+    'faculty-transcript',
+    'faculty-alerts',
+    'teaching-schedule',
+  ]
+
+  const adminSections = [
+    'admin-dashboard',
+    'user-management',
+    'course-management',
+    'reports',
+    'admin-alerts',
+    'system-status',
+  ]
+
+  if (studentSections.includes(id)) return 'student'
+  if (facultySections.includes(id)) return 'faculty'
+  if (adminSections.includes(id)) return 'admin'
+
   return null
 }
 

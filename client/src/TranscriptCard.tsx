@@ -2,64 +2,115 @@ import { useEffect, useId, useState, type SubmitEvent } from 'react'
 import axios from 'axios'
 import './TranscriptCard.css'
 import { isTranscript, type Transcript } from './transcriptApi'
+import FacultyTranscriptView from './FacultyTranscriptView'
 
 // By default, connect to the API on the same computer as the frontend.
-// For a separately hosted API, set VITE_API_BASE_URL or pass apiBaseUrl.
-const defaultApiBaseUrl = import.meta.env.VITE_API_BASE_URL
-  || `${window.location.protocol}//${window.location.hostname}:3000`
+const defaultApiBaseUrl =
+  import.meta.env.VITE_API_BASE_URL ||
+  `${window.location.protocol}//${window.location.hostname}:3000`
 
 type TranscriptCardProps = {
   id?: string
   apiBaseUrl?: string
+  mode?: 'student' | 'faculty'
+  sectionId?: number | null
+  refreshKey?: number
 }
 
-// The async Axios request is below; transcriptApi.ts contains only data types and validation.
-function TranscriptCard({ id, apiBaseUrl = defaultApiBaseUrl }: TranscriptCardProps) {
+/**
+ * Original Student Dashboard transcript workflow.
+ * Uses fictional transcript records for classroom demonstrations.
+ */
+function StudentTranscriptView({
+  id,
+  apiBaseUrl = defaultApiBaseUrl,
+}: TranscriptCardProps) {
   const labelId = useId()
+
   const [studentID, setStudentID] = useState('1001')
   const [request, setRequest] = useState({ studentID: '1001' })
+
   const [result, setResult] = useState({
-    transcript: null as Transcript | null, isLoading: true, error: '',
+    transcript: null as Transcript | null,
+    isLoading: true,
+    error: '',
   })
+
   const { transcript, isLoading, error } = result
   const [inputError, setInputError] = useState('')
 
   useEffect(() => {
     const controller = new AbortController()
-    setResult({ transcript: null, isLoading: true, error: '' })
+
+    setResult({
+      transcript: null,
+      isLoading: true,
+      error: '',
+    })
 
     const timeout = window.setTimeout(() => {
       controller.abort()
-      setResult({ transcript: null, isLoading: false, error: 'The transcript request timed out. Please try again.' })
+
+      setResult({
+        transcript: null,
+        isLoading: false,
+        error: 'The transcript request timed out. Please try again.',
+      })
     }, 15000)
 
     async function getTranscript() {
       try {
-        // Call the Express GET /api/transcripts/:studentID route in the server folder.
-        // await waits for the response; Axios puts the parsed JSON in response.data.
         const response = await axios.get<unknown>(
           `${apiBaseUrl.replace(/\/$/, '')}/api/transcripts/${request.studentID}`,
-          { signal: controller.signal },
+          { signal: controller.signal }
         )
+
         if (controller.signal.aborted) return
+
         const transcript = response.data
-        if (!isTranscript(transcript) || transcript.studentID !== request.studentID) {
-          throw new Error('The transcript service returned an unexpected response. Please try again.')
+
+        if (
+          !isTranscript(transcript) ||
+          transcript.studentID !== request.studentID
+        ) {
+          throw new Error(
+            'The transcript service returned an unexpected response. Please try again.'
+          )
         }
-        setResult({ transcript, isLoading: false, error: '' })
+
+        setResult({
+          transcript,
+          isLoading: false,
+          error: '',
+        })
       } catch (requestError) {
         if (controller.signal.aborted) return
-        let error = 'Unable to load the transcript. Please try again.'
-        // Axios rejects HTTP errors (such as 404) as well as network failures.
+
+        let error =
+          'Unable to load the transcript. Please try again.'
+
         if (axios.isAxiosError(requestError)) {
           const status = requestError.response?.status
-          if (status === 404) error = `No mock student was found with student ID ${request.studentID}. Try 1001–1005.`
-          else if (status) error = `The transcript request failed (HTTP ${status}). Please try again.`
-          else error = 'Unable to reach the transcript service. Check your connection and try again.'
+
+          if (status === 404) {
+            error =
+              `No mock student was found with student ID ${request.studentID}. Try 1001–1005.`
+          } else if (status) {
+            error =
+              `The transcript request failed (HTTP ${status}). Please try again.`
+          } else {
+            error =
+              'Unable to reach the transcript service. Check your connection and try again.'
+          }
         } else if (requestError instanceof Error) {
           error = requestError.message
         }
-        setResult({ transcript: null, isLoading: false, error })
+
+        setResult({
+          transcript: null,
+          isLoading: false,
+          error,
+        })
       } finally {
         window.clearTimeout(timeout)
       }
@@ -67,8 +118,6 @@ function TranscriptCard({ id, apiBaseUrl = defaultApiBaseUrl }: TranscriptCardPr
 
     void getTranscript()
 
-    // Cancel when leaving the dashboard or starting another request, so an
-    // older response cannot overwrite the currently requested student's data.
     return () => {
       window.clearTimeout(timeout)
       controller.abort()
@@ -77,31 +126,49 @@ function TranscriptCard({ id, apiBaseUrl = defaultApiBaseUrl }: TranscriptCardPr
 
   function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault()
+
     if (isLoading) return
+
     const nextStudentID = studentID.trim()
+
     if (!/^\d{4}$/.test(nextStudentID)) {
-      setInputError('Enter a four-digit student ID, such as 1001.')
+      setInputError(
+        'Enter a four-digit student ID, such as 1001.'
+      )
       return
     }
 
     setInputError('')
     setStudentID(nextStudentID)
-    // A new request object also lets the same ID be loaded again after an error.
     setRequest({ studentID: nextStudentID })
   }
 
   let status = 'No transcript loaded.'
-  if (isLoading) status = `Loading transcript for ${request.studentID}…`
-  else if (transcript) status = `Transcript loaded for ${transcript.firstName} ${transcript.lastName}.`
+
+  if (isLoading) {
+    status = `Loading transcript for ${request.studentID}…`
+  } else if (transcript) {
+    status =
+      `Transcript loaded for ${transcript.firstName} ${transcript.lastName}.`
+  }
 
   return (
-    <section id={id} className="transcript-card" aria-labelledby={`${labelId}-heading`} tabIndex={-1}>
-     {/* // ASSIGNMENT DELIVERABLE CODE FOR LAB 6 */}
+    <section
+      id={id}
+      className="transcript-card"
+      aria-labelledby={`${labelId}-heading`}
+      tabIndex={-1}
+    >
       <h2 id={`${labelId}-heading`}>Transcript</h2>
-      <p>Explore fictional student records for this classroom exercise.</p>
+      <p>
+        Explore fictional student records for this classroom exercise.
+      </p>
 
       <form onSubmit={handleSubmit} noValidate>
-        <label htmlFor={`${labelId}-student-id`}>Student ID</label>
+        <label htmlFor={`${labelId}-student-id`}>
+          Student ID
+        </label>
+
         <div className="transcript-card-controls">
           <input
             id={`${labelId}-student-id`}
@@ -114,39 +181,99 @@ function TranscriptCard({ id, apiBaseUrl = defaultApiBaseUrl }: TranscriptCardPr
               setStudentID(event.target.value)
               setInputError('')
             }}
-            aria-describedby={`${labelId}-help${inputError ? ` ${labelId}-input-error` : ''}`}
+            aria-describedby={
+              `${labelId}-help` +
+              (inputError
+                ? ` ${labelId}-input-error`
+                : '')
+            }
             aria-invalid={inputError ? true : undefined}
           />
-          <button type="submit" disabled={isLoading}>{isLoading ? 'Loading…' : 'Load transcript'}</button>
+
+          <button type="submit" disabled={isLoading}>
+            {isLoading ? 'Loading…' : 'Load transcript'}
+          </button>
         </div>
-        <p id={`${labelId}-help`} className="transcript-card-help">Available mock student IDs: 1001–1005.</p>
-        {inputError && <p id={`${labelId}-input-error`} className="transcript-card-error" role="alert">{inputError}</p>}
+
+        <p
+          id={`${labelId}-help`}
+          className="transcript-card-help"
+        >
+          Available mock student IDs: 1001–1005.
+        </p>
+
+        {inputError && (
+          <p
+            id={`${labelId}-input-error`}
+            className="transcript-card-error"
+            role="alert"
+          >
+            {inputError}
+          </p>
+        )}
       </form>
 
-      <p className="transcript-card-status" role="status">{status}</p>
-      {error && <p className="transcript-card-error" role="alert">{error}</p>}
+      <p className="transcript-card-status" role="status">
+        {status}
+      </p>
+
+      {error && (
+        <p className="transcript-card-error" role="alert">
+          {error}
+        </p>
+      )}
 
       {transcript && (
         <div className="transcript-card-record">
           <header>
-            <h3>{transcript.firstName} {transcript.lastName}</h3>
+            <h3>
+              {transcript.firstName} {transcript.lastName}
+            </h3>
+
             <p>{transcript.institution}</p>
-            <p>Student ID: {transcript.studentID} · {transcript.major}</p>
-            {transcript.isMockData && <p className="transcript-card-help">Mock transcript · Not an official academic record</p>}
+
+            <p>
+              Student ID: {transcript.studentID}
+              {' · '}
+              {transcript.major}
+            </p>
+
+            {transcript.isMockData && (
+              <p className="transcript-card-help">
+                Mock transcript · Not an official academic record
+              </p>
+            )}
           </header>
 
           {transcript.semesters.map((semester) => (
-            <div className="transcript-card-semester" key={semester.term}>
-              {/* A caption names each table; column headers describe its cells.
-                  The focusable wrapper allows keyboard scrolling on phones. */}
-              <div className="transcript-card-table-scroll" role="region" aria-label={`${semester.term} courses`} tabIndex={0}>
+            <div
+              className="transcript-card-semester"
+              key={semester.term}
+            >
+              <div
+                className="transcript-card-table-scroll"
+                role="region"
+                aria-label={`${semester.term} courses`}
+                tabIndex={0}
+              >
                 <table>
                   <caption>{semester.term}</caption>
-                  <thead><tr><th scope="col">Course</th><th scope="col">Title</th><th scope="col">Credits</th><th scope="col">Grade</th></tr></thead>
+
+                  <thead>
+                    <tr>
+                      <th scope="col">Course</th>
+                      <th scope="col">Title</th>
+                      <th scope="col">Credits</th>
+                      <th scope="col">Grade</th>
+                    </tr>
+                  </thead>
+
                   <tbody>
                     {semester.courses.map((course) => (
                       <tr key={course.courseCode}>
-                        <th scope="row">{course.courseCode}</th>
+                        <th scope="row">
+                          {course.courseCode}
+                        </th>
                         <td>{course.courseTitle}</td>
                         <td>{course.creditHours}</td>
                         <td>{course.grade}</td>
@@ -155,20 +282,77 @@ function TranscriptCard({ id, apiBaseUrl = defaultApiBaseUrl }: TranscriptCardPr
                   </tbody>
                 </table>
               </div>
-              <p className="transcript-card-term-summary">Term GPA: <strong>{semester.gpa.toFixed(2)}</strong> · Credits attempted: {semester.creditsAttempted} · Credits earned: {semester.creditsEarned}</p>
+
+              <p className="transcript-card-term-summary">
+                Term GPA:{' '}
+                <strong>
+                  {semester.gpa.toFixed(2)}
+                </strong>
+                {' · '}
+                Credits attempted: {semester.creditsAttempted}
+                {' · '}
+                Credits earned: {semester.creditsEarned}
+              </p>
             </div>
           ))}
 
           <dl className="transcript-card-summary">
-            <div><dt>Cumulative GPA</dt><dd>{transcript.summary.cumulativeGPA.toFixed(2)}</dd></div>
-            <div><dt>Credits attempted</dt><dd>{transcript.summary.creditsAttempted}</dd></div>
-            <div><dt>Credits earned</dt><dd>{transcript.summary.creditsEarned}</dd></div>
+            <div>
+              <dt>Cumulative GPA</dt>
+              <dd>
+                {transcript.summary.cumulativeGPA.toFixed(2)}
+              </dd>
+            </div>
+
+            <div>
+              <dt>Credits attempted</dt>
+              <dd>{transcript.summary.creditsAttempted}</dd>
+            </div>
+
+            <div>
+              <dt>Credits earned</dt>
+              <dd>{transcript.summary.creditsEarned}</dd>
+            </div>
           </dl>
-          <p className="transcript-card-help">GPA is weighted by credit hours on a 4.0 scale. F grades count toward attempted credits but earn no credits.</p>
+
+          <p className="transcript-card-help">
+            GPA is weighted by credit hours on a 4.0 scale.
+            F grades count toward attempted credits but earn no credits.
+          </p>
         </div>
       )}
-        {/* END ASSIGNMENT DELIVERABLE CODE FOR LAB 6 */}
     </section>
+  )
+}
+
+/**
+ * Shared Transcript Card entry point.
+ *
+ * Student mode: original mock transcript viewer.
+ * Faculty mode: authorized section academic record.
+ */
+function TranscriptCard({
+  id,
+  apiBaseUrl,
+  mode = 'student',
+  sectionId = null,
+  refreshKey = 0,
+}: TranscriptCardProps) {
+  if (mode === 'faculty') {
+    return (
+      <FacultyTranscriptView
+        id={id}
+        sectionId={sectionId}
+        refreshKey={refreshKey}
+      />
+    )
+  }
+
+  return (
+    <StudentTranscriptView
+      id={id}
+      apiBaseUrl={apiBaseUrl}
+    />
   )
 }
 

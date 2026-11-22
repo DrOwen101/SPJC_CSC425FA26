@@ -1,4 +1,3 @@
-
 import { useEffect, useState, type SubmitEvent } from 'react'
 import {
   getStudents,
@@ -9,6 +8,7 @@ import {
   type StudentRecord,
   type StudentInput,
 } from './studentRecordApi'
+import StudentRecordsTable from './StudentRecordsTable'
 
 // Default values for a new student
 const emptyForm: StudentInput = {
@@ -38,16 +38,16 @@ function StudentRecords() {
   const [students, setStudents] = useState<StudentRecord[]>([])
   const [form, setForm] = useState<StudentInput>({ ...emptyForm })
   const [editingId, setEditingId] = useState<number | null>(null)
-  const [selectedStudent, setSelectedStudent] = useState<StudentRecord | null>(null)
+  const [selectedStudent, setSelectedStudent] =
+    useState<StudentRecord | null>(null)
   const [lookupId, setLookupId] = useState('')
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
   const [message, setMessage] = useState('')
 
-  // Load student records when the component opens
   useEffect(() => {
-    loadStudents()
+    void loadStudents()
   }, [])
 
   async function loadStudents() {
@@ -57,7 +57,9 @@ function StudentRecords() {
       setStudents(data)
 
       setSelectedStudent((current) =>
-        current ? data.find((student) => student.id === current.id) ?? null : null
+        current
+          ? data.find((student) => student.id === current.id) ?? null
+          : null
       )
     } catch {
       setError('Unable to load student records.')
@@ -66,7 +68,6 @@ function StudentRecords() {
     }
   }
 
-  // Refresh the student list from PostgreSQL
   async function handleRefresh() {
     setMessage('')
     await loadStudents()
@@ -77,7 +78,6 @@ function StudentRecords() {
     setEditingId(null)
   }
 
-  // Retrieve a single student using their database ID
   async function handleLookup(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault()
     setError('')
@@ -100,7 +100,6 @@ function StudentRecords() {
     }
   }
 
-  // Display a student's information without editing
   async function handleView(id: number) {
     setError('')
     setMessage('')
@@ -116,10 +115,10 @@ function StudentRecords() {
     }
   }
 
-  // Populate the form with a student's saved information
   function startEditing(student: StudentRecord) {
     setEditingId(student.id)
     setSelectedStudent(student)
+
     setForm({
       first_name: student.first_name,
       last_name: student.last_name,
@@ -133,7 +132,6 @@ function StudentRecords() {
     setMessage('')
   }
 
-  // Create a new student or update an existing student
   async function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault()
     setSaving(true)
@@ -160,7 +158,6 @@ function StudentRecords() {
     }
   }
 
-  // Permanently remove a student from PostgreSQL
   async function handleDelete(id: number) {
     setError('')
     setMessage('')
@@ -199,7 +196,9 @@ function StudentRecords() {
       <div className="student-records-header">
         <div>
           <h2 id="student-records-heading">Student Records</h2>
-          <p>Create, view, update, and delete student records in PostgreSQL.</p>
+          <p>
+            Create, view, update, and delete student records in PostgreSQL.
+          </p>
         </div>
 
         <button
@@ -252,86 +251,56 @@ function StudentRecords() {
       ) : students.length === 0 ? (
         <p>No students found.</p>
       ) : (
-        <div className="student-records-table-wrapper">
-          <table className="student-records-table">
-            <thead>
-              <tr>
-                <th scope="col">ID</th>
-                <th scope="col">Student</th>
-                <th scope="col">Major</th>
-                <th scope="col">Year</th>
-                <th scope="col">Status</th>
-                <th scope="col">Actions</th>
-              </tr>
-            </thead>
+        <StudentRecordsTable
+          students={students}
+          extraHeaders={
+            <>
+              <th scope="col">Major</th>
+              <th scope="col">Year</th>
+              <th scope="col">Actions</th>
+            </>
+          }
+          renderExtraCells={(student) => (
+            <>
+              <td>
+                {student.major ?? `Major ID: ${student.major_id}`}
+              </td>
 
-            <tbody>
-              {students.map((student) => (
-                <tr key={student.id}>
-                  <td>{student.id}</td>
+              <td>{student.enrollment_year}</td>
 
-                  <td>
-                    <strong>
-                      {student.first_name} {student.last_name}
-                    </strong>
-                    <span className="student-records-email">
-                      {student.email}
-                    </span>
-                  </td>
+              <td>
+                <div className="student-records-actions">
+                  <button
+                    type="button"
+                    className="student-records-edit"
+                    onClick={() => handleView(student.id)}
+                    disabled={saving}
+                  >
+                    View
+                  </button>
 
-                  <td>
-                    {student.major ?? `Major ID: ${student.major_id}`}
-                  </td>
+                  <button
+                    type="button"
+                    className="student-records-edit"
+                    onClick={() => startEditing(student)}
+                    disabled={saving}
+                  >
+                    Edit
+                  </button>
 
-                  <td>{student.enrollment_year}</td>
-
-                  <td>
-                    <span
-                      className={
-                        student.is_active
-                          ? 'student-records-status active'
-                          : 'student-records-status inactive'
-                      }
-                    >
-                      {student.is_active ? 'Active' : 'Inactive'}
-                    </span>
-                  </td>
-
-                  <td>
-                    <div className="student-records-actions">
-                      <button
-                        type="button"
-                        className="student-records-edit"
-                        onClick={() => handleView(student.id)}
-                        disabled={saving}
-                      >
-                        View
-                      </button>
-
-                      <button
-                        type="button"
-                        className="student-records-edit"
-                        onClick={() => startEditing(student)}
-                        disabled={saving}
-                      >
-                        Edit
-                      </button>
-
-                      <button
-                        type="button"
-                        className="student-records-delete"
-                        onClick={() => handleDelete(student.id)}
-                        disabled={saving}
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+                  <button
+                    type="button"
+                    className="student-records-delete"
+                    onClick={() => handleDelete(student.id)}
+                    disabled={saving}
+                  >
+                    Delete
+                  </button>
+                </div>
+              </td>
+            </>
+          )}
+        />
       )}
 
       {selectedStudent && (
@@ -355,7 +324,9 @@ function StudentRecords() {
               <dt>Major</dt>
               <dd>
                 {selectedStudent.major ??
-                  majors.find((major) => major.id === selectedStudent.major_id)?.name ??
+                  majors.find(
+                    (major) => major.id === selectedStudent.major_id
+                  )?.name ??
                   `Major ID: ${selectedStudent.major_id}`}
               </dd>
             </div>
@@ -367,7 +338,9 @@ function StudentRecords() {
 
             <div>
               <dt>Status</dt>
-              <dd>{selectedStudent.is_active ? 'Active' : 'Inactive'}</dd>
+              <dd>
+                {selectedStudent.is_active ? 'Active' : 'Inactive'}
+              </dd>
             </div>
           </dl>
         </div>

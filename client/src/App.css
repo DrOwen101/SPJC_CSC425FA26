@@ -734,3 +734,216 @@ main, .dashboard-card {
     grid-template-columns: 1fr;
   }
 }
+
+#faculty-dashboard {
+  max-width: 1200px;
+  padding-top: 2.5rem;
+  padding-bottom: 4rem;
+}
+
+/* Faculty dashboard cards */
+#faculty-dashboard .dashboard-card,
+#faculty-dashboard .transcript-card {
+  background: #f3faf5;
+  border: 1px solid #d4e4d9;
+  border-radius: 14px;
+  padding: 1.75rem;
+  box-shadow: 0 3px 12px rgba(7, 92, 53, 0.06);
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+#faculty-dashboard .dashboard-card:hover,
+#faculty-dashboard .transcript-card:hover {
+  border-color: #a8c8b4;
+  box-shadow: 0 6px 20px rgba(7, 92, 53, 0.09);
+}
+
+/* Card headings */
+#faculty-dashboard .dashboard-card h2,
+#faculty-dashboard .transcript-card h2 {
+  color: #075c35;
+  font-size: 1.35rem;
+  font-weight: 750;
+  margin-bottom: 0.5rem;
+}
+
+/* Supporting text */
+#faculty-dashboard .dashboard-card p,
+#faculty-dashboard .transcript-card p {
+  color: #476353;
+}
+
+/* Labels */
+#faculty-dashboard label {
+  display: block;
+  margin-bottom: 0.4rem;
+  color: #123524;
+  font-size: 0.9rem;
+  font-weight: 650;
+}
+
+/* Dropdown menus */
+#faculty-dashboard select {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  min-height: 46px;
+  padding: 0.7rem 2.5rem 0.7rem 0.9rem;
+
+  background-color: #ffffff;
+  color: #123524;
+  border: 1px solid #a8c8b4;
+  border-radius: 9px;
+
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 500;
+
+  cursor: pointer;
+  appearance: none;
+
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%23075c35' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m4 6 4 4 4-4'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.9rem center;
+  background-size: 16px;
+}
+
+#faculty-dashboard select:hover {
+  border-color: #075c35;
+  background-color: #f9fcfa;
+}
+
+#faculty-dashboard select:focus-visible {
+  border-color: #075c35;
+  outline: 3px solid #a8d7b5;
+  outline-offset: 2px;
+}
+
+/* Text, number, date, and password inputs */
+#faculty-dashboard input:not([type="checkbox"]):not([type="radio"]) {
+  max-width: 100%;
+  min-width: 0;
+  min-height: 46px;
+  padding: 0.7rem 0.9rem;
+
+  background: #ffffff;
+  color: #123524;
+  border: 1px solid #a8c8b4;
+  border-radius: 9px;
+
+  font: inherit;
+  font-size: 0.95rem;
+}
+
+#faculty-dashboard input:not([type="checkbox"]):not([type="radio"]):focus-visible {
+  border-color: #075c35;
+  outline: 3px solid #a8d7b5;
+  outline-offset: 2px;
+}
+
+#faculty-dashboard input[type="checkbox"],
+#faculty-dashboard input[type="radio"] {
+  accent-color: #075c35;
+}
+
+/* Faculty buttons */
+#faculty-dashboard button {
+  min-height: 44px;
+  padding: 0.65rem 1.1rem;
+  border: 1px solid #075c35;
+  border-radius: 9px;
+
+  background: #075c35;
+  color: #ffffff;
+
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 650;
+
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+#faculty-dashboard button:hover:not(:disabled) {
+  background: #06472a;
+}
+
+#faculty-dashboard button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* Tables */
+#faculty-dashboard table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+#faculty-dashboard th {
+  background: #e9f4ed;
+  color: #075c35;
+  font-weight: 700;
+}
+
+#faculty-dashboard th,
+#faculty-dashboard td {
+  padding: 0.85rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid #e0eae3;
+}
+
+#faculty-dashboard tbody tr:hover {
+  background: #f4faf6;
+}
+
+/* Faculty navigation */
+#faculty-dashboard .dashboard-nav a {
+  border: 1px solid #b2ccbd;
+  border-radius: 9px;
+  background: #ffffff;
+  color: #075c35;
+}
+
+#faculty-dashboard .dashboard-nav a:hover {
+  background: #e9f4ed;
+  border-color: #075c35;
+}
+
+/* Make the selected section card full width */
+#faculty-dashboard #faculty-courses {
+  grid-column: 1 / -1;
+}
+
+/* Keep the section dropdown a comfortable width */
+#faculty-dashboard #faculty-courses select {
+  width: 100%;
+  max-width: 600px;
+}
+
+/* Responsive layout */
+@media (max-width: 650px) {
+  #faculty-dashboard .dashboard-card,
+  #faculty-dashboard .transcript-card {
+    padding: 1.25rem;
+  }
+
+  #faculty-dashboard select {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #faculty-dashboard .dashboard-card,
+  #faculty-dashboard .transcript-card,
+  #faculty-dashboard button {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  #faculty-dashboard select {
+    appearance: auto;
+    background-image: none;
+  }
+}
