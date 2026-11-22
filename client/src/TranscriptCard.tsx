@@ -1,21 +1,28 @@
-import { useEffect, useId, useState, type SubmitEvent } from 'react'
+import { useEffect, useId, useState, type FormEvent, type SubmitEvent } from 'react'
 import axios from 'axios'
 import './TranscriptCard.css'
 import { isTranscript, type Transcript } from './transcriptApi'
 
-// By default, connect to the API on the same computer as the frontend.
-// For a separately hosted API, set VITE_API_BASE_URL or pass apiBaseUrl.
 const defaultApiBaseUrl = import.meta.env.VITE_API_BASE_URL
   || `${window.location.protocol}//${window.location.hostname}:3000`
+
+interface AdvisingNote {
+  noteId: number
+  advisorName: string
+  noteText: string
+  createdAt: string
+}
 
 type TranscriptCardProps = {
   id?: string
   apiBaseUrl?: string
+  mode?: 'student' | 'faculty'
 }
 
-// The async Axios request is below; transcriptApi.ts contains only data types and validation.
-function TranscriptCard({ id, apiBaseUrl = defaultApiBaseUrl }: TranscriptCardProps) {
+function TranscriptCard({ id, apiBaseUrl = defaultApiBaseUrl, mode = 'student' }: TranscriptCardProps) {
   const labelId = useId()
+  const isFaculty = mode === 'faculty'
+
   const [studentID, setStudentID] = useState('1001')
   const [request, setRequest] = useState({ studentID: '1001' })
   const [result, setResult] = useState({
@@ -23,6 +30,11 @@ function TranscriptCard({ id, apiBaseUrl = defaultApiBaseUrl }: TranscriptCardPr
   })
   const { transcript, isLoading, error } = result
   const [inputError, setInputError] = useState('')
+
+  // Faculty Advising Notes State
+  const [notes, setNotes] = useState<AdvisingNote[]>([])
+  const [noteInput, setNoteInput] = useState('')
+  const [noteError, setNoteError] = useState('')
 
   useEffect(() => {
     const controller = new AbortController()
@@ -35,45 +47,44 @@ function TranscriptCard({ id, apiBaseUrl = defaultApiBaseUrl }: TranscriptCardPr
 
     async function getTranscript() {
       try {
-        // Call the Express GET /api/transcripts/:studentID route in the server folder.
-        // await waits for the response; Axios puts the parsed JSON in response.data.
         const response = await axios.get<unknown>(
           `${apiBaseUrl.replace(/\/$/, '')}/api/transcripts/${request.studentID}`,
           { signal: controller.signal },
         )
         if (controller.signal.aborted) return
-        const transcript = response.data
-        if (!isTranscript(transcript) || transcript.studentID !== request.studentID) {
-          throw new Error('The transcript service returned an unexpected response. Please try again.')
+        const data = response.data
+        if (!isTranscript(data) || data.studentID !== request.studentID) {
+          throw new Error('The transcript service returned an unexpected response.')
         }
-        setResult({ transcript, isLoading: false, error: '' })
+        setResult({ transcript: data, isLoading: false, error: '' })
+
+        if (isFaculty) {
+          const notesRes = await axios.get<AdvisingNote[]>(
+            `${apiBaseUrl.replace(/\/$/, '')}/api/advising-notes/${request.studentID}`,
+            { headers: { 'x-user-role': 'faculty' }, signal: controller.signal }
+          )
+          if (!controller.signal.aborted) setNotes(notesRes.data)
+        }
       } catch (requestError) {
         if (controller.signal.aborted) return
-        let error = 'Unable to load the transcript. Please try again.'
-        // Axios rejects HTTP errors (such as 404) as well as network failures.
+        let errMessage = 'Unable to load the transcript. Please try again.'
         if (axios.isAxiosError(requestError)) {
           const status = requestError.response?.status
-          if (status === 404) error = `No mock student was found with student ID ${request.studentID}. Try 1001–1005.`
-          else if (status) error = `The transcript request failed (HTTP ${status}). Please try again.`
-          else error = 'Unable to reach the transcript service. Check your connection and try again.'
-        } else if (requestError instanceof Error) {
-          error = requestError.message
+          if (status === 404) errMessage = `No mock student was found with student ID ${request.studentID}. Try 1001–1005.`
+          else if (status) errMessage = `The transcript request failed (HTTP ${status}).`
         }
-        setResult({ transcript: null, isLoading: false, error })
+        setResult({ transcript: null, isLoading: false, error: errMessage })
       } finally {
         window.clearTimeout(timeout)
       }
     }
 
     void getTranscript()
-
-    // Cancel when leaving the dashboard or starting another request, so an
-    // older response cannot overwrite the currently requested student's data.
     return () => {
       window.clearTimeout(timeout)
       controller.abort()
     }
-  }, [apiBaseUrl, request])
+  }, [apiBaseUrl, request, isFaculty])
 
   function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -83,22 +94,46 @@ function TranscriptCard({ id, apiBaseUrl = defaultApiBaseUrl }: TranscriptCardPr
       setInputError('Enter a four-digit student ID, such as 1001.')
       return
     }
-
     setInputError('')
     setStudentID(nextStudentID)
-    // A new request object also lets the same ID be loaded again after an error.
     setRequest({ studentID: nextStudentID })
   }
 
-  let status = 'No transcript loaded.'
-  if (isLoading) status = `Loading transcript for ${request.studentID}…`
-  else if (transcript) status = `Transcript loaded for ${transcript.firstName} ${transcript.lastName}.`
+  async function handleAddNote(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    if (!transcript || !noteInput.trim()) {
+      setNoteError('Enter an advising note before saving.')
+      return
+    }
+    setNoteError('')
+
+    try {
+      const res = await axios.post<AdvisingNote>(
+        `${apiBaseUrl.replace(/\/$/, '')}/api/advising-notes`,
+        { studentId: transcript.studentID, noteText: noteInput },
+        { headers: { 'x-user-role': 'faculty' } }
+      )
+      setNotes([res.data, ...notes])
+      setNoteInput('')
+    } catch {
+      setNoteError('Failed to save advising note.')
+    }
+  }
+
+  const flaggedCourses = transcript
+    ? transcript.semesters.flatMap((s) =>
+        s.courses.filter((c) => c.grade.startsWith('D') || c.grade === 'F')
+      )
+    : []
 
   return (
     <section id={id} className="transcript-card" aria-labelledby={`${labelId}-heading`} tabIndex={-1}>
-     {/* // ASSIGNMENT DELIVERABLE CODE FOR LAB 6 */}
-      <h2 id={`${labelId}-heading`}>Transcript</h2>
-      <p>Explore fictional student records for this classroom exercise.</p>
+      <h2 id={`${labelId}-heading`}>{isFaculty ? 'Student Advising & Transcript Audit' : 'Transcript'}</h2>
+      <p>
+        {isFaculty
+          ? 'Audit advisee academic standing, review deficient grades, and record advising notes.'
+          : 'Explore fictional student records for this classroom exercise.'}
+      </p>
 
       <form onSubmit={handleSubmit} noValidate>
         <label htmlFor={`${labelId}-student-id`}>Student ID</label>
@@ -114,16 +149,13 @@ function TranscriptCard({ id, apiBaseUrl = defaultApiBaseUrl }: TranscriptCardPr
               setStudentID(event.target.value)
               setInputError('')
             }}
-            aria-describedby={`${labelId}-help${inputError ? ` ${labelId}-input-error` : ''}`}
-            aria-invalid={inputError ? true : undefined}
           />
           <button type="submit" disabled={isLoading}>{isLoading ? 'Loading…' : 'Load transcript'}</button>
         </div>
         <p id={`${labelId}-help`} className="transcript-card-help">Available mock student IDs: 1001–1005.</p>
-        {inputError && <p id={`${labelId}-input-error`} className="transcript-card-error" role="alert">{inputError}</p>}
+        {inputError && <p className="transcript-card-error" role="alert">{inputError}</p>}
       </form>
 
-      <p className="transcript-card-status" role="status">{status}</p>
       {error && <p className="transcript-card-error" role="alert">{error}</p>}
 
       {transcript && (
@@ -132,13 +164,24 @@ function TranscriptCard({ id, apiBaseUrl = defaultApiBaseUrl }: TranscriptCardPr
             <h3>{transcript.firstName} {transcript.lastName}</h3>
             <p>{transcript.institution}</p>
             <p>Student ID: {transcript.studentID} · {transcript.major}</p>
-            {transcript.isMockData && <p className="transcript-card-help">Mock transcript · Not an official academic record</p>}
           </header>
+
+          {isFaculty && (
+            <div className="advising-audit-box" style={{ padding: '0.75rem', margin: '0.75rem 0', border: '1px solid #cbd5e1', borderRadius: '6px' }}>
+              <strong>Academic Standing Audit:</strong>{' '}
+              {transcript.summary.cumulativeGPA < 2.0
+                ? 'Academic Warning (GPA below 2.00)'
+                : 'Good Academic Standing'}
+              {flaggedCourses.length > 0 && (
+                <p style={{ margin: '0.35rem 0 0', color: '#b91c1c' }}>
+                  Courses flagged for retake/review: {flaggedCourses.map((c) => `${c.courseCode} (${c.grade})`).join(', ')}
+                </p>
+              )}
+            </div>
+          )}
 
           {transcript.semesters.map((semester) => (
             <div className="transcript-card-semester" key={semester.term}>
-              {/* A caption names each table; column headers describe its cells.
-                  The focusable wrapper allows keyboard scrolling on phones. */}
               <div className="transcript-card-table-scroll" role="region" aria-label={`${semester.term} courses`} tabIndex={0}>
                 <table>
                   <caption>{semester.term}</caption>
@@ -155,7 +198,7 @@ function TranscriptCard({ id, apiBaseUrl = defaultApiBaseUrl }: TranscriptCardPr
                   </tbody>
                 </table>
               </div>
-              <p className="transcript-card-term-summary">Term GPA: <strong>{semester.gpa.toFixed(2)}</strong> · Credits attempted: {semester.creditsAttempted} · Credits earned: {semester.creditsEarned}</p>
+              <p className="transcript-card-term-summary">Term GPA: <strong>{semester.gpa.toFixed(2)}</strong> · Credits earned: {semester.creditsEarned}</p>
             </div>
           ))}
 
@@ -164,10 +207,37 @@ function TranscriptCard({ id, apiBaseUrl = defaultApiBaseUrl }: TranscriptCardPr
             <div><dt>Credits attempted</dt><dd>{transcript.summary.creditsAttempted}</dd></div>
             <div><dt>Credits earned</dt><dd>{transcript.summary.creditsEarned}</dd></div>
           </dl>
-          <p className="transcript-card-help">GPA is weighted by credit hours on a 4.0 scale. F grades count toward attempted credits but earn no credits.</p>
+
+          {isFaculty && (
+            <div className="advisor-notes-section" style={{ marginTop: '1rem', borderTop: '1px solid #e2e8f0', paddingTop: '0.75rem' }}>
+              <h3>Advisor Notes</h3>
+              <form onSubmit={handleAddNote}>
+                <div className="transcript-card-controls">
+                  <input
+                    type="text"
+                    placeholder="Add advising note for this student..."
+                    value={noteInput}
+                    onChange={(e) => setNoteInput(e.target.value)}
+                  />
+                  <button type="submit">Save Note</button>
+                </div>
+                {noteError && <p className="transcript-card-error" role="alert">{noteError}</p>}
+              </form>
+              {notes.length === 0 ? (
+                <p className="transcript-card-help">No advising notes recorded yet.</p>
+              ) : (
+                <ul>
+                  {notes.map((n) => (
+                    <li key={n.noteId}>
+                      <strong>{n.advisorName}:</strong> {n.noteText}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          )}
         </div>
       )}
-        {/* END ASSIGNMENT DELIVERABLE CODE FOR LAB 6 */}
     </section>
   )
 }

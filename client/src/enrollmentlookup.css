@@ -1,0 +1,86 @@
+.enrollment-lookup .enrollment-form {
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.enrollment-form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 0.75rem;
+}
+
+.enrollment-form-grid label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.enrollment-form-grid input,
+.enrollment-form-grid select {
+  width: 100%;
+  padding: 0.5rem;
+  box-sizing: border-box;
+}
+
+.add-enrollment-btn {
+  align-self: flex-start;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+}
+
+.enrollment-table-area {
+  margin-top: 1rem;
+}
+
+.enrollment-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.enrollment-table th,
+.enrollment-table td {
+  padding: 0.5rem;
+  text-align: left;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  text-transform: capitalize;
+}
+
+.status-enrolled {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+.status-waitlisted {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.status-completed {
+  background-color: #e0e7ff;
+  color: #3730a3;
+}
+
+.delete-btn {
+  background-color: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fca5a5;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.delete-btn:hover {
+  background-color: #fca5a5;
+}
