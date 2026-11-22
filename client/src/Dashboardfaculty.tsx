@@ -20,8 +20,10 @@ function Dashboardfaculty() {
           Each href matches a section ID; .dashboard-nav styles the link list. */}
       <nav className="dashboard-nav" aria-label="Faculty sections">
         <ul>
-            <li><a href="#faculty-alerts">Alerts</a></li>
-            <li><a href="#student-records">Student Records</a></li>
+          <li><a href="#weather-card">Weather</a></li>
+          <li><a href="#faculty-alerts">Alerts</a></li>
+          <li><a href="#student-records">Student Records</a></li>
+          <li><a href="#task-list">Task List</a></li>
             {/* <li><a href="#faculty-courses">Courses</a></li> */}
             {/* <li><a href="#class-rosters">Class Rosters</a></li> */}
             {/* <li><a href="#grading">Grading</a></li> */}

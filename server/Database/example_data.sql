@@ -15,4 +15,3 @@ INSERT INTO student_records.students (first_name, last_name, email, major_id, en
 ('Joe', 'Schmoe', 'jscmoe@spjc.edu', (SELECT id FROM student_records.majors WHERE code = 'CS'), 2022, TRUE),
 ('Jane', 'Doe', 'jdoe@spjc.edu', (SELECT id FROM student_records.majors WHERE code = 'EE'), 2022, TRUE)
 ON CONFLICT (email) DO NOTHING;
-
