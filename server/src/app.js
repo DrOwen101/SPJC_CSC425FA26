@@ -4,6 +4,7 @@ import cors from 'cors'
 import express from 'express'
 import { checkDatabase } from './db.js'
 import { attendanceRouter } from './attendanceRoutes.js'
+import { facultyRouter } from './facultyRoutes.js'
 
 export const app = express()
 
@@ -12,6 +13,7 @@ app.use(express.json())
 
 // Lab 10: PostgreSQL attendance CRUD routes.
 app.use('/api/attendance', attendanceRouter)
+app.use('/api/faculty', facultyRouter)
 
 // Fictional data for the Student Lookup exercise.
 const mockStudents = [

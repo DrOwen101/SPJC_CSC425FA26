@@ -1,25 +1,9 @@
 import { useState } from 'react'
 import axios from 'axios'
 
-type AttendanceRecord = {
-  id: number
-  studentId: string
-  studentName: string
-  date: string
-  status: 'present' | 'absent' | 'late'
-}
+import { attendanceApi as api, type AttendanceRecord } from './attendanceApi'
 
 type Action = 'create' | 'retrieve' | 'update' | 'delete'
-
-// Change environments through client/.env.local:
-// VITE_API_BASE_URL=http://localhost:3000
-const api = axios.create({
-  baseURL: (
-    import.meta.env.VITE_API_BASE_URL ||
-    'http://localhost:3000'
-  ).replace(/\/+$/, ''),
-  timeout: 10000,
-})
 
 export default function AttendanceCard() {
   const [recordId, setRecordId] = useState('')

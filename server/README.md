@@ -145,3 +145,21 @@ npm test --prefix server
 ```
 
 Tests make real HTTP requests on a temporary local port and cover all five transcripts, GPA and credit totals, both lookup forms, invalid/unknown IDs, cross-origin requests, and database-independent status.
+
+## Lab 12 faculty demo
+
+1. Open your Lab 10 database in pgAdmin. If this database is new, run `server/sql/lab10.sql` once. Run `server/sql/lab12.sql` to add fictional faculty records.
+2. In `server/.env`, keep the database settings for that database and set `LAB12_FACULTY_PASSWORD` to a password you choose for this local demo. Use `HOST=127.0.0.1` for a demo on your computer.
+3. Start the server and client, open `http://localhost:5173`, and select **Faculty**. Enter the demo password to see the teaching schedule, course roster, class attendance, and grading review.
+
+The API uses the demo username `faculty` and the server-side password on every faculty request. These records belong to fictional courses. Course assignment checks also use the faculty identity on the server.
+
+| Method | Path |
+| --- | --- |
+| GET | `/api/faculty/schedule` |
+| GET | `/api/faculty/courses/CSC101/roster` |
+| GET | `/api/faculty/courses/CSC101/attendance` |
+| GET | `/api/faculty/grading` |
+| PUT | `/api/faculty/grading/1/review` |
+
+For local evidence, request the schedule without credentials to see HTTP 401. Use `curl -i -u student:demo http://localhost:3000/api/faculty/schedule` to see HTTP 403, or `curl -i -u faculty http://localhost:3000/api/faculty/schedule` and enter the demo password when prompted to see HTTP 200.
