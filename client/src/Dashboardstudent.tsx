@@ -1,7 +1,8 @@
-import { useState, type SubmitEvent } from 'react'
+import { useEffect, useState, type SubmitEvent } from 'react'
 import WeatherCard from './WeatherCard'
 import StudentLookup from './StudentLookup'
 import TranscriptCard from './TranscriptCard'
+import { getAllStudents, getStudentById, createStudent,updateStudent,deleteStudent, type DbStudent } from './studentDbApi'
 
 // Each letter grade maps to its value on a standard 4.0 GPA scale.
 const gradePoints: Record<string, number> = {
@@ -23,10 +24,178 @@ const gradePoints: Record<string, number> = {
 // This role component supplies content; App.css supplies the shared layout.
 // The lookup uses the dummy API; the other cards remain classroom examples.
 function Dashboardstudent() {
+  // Module 10 — PostgreSQL student records
+const [dbStudents, setDbStudents] = useState<DbStudent[]>([])
+const [dbLoading, setDbLoading] = useState(true)
+const [dbError, setDbError] = useState('')
+
+
+// MODULE 10 — FETCH STUDENTS FROM POSTGRESQL
+
+useEffect(() => {
+  async function fetchStudents() {
+    try {
+      setDbLoading(true)
+      setDbError('')
+
+      const students = await getAllStudents()
+      setDbStudents(students)
+    } catch (error) {
+      console.error('Failed to fetch students:', error)
+      setDbError('Unable to load students from PostgreSQL.')
+    } finally {
+      setDbLoading(false)
+    }
+  }
+
+  void fetchStudents()
+}, [])
   const [gradeEntry, setGradeEntry] = useState('')
   const [grades, setGrades] = useState<string[]>([])
   const [gpa, setGpa] = useState<number | null>(null)
   const [gradeError, setGradeError] = useState('')
+
+  // MODULE 10 — CREATE STUDENT FORM
+const [newStudent, setNewStudent] = useState<DbStudent>({
+  student_id: 1005,
+  first_name: '',
+  last_name: '',
+  email: '',
+})
+
+const [createMessage, setCreateMessage] = useState('')
+const [creatingStudent, setCreatingStudent] = useState(false)
+
+// MODULE 10 — CREATE STUDENT HANDLER
+
+async function handleCreateStudent(event: SubmitEvent<HTMLFormElement>) {
+  event.preventDefault()
+
+  setCreatingStudent(true)
+  setCreateMessage('')
+
+  try {
+    const createdStudent = await createStudent(newStudent)
+
+    // Update the student list after successful creation
+    setDbStudents((previous) => [...previous, createdStudent])
+
+    setCreateMessage(
+      `Student ${createdStudent.first_name} ${createdStudent.last_name} created successfully!`
+    )
+
+    // Reset the form
+    setNewStudent({
+      student_id: 1006,
+      first_name: '',
+      last_name: '',
+      email: '',
+    })
+  } catch (error) {
+    console.error('Failed to create student:', error)
+    setCreateMessage('Failed to create student. Check the ID and email.')
+  } finally {
+    setCreatingStudent(false)
+  }
+}
+// MODULE 10 — UPDATE STUDENT FORM
+const [editStudent, setEditStudent] = useState<DbStudent>({
+  student_id: 0,
+  first_name: '',
+  last_name: '',
+  email: '',
+})
+
+const [updateMessage, setUpdateMessage] = useState('')
+const [updatingStudent, setUpdatingStudent] = useState(false)
+
+
+// MODULE 10 — UPDATE STUDENT HANDLER
+
+
+// MODULE 10 — LOAD STUDENT BY ID
+const [loadingStudent, setLoadingStudent] = useState(false)
+const [loadMessage, setLoadMessage] = useState('')
+
+async function handleLoadStudent() {
+  setLoadingStudent(true)
+  setLoadMessage('')
+
+  try {
+    const student = await getStudentById(editStudent.student_id)
+
+    // Fill the UPDATE form with the saved PostgreSQL values
+    setEditStudent(student)
+
+    setLoadMessage('Student loaded successfully!')
+  } catch (error) {
+    console.error('Failed to load student:', error)
+    setLoadMessage('Student not found or unable to load.')
+  } finally {
+    setLoadingStudent(false)
+  }
+}
+
+async function handleUpdateStudent(event: SubmitEvent<HTMLFormElement>) {
+  event.preventDefault()
+
+  setUpdatingStudent(true)
+  setUpdateMessage('')
+
+  try {
+    const updatedStudent = await updateStudent(editStudent.student_id, {
+      first_name: editStudent.first_name,
+      last_name: editStudent.last_name,
+      email: editStudent.email,
+    })
+
+    // Update the student displayed in React
+    setDbStudents((previous) =>
+      previous.map((student) =>
+        student.student_id === updatedStudent.student_id
+          ? updatedStudent
+          : student
+      )
+    )
+
+    setUpdateMessage('Student updated successfully!')
+  } catch (error) {
+    console.error('Failed to update student:', error)
+    setUpdateMessage('Failed to update student. Check the ID and details.')
+  } finally {
+    setUpdatingStudent(false)
+  }
+}// MODULE 10 — DELETE STUDENT HANDLER
+const [deletingStudent, setDeletingStudent] = useState(false)
+const [deleteMessage, setDeleteMessage] = useState('')
+
+async function handleDeleteStudent(studentId: number) {
+  const confirmed = window.confirm(
+    `Are you sure you want to delete student ID ${studentId}?`
+  )
+
+  if (!confirmed) return
+
+  setDeletingStudent(true)
+  setDeleteMessage('')
+
+  try {
+    await deleteStudent(studentId)
+
+    // Remove deleted student from the React list
+    setDbStudents((previous) =>
+      previous.filter((student) => student.student_id !== studentId)
+    )
+
+    setDeleteMessage('Student deleted successfully!')
+  } catch (error) {
+    console.error('Failed to delete student:', error)
+    setDeleteMessage('Unable to delete student. Check for existing enrollments.')
+  } finally {
+    setDeletingStudent(false)
+  }
+}
+
 
   function addGrade(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -76,6 +245,227 @@ function Dashboardstudent() {
           Each named section is a card. tabIndex=-1 permits anchor focus without
           adding every card to the Tab sequence; links remain the normal stops. */}
       <div className="dashboard-grid">
+        {/*
+    MODULE 10 — POSTGRESQL STUDENT RECORDS
+     */}
+
+<section
+  id="student-database"
+  className="dashboard-card"
+  aria-labelledby="student-database-heading"
+  tabIndex={-1}
+>
+<h2 id="student-database-heading">Add Student</h2>
+<p>Create a new student record in PostgreSQL.</p>
+
+  {/* MODULE 10 — CREATE STUDENT FORM */}
+<h3>Add New Student</h3>
+
+<form onSubmit={handleCreateStudent}>
+  <label htmlFor="new-student-id">Student ID</label>
+  <input
+    id="new-student-id"
+    type="number"
+    min="1"
+    required
+    value={newStudent.student_id}
+    onChange={(event) =>
+      setNewStudent({
+        ...newStudent,
+        student_id: Number(event.target.value),
+      })
+    }
+  />
+
+  <label htmlFor="new-first-name">First Name</label>
+  <input
+    id="new-first-name"
+    type="text"
+    maxLength={50}
+    required
+    value={newStudent.first_name}
+    onChange={(event) =>
+      setNewStudent({
+        ...newStudent,
+        first_name: event.target.value,
+      })
+    }
+  />
+
+  <label htmlFor="new-last-name">Last Name</label>
+  <input
+    id="new-last-name"
+    type="text"
+    maxLength={50}
+    required
+    value={newStudent.last_name}
+    onChange={(event) =>
+      setNewStudent({
+        ...newStudent,
+        last_name: event.target.value,
+      })
+    }
+  />
+
+  <label htmlFor="new-email">Email</label>
+  <input
+    id="new-email"
+    type="email"
+    maxLength={100}
+    required
+    value={newStudent.email}
+    onChange={(event) =>
+      setNewStudent({
+        ...newStudent,
+        email: event.target.value,
+      })
+    }
+  />
+
+  <button type="submit" disabled={creatingStudent}>
+    {creatingStudent ? 'Creating...' : 'Create Student'}
+  </button>
+</form>
+
+{createMessage && (
+  <p role="status" aria-live="polite">
+    {createMessage}
+  </p>
+)}
+
+</section>
+<section
+  id="update-student"
+  className="dashboard-card"
+  aria-labelledby="update-student-heading"
+  tabIndex={-1}
+>
+  <h2 id="update-student-heading">Update Student</h2>
+  <p>Load an existing student from PostgreSQL and edit their information.</p>
+
+<form onSubmit={handleUpdateStudent}>
+  <label htmlFor="edit-student-id">Student ID</label>
+  <input
+    id="edit-student-id"
+    type="number"
+    min="1"
+    required
+    value={editStudent.student_id}
+    onChange={(event) =>
+      setEditStudent({
+        ...editStudent,
+        student_id: Number(event.target.value),
+      })
+    }
+  />
+
+  <button
+    type="button"
+    onClick={handleLoadStudent}
+    disabled={loadingStudent || editStudent.student_id <= 0}
+  >
+    {loadingStudent ? 'Loading...' : 'Load Student'}
+  </button>
+
+  {loadMessage && <p role="status">{loadMessage}</p>}
+
+  <label htmlFor="edit-first-name">First Name</label>
+  <input
+    id="edit-first-name"
+    type="text"
+    maxLength={50}
+    required
+    value={editStudent.first_name}
+    onChange={(event) =>
+      setEditStudent({ ...editStudent, first_name: event.target.value })
+    }
+  />
+
+  <label htmlFor="edit-last-name">Last Name</label>
+  <input
+    id="edit-last-name"
+    type="text"
+    maxLength={50}
+    required
+    value={editStudent.last_name}
+    onChange={(event) =>
+      setEditStudent({ ...editStudent, last_name: event.target.value })
+    }
+  />
+
+  <label htmlFor="edit-email">Email</label>
+  <input
+    id="edit-email"
+    type="email"
+    maxLength={100}
+    required
+    value={editStudent.email}
+    onChange={(event) =>
+      setEditStudent({ ...editStudent, email: event.target.value })
+    }
+  />
+
+  <button type="submit" disabled={updatingStudent}>
+    {updatingStudent ? 'Updating...' : 'Update Student'}
+  </button>
+</form>
+
+{updateMessage && (
+  <p role="status" aria-live="polite">{updateMessage}</p>
+)}
+
+
+</section>
+
+{/* MODULE 10 — STUDENT RECORDS CARD */}
+<section
+  id="student-records"
+  className="dashboard-card"
+  aria-labelledby="student-records-heading"
+  tabIndex={-1}
+>
+  <h2 id="student-records-heading">Student Records</h2>
+  <p>View and delete student records stored in PostgreSQL.</p>
+
+  {dbLoading && <p>Loading students...</p>}
+
+  {dbError && <p role="alert">{dbError}</p>}
+
+  {!dbLoading && !dbError && (
+    <>
+      {dbStudents.length === 0 ? (
+        <p>No students found.</p>
+      ) : (
+        <ul>
+          {dbStudents.map((student) => (
+            <li key={student.student_id}>
+              <strong>
+                {student.first_name} {student.last_name}
+              </strong>
+              {' — '}
+              ID: {student.student_id}
+              {' — '}
+              {student.email}
+              {' '}
+<button
+  type="button"
+  disabled={deletingStudent}
+  onClick={() => handleDeleteStudent(student.student_id)}
+>
+  Delete
+</button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </>
+  )}
+  {deleteMessage && (
+  <p role="status" aria-live="polite">
+    {deleteMessage}
+  </p>
+)}
+</section>
         {/* StudentLookup contains the Lab 7 form, request, state, and result.
             The dashboard imports and places it like any other React component. */}
         <StudentLookup />
