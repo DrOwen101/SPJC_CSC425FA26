@@ -1,4 +1,9 @@
 // This role component supplies content; App.css supplies the shared layout.
+
+import StudentLookup from "./StudentLookup"
+import WeatherCard from "./WeatherCard"
+import AttendanceRecord from "./AttendanceRecord"
+
 // Keep these examples separate from live records until a data source is connected.
 function Dashboardfaculty() {
   return (
@@ -27,6 +32,8 @@ function Dashboardfaculty() {
           Each named section is a card. tabIndex=-1 permits anchor focus without
           adding every card to the Tab sequence; links remain the normal stops. */}
       <div className="dashboard-grid">
+        <StudentLookup />
+        <WeatherCard />
         <section id="faculty-courses" className="dashboard-card" aria-labelledby="faculty-courses-heading" tabIndex={-1}>
           <h2 id="faculty-courses-heading">Courses</h2>
           <p className="status-label">Not connected</p>
@@ -36,15 +43,7 @@ function Dashboardfaculty() {
             <li>Enrollment and course materials</li>
           </ul>
         </section>
-        <section id="class-rosters" className="dashboard-card" aria-labelledby="class-rosters-heading" tabIndex={-1}>
-          <h2 id="class-rosters-heading">Class Rosters</h2>
-          <p className="status-label">Not connected</p>
-          <p>Student lists will appear here when enrollment records are available.</p>
-          <ul className="detail-list">
-            <li>Students organized by course and section</li>
-            <li>Attendance records for each class</li>
-          </ul>
-        </section>
+        <AttendanceRecord />
         <section id="grading" className="dashboard-card" aria-labelledby="grading-heading" tabIndex={-1}>
           <h2 id="grading-heading">Grading</h2>
           <p className="status-label">Not connected</p>

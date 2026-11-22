@@ -2,7 +2,7 @@ import 'dotenv/config'
 import { readFileSync } from 'node:fs'
 import cors from 'cors'
 import express from 'express'
-import { checkDatabase } from './db.js'
+import { checkDatabase, ensureAttendanceTable, pool } from './db.js'
 
 export const app = express()
 
@@ -48,7 +48,7 @@ const { students: transcripts } = JSON.parse(readFileSync(new URL('./data/transc
 
 // Only the fictional API allows requests from any frontend origin.
 const teachingApi = express.Router()
-teachingApi.use(['/status', '/students', '/transcripts'], cors({ methods: ['GET', 'HEAD', 'OPTIONS'] }))
+teachingApi.use(['/status', '/students', '/transcripts', '/courses'], cors({ methods: ['GET', 'HEAD', 'OPTIONS'] }))
 
 teachingApi.get('/status', (_request, response) => {
   response.json({ status: 'ok', service: 'Mock transcript API', studentCount: mockStudents.length })
@@ -85,11 +85,119 @@ function getTranscript(request, response) {
 teachingApi.get('/transcripts', getTranscript)
 teachingApi.get('/transcripts/:studentID', getTranscript)
 
+teachingApi.get('/courses/:studentID', (request, response) => {
+  const { studentID } = request.params
+  if (!/^\d{4}$/.test(studentID)) {
+    return response.status(400).json({
+      error: 'INVALID_STUDENT_ID',
+      message: 'Provide a four-digit studentID.',
+    })
+  }
+
+  const student = transcripts.find((record) => record.studentID === studentID)
+  if (!student) {
+    return response.status(404).json({
+      error: 'STUDENT_NOT_FOUND',
+      message: `No mock student was found with studentID ${studentID}.`,
+    })
+  }
+
+  const coursesByCode = new Map()
+  for (const semester of student.semesters) {
+    for (const course of semester.courses) {
+      coursesByCode.set(course.courseCode, {
+        courseCode: course.courseCode,
+        courseTitle: course.courseTitle,
+        creditHours: course.creditHours,
+      })
+    }
+  }
+  return response.json({ studentID, courses: [...coursesByCode.values()] })
+})
+
 // These handlers finish before the original starter API's CORS middleware.
 app.use('/api', teachingApi)
 
 app.use(cors({ origin: 'http://localhost:5173' }))
 app.use(express.json())
+
+app.post('/api/attendance', async (request, response) => {
+  const { studentID, courseCode, attendanceDate, status } = request.body ?? {}
+  const validStatuses = ['Present', 'Absent', 'Excused']
+
+  if (typeof studentID !== 'string' || !/^\d{4}$/.test(studentID)) {
+    return response.status(400).json({ error: 'INVALID_STUDENT_ID', message: 'A four-digit studentID is required.' })
+  }
+  if (!mockStudents.some((student) => student.studentID === studentID)) {
+    return response.status(404).json({ error: 'STUDENT_NOT_FOUND', message: 'No student was found with that studentID.' })
+  }
+  if (typeof courseCode !== 'string' || !courseCode.trim()) {
+    return response.status(400).json({ error: 'INVALID_COURSE', message: 'A courseCode is required.' })
+  }
+  if (typeof attendanceDate !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(attendanceDate)) {
+    return response.status(400).json({ error: 'INVALID_DATE', message: 'attendanceDate must use YYYY-MM-DD format.' })
+  }
+  if (!validStatuses.includes(status)) {
+    return response.status(400).json({ error: 'INVALID_STATUS', message: 'Status must be Present, Absent, or Excused.' })
+  }
+
+  const studentTranscript = transcripts.find((student) => student.studentID === studentID)
+  const courseExists = studentTranscript?.semesters.some((semester) =>
+    semester.courses.some((course) => course.courseCode === courseCode),
+  )
+  if (!courseExists) {
+    return response.status(404).json({ error: 'COURSE_NOT_FOUND', message: 'The course does not belong to this student.' })
+  }
+
+  try {
+    await ensureAttendanceTable()
+    const result = await pool.query(
+      `INSERT INTO attendance_records (student_id, course_code, attendance_date, status)
+       VALUES ($1, $2, $3, $4)
+       ON CONFLICT (student_id, course_code, attendance_date)
+       DO UPDATE SET status = EXCLUDED.status, recorded_at = NOW()
+       RETURNING id, student_id AS "studentID", course_code AS "courseCode",
+                 attendance_date::text AS "attendanceDate", status, recorded_at AS "recordedAt"`,
+      [studentID, courseCode, attendanceDate, status],
+    )
+    return response.status(200).json({ record: result.rows[0] })
+  } catch (error) {
+    console.error('Unable to save attendance record:', error.message)
+    return response.status(503).json({
+      error: 'DATABASE_UNAVAILABLE',
+      message: 'Attendance could not be saved because the database is unavailable.',
+    })
+  }
+})
+
+app.get('/api/attendance', async (request, response) => {
+  const studentID = typeof request.query.studentID === 'string' ? request.query.studentID : undefined
+  if (studentID && !/^\d{4}$/.test(studentID)) {
+    return response.status(400).json({ error: 'INVALID_STUDENT_ID', message: 'studentID must contain four digits.' })
+  }
+
+  try {
+    await ensureAttendanceTable()
+    const values = studentID ? [studentID] : []
+    const whereClause = studentID ? 'WHERE student_id = $1' : ''
+    const result = await pool.query(
+      `SELECT id, student_id AS "studentID", course_code AS "courseCode",
+              attendance_date::text AS "attendanceDate", status, recorded_at AS "recordedAt"
+       FROM attendance_records
+       ${whereClause}
+       ORDER BY attendance_date DESC, recorded_at DESC
+       LIMIT 200`,
+      values,
+    )
+    return response.json({ records: result.rows })
+  } catch (error) {
+    console.error('Unable to load attendance records:', error.message)
+    return response.status(503).json({
+      error: 'DATABASE_UNAVAILABLE',
+      message: 'Attendance records could not be loaded because the database is unavailable.',
+    })
+  }
+})
 
 app.get('/', (_request, response) => {
   response.json({
@@ -99,6 +207,8 @@ app.get('/', (_request, response) => {
       students: '/api/students',
       transcript: '/api/transcripts/1001',
       transcriptQuery: '/api/transcripts?studentID=1001',
+      courses: '/api/courses/1001',
+      attendance: '/api/attendance',
       status: '/api/status',
       databaseHealth: '/api/health',
     },
