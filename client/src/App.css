@@ -390,3 +390,120 @@ main, .dashboard-card {
     border: 1px solid CanvasText;
   }
 }
+
+
+
+/* MODULE 10 — Student Management Forms */
+
+#student-database form,
+#update-student form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 1.25rem;
+  row-gap: 0.65rem;
+  align-items: end;
+}
+
+/* Each label and input takes its own row */
+#student-database form label,
+#update-student form label {
+  grid-column: 1 / -1;
+  font-weight: 700;
+  margin-top: 0.35rem;
+}
+
+#student-database input,
+#update-student input {
+  grid-column: 1 / -1;
+  width: 100%;
+  min-width: 0;
+  min-height: 46px;
+  padding: 0.7rem 0.85rem;
+  border: 1px solid #568069;
+  border-radius: 8px;
+  background: white;
+  color: #123524;
+  font: inherit;
+}
+
+/* Green action buttons */
+#student-database button,
+#update-student button,
+#student-records button {
+  min-height: 46px;
+  padding: 0.7rem 1.25rem;
+  border: 2px solid #075c35;
+  border-radius: 8px;
+  background: #075c35;
+  color: white;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+#student-database form button[type="submit"],
+#update-student form button[type="submit"] {
+  grid-column: 1 / -1;
+  margin-top: 0.75rem;
+}
+
+#student-database button:hover:not(:disabled),
+#update-student button:hover:not(:disabled),
+#student-records button:hover:not(:disabled) {
+  background: #06472a;
+}
+
+#student-database button:disabled,
+#update-student button:disabled,
+#student-records button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* Better spacing between student records */
+#student-records li {
+  margin-bottom: 1rem;
+  overflow-wrap: anywhere;
+}
+
+#student-records li button {
+  display: block;
+  margin-top: 0.5rem;
+}
+
+@media (max-width: 650px) {
+  #student-database form,
+  #update-student form {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* MODULE 10 — Full-width Student Records */
+
+#student-records {
+  grid-column: 1 / -1;
+}
+
+#student-records ul {
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0 0;
+}
+
+#student-records li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+  border: 1px solid #b2ccbd;
+  border-radius: 10px;
+  background: #ffffff;
+}
+
+#student-records li button {
+  margin-top: 0;
+  flex-shrink: 0;
+}

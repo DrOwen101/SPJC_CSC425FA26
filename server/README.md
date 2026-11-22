@@ -145,3 +145,147 @@ npm test --prefix server
 ```
 
 Tests make real HTTP requests on a temporary local port and cover all five transcripts, GPA and credit totals, both lookup forms, invalid/unknown IDs, cross-origin requests, and database-independent status.
+
+
+## Module 10 — PostgreSQL Student CRUD API
+
+The Student Dashboard uses Axios to communicate with an Express backend connected to PostgreSQL.
+
+**API Base URL:** `http://localhost:3000/api/db`
+
+### 1. GET /students
+
+**Purpose:** Retrieve all students.
+
+**Request body:** None.
+
+**Expected response (200 OK):**
+```json
+{
+  "students": [
+    {
+      "student_id": 1001,
+      "first_name": "John",
+      "last_name": "Smith",
+      "email": "john.smith@example.com"
+    }
+  ]
+}
+```
+
+### 2. GET /students/:id
+
+**Purpose:** Retrieve a student by ID.
+
+**Request body:** None.
+
+**Example:** `GET /students/1001`
+
+**Expected response (200 OK):**
+```json
+{
+  "student": {
+    "student_id": 1001,
+    "first_name": "John",
+    "last_name": "Smith",
+    "email": "john.smith@example.com"
+  }
+}
+```
+
+**Errors:** 400 invalid ID, 404 student not found.
+
+### 3. POST /students
+
+**Purpose:** Create a new student.
+
+**Request body:**
+```json
+{
+  "student_id": 12340,
+  "first_name": "Nithin",
+  "last_name": "Deepa",
+  "email": "nithin.deepa@example.com"
+}
+```
+
+**Expected response (201 Created):**
+```json
+{
+  "message": "Student created successfully",
+  "student": {
+    "student_id": 12340,
+    "first_name": "Nithin",
+    "last_name": "Deepa",
+    "email": "nithin.deepa@example.com"
+  }
+}
+```
+
+**Errors:** 400 invalid input, 409 duplicate student ID or email.
+
+### 4. PATCH /students/:id
+
+**Purpose:** Update an existing student's name and email.
+
+**Example:** `PATCH /students/12340`
+
+**Request body:**
+```json
+{
+  "first_name": "Nithin",
+  "last_name": "Deepa",
+  "email": "nithin.updated@example.com"
+}
+```
+
+**Expected response (200 OK):**
+```json
+{
+  "message": "Student updated successfully",
+  "student": {
+    "student_id": 12340,
+    "first_name": "Nithin",
+    "last_name": "Deepa",
+    "email": "nithin.updated@example.com"
+  }
+}
+```
+
+**Errors:** 400 invalid input, 404 student not found, 409 duplicate email.
+
+### 5. DELETE /students/:id
+
+**Purpose:** Delete a student by ID.
+
+**Request body:** None.
+
+**Example:** `DELETE /students/12340`
+
+**Expected response (200 OK):**
+```json
+{
+  "message": "Student deleted successfully",
+  "student": {
+    "student_id": 12340,
+    "first_name": "Nithin",
+    "last_name": "Deepa",
+    "email": "nithin.updated@example.com"
+  }
+}
+```
+
+**Errors:** 400 invalid ID, 404 student not found, 409 student has related enrollments.
+
+### Database Files
+
+- `sql/schema.sql` — Creates the students and enrollments tables.
+- `sql/sample_data.sql` — Inserts fictional students and enrollments and verifies the records.
+
+### Notes
+
+- All five endpoints use PostgreSQL through the Express connection pool.
+- SQL queries use parameterized values to reduce SQL injection risks.
+- The frontend uses Axios in `client/src/studentDbApi.ts`.
+- The student ID remains consistent throughout the create, read, update, and delete workflow.
+- All endpoints may return HTTP 500 for database errors.

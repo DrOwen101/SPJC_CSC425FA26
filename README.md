@@ -403,3 +403,83 @@ When every verification check passes, your development environment is ready. Rev
 CSC 425: Web-Based Services and Applications  
 Fall 2026  
 Dr. Jason T. Owen
+
+
+## Module 10 — PostgreSQL Setup Instructions
+
+### Requirements
+
+- Node.js and npm
+- PostgreSQL
+- A local PostgreSQL user with permission to create tables
+
+### 1. Create the database
+
+Connect to PostgreSQL and create a database:
+
+```sql
+CREATE DATABASE csc425_practice;
+```
+
+### 2. Create the tables and insert sample data
+
+From the repository root, run:
+
+```bash
+psql -U postgres -h localhost -p 4919 -d csc425_practice -f server/sql/schema.sql
+psql -U postgres -h localhost -p 4919 -d csc425_practice -f server/sql/sample_data.sql
+```
+
+Port 4919 is the port used in this development environment. Replace it with your PostgreSQL port if different.
+
+### 3. Configure database credentials
+
+Copy `server/.env.example` to `server/.env`.
+
+Update the database host, port, name, username, and password to match your local PostgreSQL installation.
+
+Do not commit `server/.env` to GitHub.
+
+### 4. Install dependencies
+
+From the repository root:
+
+```bash
+npm ci
+npm ci --prefix server
+npm ci --prefix client
+```
+
+### 5. Start the application
+
+From the repository root:
+
+```bash
+npm run dev
+```
+
+Alternatively, run the frontend and backend separately using their respective npm scripts.
+
+Backend: `http://localhost:3000`
+
+Frontend: Use the local URL displayed by Vite, typically `http://localhost:5173` or `http://localhost:5174`.
+
+### 6. Verify the database connection
+
+Open:
+
+`http://localhost:3000/api/health`
+
+A successful response indicates that PostgreSQL is connected.
+
+### 7. Test the Student Dashboard
+
+Open the Student Dashboard and use the PostgreSQL student management sections to:
+
+1. Create a student.
+2. Retrieve the student record.
+3. Update the student's information.
+4. Delete the student.
+5. Verify the student no longer exists.
+
+Use the same student ID throughout the CRUD workflow.
