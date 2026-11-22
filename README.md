@@ -273,6 +273,8 @@ Frontend dependencies:
 - `typescript`
 - `vite`
 - `@vitejs/plugin-react`
+- `@svar-ui/react-tasklist` for the task-list component
+- `@svar-ui/react-core` for SVAR UI core components and styles
 - ESLint and TypeScript ESLint packages
 
 Backend dependencies:
