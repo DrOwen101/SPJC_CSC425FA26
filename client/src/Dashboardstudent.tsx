@@ -80,8 +80,8 @@ function Dashboardstudent() {
         {/* StudentLookup contains the Lab 7 form, request, state, and result.
             The dashboard imports and places it like any other React component. */}
         <StudentLookup />
-        <StudentDatabase />
         <WeatherCard />
+        <StudentDatabase />
         <section id="gpa" className="dashboard-card" aria-labelledby="gpa-heading" tabIndex={-1}>
           <h2 id="gpa-heading">GPA</h2>
           <p id="gpa-value" className="metric" aria-live="polite">
