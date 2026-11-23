@@ -1,7 +1,7 @@
 // This role component supplies content; App.css supplies the shared layout.
 // Keep these examples separate from live records until a data source is connected.
 import ClassRosters from './ClassRosters'
-import TranscriptCard from './TranscriptCard'
+import TranscriptCardFV from './TranscriptCardFV'
 
 function Dashboardfaculty() {
   return (
@@ -31,7 +31,7 @@ function Dashboardfaculty() {
           Each named section is a card. tabIndex=-1 permits anchor focus without
           adding every card to the Tab sequence; links remain the normal stops. */}
       <div className="dashboard-grid">
-        <TranscriptCard id="transcript-1" />
+        <TranscriptCardFV id="transcript-1" />
         <ClassRosters />
         <section id="faculty-courses" className="dashboard-card" aria-labelledby="faculty-courses-heading" tabIndex={-1}>
           <h2 id="faculty-courses-heading">Courses</h2>
