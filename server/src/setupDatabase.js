@@ -35,6 +35,26 @@ try {
     )
   }
 
+  const courseResult = await client.query(
+  `INSERT INTO courses (course_code, course_title, section, term)
+   VALUES ($1, $2, $3, $4)
+   ON CONFLICT (course_code, section, term)
+   DO UPDATE SET course_title = EXCLUDED.course_title
+   RETURNING course_id`,
+  ['CSC425', 'Full Stack Development', '01', 'Fall 2026'],
+)
+
+const courseId = courseResult.rows[0].course_id
+
+for (const studentID of ['1001', '1002']) {
+  await client.query(
+    `INSERT INTO enrollments (course_id, student_id)
+     VALUES ($1, $2)
+     ON CONFLICT (course_id, student_id) DO NOTHING`,
+    [courseId, studentID],
+  )
+}
+
   await client.query('COMMIT')
   transactionStarted = false
   console.log(`Database setup complete. Added schema and missing fixture records for ${students.length} students.`)

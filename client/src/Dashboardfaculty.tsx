@@ -1,6 +1,58 @@
+import { useEffect, useState } from 'react'
+import {
+  getCourseRoster,
+  getFacultyCourses,
+  type FacultyCourse,
+  type RosterStudent,
+} from './facultyApi'
+
 // This role component supplies content; App.css supplies the shared layout.
-// Keep these examples separate from live records until a data source is connected.
 function Dashboardfaculty() {
+  const [courses, setCourses] = useState<FacultyCourse[]>([])
+  const [coursesLoading, setCoursesLoading] = useState(true)
+  const [coursesError, setCoursesError] = useState('')
+  const [selectedCourse, setSelectedCourse] = useState<FacultyCourse | null>(null)
+  const [roster, setRoster] = useState<RosterStudent[]>([])
+  const [rosterLoading, setRosterLoading] = useState(false)
+  const [rosterError, setRosterError] = useState('')
+
+  useEffect(() => {
+    let active = true
+
+    async function loadCourses() {
+      try {
+        const result = await getFacultyCourses()
+        if (active) setCourses(result)
+      } catch (error) {
+        if (active) {
+          setCoursesError(error instanceof Error ? error.message : 'Unable to load courses.')
+        }
+      } finally {
+        if (active) setCoursesLoading(false)
+      }
+    }
+
+    void loadCourses()
+    return () => {
+      active = false
+    }
+  }, [])
+
+  async function showRoster(course: FacultyCourse) {
+    setSelectedCourse(course)
+    setRoster([])
+    setRosterError('')
+    setRosterLoading(true)
+
+    try {
+      setRoster(await getCourseRoster(course.courseId))
+    } catch (error) {
+      setRosterError(error instanceof Error ? error.message : 'Unable to load the roster.')
+    } finally {
+      setRosterLoading(false)
+    }
+  }
+
   return (
     <main id="faculty-dashboard" className="dashboard" aria-labelledby="faculty-title" tabIndex={-1}>
       {/* One h1 names the page. Each card below has an h2 for heading navigation. */}
@@ -8,7 +60,7 @@ function Dashboardfaculty() {
         <p className="eyebrow">Your teaching workspace</p>
         <h1 id="faculty-title">Faculty Dashboard</h1>
         <p>Find course information, student rosters, and grading tasks in one place.</p>
-        <p className="demo-note">Course project preview. Live records and management actions are not connected yet.</p>
+        <p className="demo-note">Courses and rosters load from the demo API. Grading, alerts, and schedule features are not connected yet.</p>
       </header>
 
       {/* Real anchor links work with keyboards and browser history.
@@ -29,21 +81,53 @@ function Dashboardfaculty() {
       <div className="dashboard-grid">
         <section id="faculty-courses" className="dashboard-card" aria-labelledby="faculty-courses-heading" tabIndex={-1}>
           <h2 id="faculty-courses-heading">Courses</h2>
-          <p className="status-label">Not connected</p>
-          <p>Your assigned courses and sections will appear here.</p>
-          <ul className="detail-list">
-            <li>Course name and section</li>
-            <li>Enrollment and course materials</li>
-          </ul>
+          <p className="status-label" role="status">
+            {coursesLoading ? 'Loading courses…' : coursesError ? 'Could not load courses' : `${courses.length} course${courses.length === 1 ? '' : 's'} loaded`}
+          </p>
+          {coursesError && <p className="field-error" role="alert">{coursesError}</p>}
+          {!coursesLoading && !coursesError && courses.length === 0 && <p>No courses are available.</p>}
+          {courses.length > 0 && (
+            <ul className="detail-list">
+              {courses.map((course) => (
+                <li key={course.courseId}>
+                  <p><strong>{course.courseCode}: {course.courseTitle}</strong></p>
+                  <p>Section {course.section} · {course.term}</p>
+                  <div className="gpa-entry-row">
+                    <button
+                      type="button"
+                      onClick={() => void showRoster(course)}
+                      disabled={rosterLoading}
+                    >
+                      {rosterLoading && selectedCourse?.courseId === course.courseId ? 'Loading roster…' : 'View roster'}
+                    </button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
         </section>
         <section id="class-rosters" className="dashboard-card" aria-labelledby="class-rosters-heading" tabIndex={-1}>
           <h2 id="class-rosters-heading">Class Rosters</h2>
-          <p className="status-label">Not connected</p>
-          <p>Student lists will appear here when enrollment records are available.</p>
-          <ul className="detail-list">
-            <li>Students organized by course and section</li>
-            <li>Attendance records for each class</li>
-          </ul>
+          <p className="status-label" role="status">
+            {rosterLoading
+              ? `Loading ${selectedCourse?.courseCode ?? ''} roster…`
+              : selectedCourse
+                ? `Roster for ${selectedCourse.courseCode}, section ${selectedCourse.section}`
+                : 'Choose View roster for a course.'}
+          </p>
+          {rosterError && <p className="field-error" role="alert">{rosterError}</p>}
+          {selectedCourse && !rosterLoading && !rosterError && roster.length === 0 && <p>No students are enrolled in this course.</p>}
+          {roster.length > 0 && (
+            <ul className="detail-list">
+              {roster.map((student) => (
+                <li key={student.studentID}>
+                  <strong>{student.firstName} {student.lastName}</strong>
+                  <br />
+                  Student ID: {student.studentID} · Major: {student.major}
+                </li>
+              ))}
+            </ul>
+          )}
         </section>
         <section id="grading" className="dashboard-card" aria-labelledby="grading-heading" tabIndex={-1}>
           <h2 id="grading-heading">Grading</h2>

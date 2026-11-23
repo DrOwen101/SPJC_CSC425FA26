@@ -6,7 +6,7 @@ export const app = express()
 
 // Only the fictional API allows requests from any frontend origin.
 const teachingApi = express.Router()
-teachingApi.use(['/status', '/students', '/transcripts'], cors({ methods: ['GET', 'HEAD', 'OPTIONS'] }))
+teachingApi.use(['/status', '/students', '/transcripts', '/faculty'], cors({ methods: ['GET', 'HEAD', 'OPTIONS'] }))
 
 function databaseUnavailable(response, error, context) {
   const code = typeof error?.code === 'string' ? error.code : undefined
@@ -98,6 +98,52 @@ async function getTranscript(request, response) {
 
 teachingApi.get('/transcripts', getTranscript)
 teachingApi.get('/transcripts/:studentID', getTranscript)
+
+teachingApi.get('/faculty/courses', async (_request, response) => {
+  try {
+    const result = await queryDatabase(
+      `SELECT course_id AS "courseId",
+              course_code AS "courseCode",
+              course_title AS "courseTitle",
+              section,
+              term
+       FROM courses
+       ORDER BY course_code, section`,
+    )
+    return response.json({ courses: result.rows })
+  } catch (error) {
+    return databaseUnavailable(response, error, 'Faculty course lookup failed')
+  }
+})
+
+teachingApi.get('/faculty/courses/:courseId/roster', async (request, response) => {
+  const { courseId } = request.params
+
+  if (!/^[1-9]\d*$/.test(courseId)) {
+    return response.status(400).json({
+      error: 'INVALID_COURSE_ID',
+      message: 'Provide a positive numeric course ID.',
+    })
+  }
+
+  try {
+    const result = await queryDatabase(
+      `SELECT s.student_id AS "studentID",
+              s.first_name AS "firstName",
+              s.last_name AS "lastName",
+              s.major
+       FROM enrollments e
+       JOIN students s ON s.student_id = e.student_id
+       WHERE e.course_id = $1
+       ORDER BY s.last_name, s.first_name`,
+      [courseId],
+    )
+    return response.json({ students: result.rows })
+  } catch (error) {
+    return databaseUnavailable(response, error, 'Faculty roster lookup failed')
+  }
+})
+
 
 // These handlers finish before the original starter API's CORS middleware.
 app.use('/api', teachingApi)
