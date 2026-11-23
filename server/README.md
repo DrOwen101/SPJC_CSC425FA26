@@ -41,10 +41,10 @@ Replace `BASE_URL` with your server address, such as `http://localhost:3000` whe
 | GET | `BASE_URL/api/faculty/courses/:courseId/grades` | Enrolled students and their final grades (null if not graded) |
 | PUT | `BASE_URL/api/faculty/courses/:courseId/grades/:studentID` | Create or update an enrolled student's final letter grade (`A`–`F`) |
 | GET | `BASE_URL/api/faculty/schedule` | Teaching schedule and office-hour entries |
-| POST | `BASE_URL/api/faculty/schedule` | Add a class meeting or office-hours entry |
+| POST | `BASE_URL/api/faculty/schedule` | Add a class meeting or office-hours entry; an identical existing entry returns HTTP **409** |
 | DELETE | `BASE_URL/api/faculty/schedule/:scheduleId` | Remove a schedule entry |
 
-The faculty dashboard supports entering final letter grades for enrolled students. The schema setup also creates `course_grades` and `faculty_schedule`; schedule records can be added from the dashboard or directly through the API. Class entries require a `courseId`; office-hour entries use `courseId: null`. Both types require `dayOfWeek` (full weekday name), `startTime` and `endTime` (`HH:MM` in 24-hour time), and a non-empty `location`. Re-run `npm run db:setup --prefix server` after pulling schema changes; it adds missing tables without overwriting existing grades or schedule entries.
+The faculty dashboard supports entering final letter grades for enrolled students. The schema setup also creates `course_grades` and `faculty_schedule`; schedule records can be added from the dashboard or directly through the API. Class entries require a `courseId`; office-hour entries use `courseId: null`. Both types require `dayOfWeek` (full weekday name), `startTime` and `endTime` (`HH:MM` in 24-hour time), and a non-empty `location`. A duplicate is an entry with the same meeting type, course, day, time range, and location (location comparison is case-insensitive); duplicate submissions return HTTP **409**. Re-run `npm run db:setup --prefix server` after pulling schema changes; it adds missing tables and schedule constraints without overwriting existing grades or schedule entries.
 
 | studentID | Fictional student | Major |
 | --- | --- | --- |

@@ -162,13 +162,27 @@ function Dashboardfaculty() {
 
   async function submitSchedule(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
+    if (scheduleType === 'class' && (!Number.isInteger(Number(scheduleCourseId)) || Number(scheduleCourseId) < 1)) {
+      setScheduleError('Select an available course before adding a class meeting.')
+      return
+    }
+    if (scheduleStart >= scheduleEnd) {
+      setScheduleError('The end time must be later than the start time.')
+      return
+    }
+    const location = scheduleLocation.trim()
+    if (!location) {
+      setScheduleError('Enter a room or location.')
+      return
+    }
+
     const entry: NewTeachingScheduleEntry = {
       meetingType: scheduleType,
       courseId: scheduleType === 'class' ? Number(scheduleCourseId) : null,
       dayOfWeek: scheduleDay,
       startTime: scheduleStart,
       endTime: scheduleEnd,
-      location: scheduleLocation.trim(),
+      location,
     }
     setScheduleSaving(true)
     setScheduleError('')
@@ -377,14 +391,21 @@ function Dashboardfaculty() {
                   id="schedule-course"
                   value={scheduleCourseId}
                   onChange={(event) => setScheduleCourseId(event.target.value)}
+                  disabled={coursesLoading || courses.length === 0}
                   required
                 >
+                  <option value="" disabled>Select a course</option>
                   {courses.map((course) => (
                     <option key={course.courseId} value={course.courseId}>
                       {course.courseCode} section {course.section}
                     </option>
                   ))}
                 </select>
+                {coursesLoading && <p role="status">Loading available courses…</p>}
+                {coursesError && <p className="field-error" role="alert">Courses could not be loaded. Try again later, or choose office hours.</p>}
+                {!coursesLoading && !coursesError && courses.length === 0 && (
+                  <p>No courses are available for class meetings. You can still add office hours.</p>
+                )}
               </>
             )}
             <label htmlFor="schedule-day">Day</label>
@@ -405,12 +426,12 @@ function Dashboardfaculty() {
               </div>
               <div>
                 <label htmlFor="schedule-end">Ends</label>
-                <input id="schedule-end" type="time" value={scheduleEnd} onChange={(event) => setScheduleEnd(event.target.value)} required />
+                <input id="schedule-end" type="time" min={scheduleStart} value={scheduleEnd} onChange={(event) => setScheduleEnd(event.target.value)} required />
               </div>
             </div>
             <label htmlFor="schedule-location">Room or location</label>
             <input id="schedule-location" value={scheduleLocation} onChange={(event) => setScheduleLocation(event.target.value)} required />
-            <button type="submit" disabled={scheduleSaving || (scheduleType === 'class' && courses.length === 0)}>
+            <button type="submit" disabled={scheduleSaving || (scheduleType === 'class' && (coursesLoading || courses.length === 0))}>
               {scheduleSaving ? 'Saving schedule…' : 'Add to schedule'}
             </button>
           </form>

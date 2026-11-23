@@ -53,3 +53,13 @@ CREATE TABLE IF NOT EXISTS faculty_schedule (
     OR (meeting_type = 'office_hours' AND course_id IS NULL)
   )
 );
+
+CREATE UNIQUE INDEX IF NOT EXISTS faculty_schedule_no_duplicate_entries
+  ON faculty_schedule (
+    meeting_type,
+    COALESCE(course_id, 0),
+    day_of_week,
+    start_time,
+    end_time,
+    lower(trim(location))
+  );

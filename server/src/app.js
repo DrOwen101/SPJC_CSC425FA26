@@ -294,6 +294,12 @@ teachingApi.post('/faculty/schedule', async (request, response) => {
         message: 'The selected course does not exist.',
       })
     }
+    if (error?.code === '23505') {
+      return response.status(409).json({
+        error: 'DUPLICATE_SCHEDULE_ENTRY',
+        message: 'This schedule entry already exists.',
+      })
+    }
     return databaseUnavailable(response, error, 'Faculty schedule save failed')
   }
 })

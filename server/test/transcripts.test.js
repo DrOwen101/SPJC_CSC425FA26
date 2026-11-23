@@ -62,6 +62,19 @@ before(async () => {
     }
     if (text.includes('INSERT INTO faculty_schedule')) {
       const [meetingType, courseId, dayOfWeek, startTime, endTime, location] = values
+      const duplicate = scheduleEntries.some((entry) => (
+        entry.meetingType === meetingType
+        && entry.courseId === courseId
+        && entry.dayOfWeek === dayOfWeek
+        && entry.startTime === startTime
+        && entry.endTime === endTime
+        && entry.location.trim().toLowerCase() === location.trim().toLowerCase()
+      ))
+      if (duplicate) {
+        const error = new Error('Duplicate schedule entry')
+        error.code = '23505'
+        throw error
+      }
       const schedule = {
         scheduleId: nextScheduleId++,
         meetingType,
@@ -256,6 +269,24 @@ test('faculty can create, list, and remove class meetings and office hours', asy
     })
     assert.equal(response.status, 201)
   }
+
+  const duplicate = await fetch(`${baseURL}/api/faculty/schedule`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      meetingType: 'class',
+      courseId: 1,
+      dayOfWeek: 'Monday',
+      startTime: '09:00',
+      endTime: '10:00',
+      location: ' room 12 ',
+    }),
+  })
+  assert.equal(duplicate.status, 409)
+  assert.deepEqual(await duplicate.json(), {
+    error: 'DUPLICATE_SCHEDULE_ENTRY',
+    message: 'This schedule entry already exists.',
+  })
 
   const listed = await fetch(`${baseURL}/api/faculty/schedule`)
   assert.equal(listed.status, 200)
