@@ -80,3 +80,48 @@ export async function deleteStudent(studentID) {
 
   return result.rows[0] ?? null
 }
+
+export async function getCourses() {
+  const result = await pool.query(`
+    SELECT course_id AS "courseID",
+           course_name AS "title",
+           course_code AS "code", 
+           credits,
+           subject
+    FROM courses
+    ORDER BY course_name
+  `)
+  return result.rows
+}
+
+export async function getRoster(sectionID) {
+  const result = await pool.query(`
+    SELECT
+      s.student_id AS "studentID",
+      s.first_name AS "firstName",
+      s.last_name AS "lastName"
+    FROM enrollments AS e
+    JOIN students AS s ON s.student_id = e.student_id
+    WHERE e.section_id = $1
+    ORDER BY s.last_name, s.first_name
+    `, [sectionID])
+
+    return result.rows
+}
+
+export async function getProfessorSections(professorID) {
+  const result = await pool.query(`
+    SELECT
+      cs.section_id AS "sectionID",
+      cs.section,
+      cs.term,
+      c.course_code AS "code",
+      c.course_name AS "title"
+    FROM course_sections AS cs
+    JOIN courses AS c ON c.course_id = cs.course_id
+    WHERE cs.professor_id = $1
+    ORDER BY c.course_code, cs.term, cs.section
+  `, [professorID])
+
+  return result.rows
+}

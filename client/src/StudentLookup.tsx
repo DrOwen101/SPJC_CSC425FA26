@@ -9,7 +9,7 @@ const apiBaseUrl = import.meta.env.VITE_API_BASE_URL
 
 // This component owns the lookup's state, API request, and displayed result.
 // Import it into a dashboard and render <StudentLookup /> to show the feature.
-function StudentLookup() {
+function StudentLookup({ facultyMode = false }: { facultyMode?: boolean }) {
   // The editable input and submitted name are separate: typing a new name
   // must not relabel an existing result or start a request automatically.
   const [searchName, setSearchName] = useState('')
@@ -231,7 +231,7 @@ function StudentLookup() {
 
         </>
       )}
-      {student && (
+      {!facultyMode &&student && (
         <form onSubmit={saveStudent}>
           <h3>Edit student</h3>
           <label>
@@ -252,20 +252,22 @@ function StudentLookup() {
           <button type="button" onClick={removeStudent}>Delete Student</button>
         </form>
       )}
-      <form onSubmit={addStudent}>
-        <h3>Add Student</h3>
-        {(['studentID', 'firstName', 'lastName', 'major'] as const).map((field) => (
-          <label key = {field}>
-            {field}
-            <input
-            required
-            value={newStudent[field]}
-            onChange={(event) => setNewStudent({ ...newStudent, [field]: event.target.value })}
-            />
-          </label>
-        ))}
-        <button type="submit">Add Student</button>
-      </form>
+      {!facultyMode && (
+        <form onSubmit={addStudent}>
+          <h3>Add Student</h3>
+          {(['studentID', 'firstName', 'lastName', 'major'] as const).map((field) => (
+            <label key = {field}>
+              {field}
+              <input
+              required
+              value={newStudent[field]}
+              onChange={(event) => setNewStudent({ ...newStudent, [field]: event.target.value })}
+              />
+            </label>
+          ))}
+          <button type="submit">Add Student</button>
+        </form>
+      )}
     </section>
 
   )

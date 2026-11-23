@@ -348,6 +348,12 @@ main, .dashboard-card {
   max-height: 179px;
   object-fit: contain;
 }
+#roster-section {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
 
 /* At narrow widths (including desktop zoom), stack cards and allow links to
    wrap. No fixed card heights means enlarged text stays visible. */

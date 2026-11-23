@@ -11,13 +11,14 @@ const defaultApiBaseUrl = import.meta.env.VITE_API_BASE_URL
 type TranscriptCardProps = {
   id?: string
   apiBaseUrl?: string
+  initialStudentID?: string
 }
 
 // The async Axios request is below; transcriptApi.ts contains only data types and validation.
-function TranscriptCard({ id, apiBaseUrl = defaultApiBaseUrl }: TranscriptCardProps) {
+function TranscriptCard({ id, apiBaseUrl = defaultApiBaseUrl, initialStudentID = '1001' }: TranscriptCardProps) {
   const labelId = useId()
-  const [studentID, setStudentID] = useState('1001')
-  const [request, setRequest] = useState({ studentID: '1001' })
+  const [studentID, setStudentID] = useState(initialStudentID)
+  const [request, setRequest] = useState({ studentID: initialStudentID })
   const [result, setResult] = useState({
     transcript: null as Transcript | null, isLoading: true, error: '',
   })

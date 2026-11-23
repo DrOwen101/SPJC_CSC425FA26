@@ -1,3 +1,7 @@
+import bcrypt from 'bcryptjs'
+import session from 'express-session'
+import connectPgSimple from 'connect-pg-simple'
+import { pool } from './db.js'
 import 'dotenv/config'
 import { readFileSync } from 'node:fs'
 import cors from 'cors'
@@ -8,7 +12,10 @@ import {
   getEnrollment,
   createStudent,
   updateStudent,
-  deleteStudent
+  deleteStudent,
+  getCourses, 
+  getRoster, 
+  getProfessorSections,
 } from './db.js'
 
 export const app = express()
@@ -55,7 +62,11 @@ const { students: transcripts } = JSON.parse(readFileSync(new URL('./data/transc
 
 // Only the fictional API allows requests from any frontend origin.
 const teachingApi = express.Router()
-teachingApi.use(['/status', '/students', '/transcripts', '/enrollments'], cors({ methods: ['GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'OPTIONS'] }))
+teachingApi.use(['/status', '/students', '/transcripts', '/enrollments', '/courses'], cors({ methods: ['GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'OPTIONS'] }))
+teachingApi.use(['/rosters', '/professors'], cors({
+  origin: 'http://localhost:5173',
+  credentials: true,
+}))
 
 teachingApi.get('/status', (_request, response) => {
   response.json({ status: 'ok', service: 'Mock transcript API', studentCount: mockStudents.length })
@@ -71,6 +82,49 @@ teachingApi.get('/students', async (_request, response) => {
   }
 })
 
+teachingApi.get('/courses', async (_request, response) => {
+  try {
+    const courses = await getCourses()
+    response.json({ courses })
+  } catch (error) {
+    console.error('Failed to get courses:', error.message)
+    response.status(500).json({ status: 'error', message: error.message })
+  }
+})
+
+function requireFaculty(request, response, next) {
+  if (!request.session.user) {
+    return response.status(401).json({ error: 'Please log in.' })
+  }
+  if (request.session.user.role !== 'faculty') {
+    return response.status(403).json({ error: 'Faculty access required.' })
+  }
+  next()
+}
+
+teachingApi.get('/rosters/:sectionID', requireFaculty, async (request, response) => {
+  const sectionID = Number(request.params.sectionID)
+
+  if(!Number.isInteger(sectionID) || sectionID < 1 || sectionID > 2147483647) {
+    return response.status(400).json({ error: 'INVALID_SECTION_ID', message: 'Provide a valid sectionID.' })
+  }
+  try {
+    const roster = await getRoster(sectionID)
+    return response.json({ roster })
+  } catch (error) {
+    return response.status(500).json({ error: 'INTERNAL_SERVER_ERROR', message: error.message })
+  }
+})
+
+teachingApi.get('/professors/:professorID/sections', requireFaculty, async (request, response) => {
+  try {
+    const sections = await getProfessorSections(request.params.professorID)
+    return response.json({sections})
+  } catch (error) {
+    console.error('Failed to get professor sections:', error.message)
+    return response.status(500).json({ error: 'INTERNAL_SERVER_ERROR', message: error.message })
+  }
+})
 teachingApi.post('/students', async (request, response) => {
   const student = request.body
   if (!student || !/^\d{4}$/.test(student.studentID ?? ``)
@@ -141,6 +195,66 @@ teachingApi.get('/transcripts/:studentID', getTranscript)
 
 // These handlers finish before the original starter API's CORS middleware.
 app.use(express.json())
+const PgSession = connectPgSimple(session)
+app.use(session({
+  store: new PgSession({ pool, createTableIfMissing: true }),
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production',
+  },
+}))
+app.use('/api/auth', cors({
+  origin: 'http://localhost:5173',
+  credentials: true,
+}))
+
+app.post('/api/auth/login', async (request, response) => {
+  const { username, password } = request.body ?? {}
+
+  if (typeof username !== 'string' || typeof password !== 'string') {
+    return response.status(400).json({ error: 'Enter a username and password.' })
+  }
+
+  try {
+    const result = await pool.query(
+      'SELECT user_id, password_hash, role, professor_id FROM app_users WHERE username = $1',
+      [username.trim()],
+    )
+    const user = result.rows[0]
+
+    if (!user || !(await bcrypt.compare(password, user.password_hash))) {
+      return response.status(401).json({ error: 'Invalid username or password.' })
+    }
+
+    request.session.regenerate((error) => {
+      if (error) {
+        console.error('Session creation failed:', error.message)
+        return response.status(500).json({ error: 'Unable to log in.' })
+      }
+
+      request.session.user = {
+        userID: user.user_id,
+        role: user.role,
+        professorID: user.professor_id,
+      }
+
+      request.session.save((saveError) => {
+        if (saveError) {
+          console.error('Session save failed:', saveError.message)
+          return response.status(500).json({ error: 'Unable to log in.' })
+        }
+        return response.json({ message: 'Logged in.', role: user.role })
+      })
+    })
+  } catch (error) {
+    console.error('Login failed:', error.message)
+    return response.status(500).json({ error: 'Unable to log in.' })
+  }
+})
 app.use('/api', teachingApi)
 
 app.use(cors({ origin: 'http://localhost:5173' }))
