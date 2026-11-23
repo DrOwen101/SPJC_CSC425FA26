@@ -1,4 +1,5 @@
 {
   "git.branchProtection": ["main"],
-  "git.branchProtectionPrompt": "alwaysCommitToNewBranch"
+  "git.branchProtectionPrompt": "alwaysCommitToNewBranch",
+  "python.terminal.useEnvFile": true
 }
