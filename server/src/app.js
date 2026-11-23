@@ -4,6 +4,8 @@ import cors from 'cors'
 import express from 'express'
 import { checkDatabase } from './db.js'
 import { dashboardRouter } from './dashboardStudents.js'
+import { authRouter } from './auth.js'
+import { facultyRouter } from './facultyRoutes.js'
 
 export const app = express()
 
@@ -103,6 +105,8 @@ app.get('/', (_request, response) => {
       status: '/api/status',
       databaseHealth: '/api/health',
       dashboardStudents: '/api/dashboard/students',
+      facultySignIn: '/api/auth/login',
+      facultySections: '/api/faculty/sections',
     },
   })
 })
@@ -119,3 +123,7 @@ app.get('/api/health', async (_request, response) => {
 
 // Lab 10: student CRUD backed by PostgreSQL (see dashboardStudents.js).
 app.use('/api/dashboard', dashboardRouter)
+
+// Lab 12: demo sign-in and faculty-only routes (see auth.js and facultyRoutes.js).
+app.use('/api/auth', authRouter)
+app.use('/api/faculty', facultyRouter)

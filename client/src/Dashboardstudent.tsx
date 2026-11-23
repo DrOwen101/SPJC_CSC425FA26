@@ -3,23 +3,7 @@ import WeatherCard from './WeatherCard'
 import StudentLookup from './StudentLookup'
 import TranscriptCard from './TranscriptCard'
 import StudentManager from './StudentManager'
-
-// Each letter grade maps to its value on a standard 4.0 GPA scale.
-const gradePoints: Record<string, number> = {
-  'A+': 4.0,
-  A: 4.0,
-  'A-': 3.7,
-  'B+': 3.3,
-  B: 3.0,
-  'B-': 2.7,
-  'C+': 2.3,
-  C: 2.0,
-  'C-': 1.7,
-  'D+': 1.3,
-  D: 1.0,
-  'D-': 0.7,
-  F: 0,
-}
+import { averageGpa, gradePoints } from './gradeScale'
 
 // This role component supplies content; App.css supplies the shared layout.
 // The lookup uses the dummy API; the other cards remain classroom examples.
@@ -47,8 +31,7 @@ function Dashboardstudent() {
   }
 
   function calculateGpa() {
-    const totalPoints = grades.reduce((total, grade) => total + gradePoints[grade], 0)
-    setGpa(totalPoints / grades.length)
+    setGpa(averageGpa(grades))
   }
 
   return (

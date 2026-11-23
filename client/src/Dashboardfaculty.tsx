@@ -1,6 +1,41 @@
+import { useEffect, useState } from 'react'
+import './FacultyDashboard.css'
+import { errorMessage, getAuthToken } from './apiClient'
+import { currentUser, listMySections, type Section, type SignedInUser } from './facultyApi'
+import FacultySignIn from './FacultySignIn'
+import ClassRoster from './ClassRoster'
+import GradePosting from './GradePosting'
+import SectionGpaSummary from './SectionGpaSummary'
+import RosterLookup from './RosterLookup'
+
 // This role component supplies content; App.css supplies the shared layout.
-// Keep these examples separate from live records until a data source is connected.
+// Lab 12: the four faculty cards only render for a signed-in faculty account.
+// That is the interface check. The server checks again on every request.
 function Dashboardfaculty() {
+  const [user, setUser] = useState<SignedInUser | null>(null)
+  const [sections, setSections] = useState<Section[]>([])
+  const [error, setError] = useState('')
+  // Changes after a grade is saved so every card reloads the stored values.
+  const [refreshKey, setRefreshKey] = useState(0)
+
+  // After a page refresh, check whether the saved sign-in token still works.
+  useEffect(() => {
+    if (!getAuthToken()) return
+    currentUser().then(setUser).catch(() => setUser(null))
+  }, [])
+
+  // Load only this faculty member's sections once a faculty account signs in.
+  useEffect(() => {
+    if (user?.role !== 'faculty') {
+      setSections([])
+      return
+    }
+    setError('')
+    listMySections().then(setSections).catch((requestError) => setError(errorMessage(requestError)))
+  }, [user, refreshKey])
+
+  const isFaculty = user?.role === 'faculty'
+
   return (
     <main id="faculty-dashboard" className="dashboard" aria-labelledby="faculty-title" tabIndex={-1}>
       {/* One h1 names the page. Each card below has an h2 for heading navigation. */}
@@ -8,51 +43,56 @@ function Dashboardfaculty() {
         <p className="eyebrow">Your teaching workspace</p>
         <h1 id="faculty-title">Faculty Dashboard</h1>
         <p>Find course information, student rosters, and grading tasks in one place.</p>
-        <p className="demo-note">Course project preview. Live records and management actions are not connected yet.</p>
+        <p className="demo-note">Course project. All people and records are fictional.</p>
       </header>
 
       {/* Real anchor links work with keyboards and browser history.
           Each href matches a section ID; .dashboard-nav styles the link list. */}
       <nav className="dashboard-nav" aria-label="Faculty sections">
         <ul>
-            <li><a href="#faculty-courses">Courses</a></li>
-            <li><a href="#class-rosters">Class Rosters</a></li>
-            <li><a href="#grading">Grading</a></li>
-            <li><a href="#faculty-alerts">Alerts</a></li>
-            <li><a href="#teaching-schedule">Teaching Schedule</a></li>
+          <li><a href="#faculty-sign-in">Sign in</a></li>
+          <li><a href="#class-rosters">Class Roster</a></li>
+          <li><a href="#grading">Grading</a></li>
+          <li><a href="#section-gpa">Section GPA</a></li>
+          <li><a href="#roster-lookup">Roster Lookup</a></li>
+          <li><a href="#faculty-courses">Courses</a></li>
+          <li><a href="#faculty-alerts">Alerts</a></li>
+          <li><a href="#teaching-schedule">Teaching Schedule</a></li>
         </ul>
       </nav>
 
-      {/* className="dashboard-grid" connects to .dashboard-grid in App.css.
-          Each named section is a card. tabIndex=-1 permits anchor focus without
-          adding every card to the Tab sequence; links remain the normal stops. */}
       <div className="dashboard-grid">
+        <FacultySignIn user={user} onChange={setUser} />
+
+        {user && !isFaculty && (
+          <p className="faculty-error faculty-wide" role="alert">
+            You are signed in with a {user.role} account. Faculty features need a faculty account.
+          </p>
+        )}
+        {error && <p className="faculty-error faculty-wide" role="alert">{error}</p>}
+
+        {isFaculty && (
+          <>
+            <ClassRoster sections={sections} refreshKey={refreshKey} />
+            <GradePosting sections={sections} refreshKey={refreshKey} onSaved={() => setRefreshKey((key) => key + 1)} />
+            <SectionGpaSummary sections={sections} refreshKey={refreshKey} />
+            <RosterLookup />
+          </>
+        )}
+
         <section id="faculty-courses" className="dashboard-card" aria-labelledby="faculty-courses-heading" tabIndex={-1}>
           <h2 id="faculty-courses-heading">Courses</h2>
-          <p className="status-label">Not connected</p>
-          <p>Your assigned courses and sections will appear here.</p>
-          <ul className="detail-list">
-            <li>Course name and section</li>
-            <li>Enrollment and course materials</li>
-          </ul>
-        </section>
-        <section id="class-rosters" className="dashboard-card" aria-labelledby="class-rosters-heading" tabIndex={-1}>
-          <h2 id="class-rosters-heading">Class Rosters</h2>
-          <p className="status-label">Not connected</p>
-          <p>Student lists will appear here when enrollment records are available.</p>
-          <ul className="detail-list">
-            <li>Students organized by course and section</li>
-            <li>Attendance records for each class</li>
-          </ul>
-        </section>
-        <section id="grading" className="dashboard-card" aria-labelledby="grading-heading" tabIndex={-1}>
-          <h2 id="grading-heading">Grading</h2>
-          <p className="status-label">Not connected</p>
-          <p>Assignments awaiting review and grade submission deadlines will appear here.</p>
-          <ul className="detail-list">
-            <li>Submissions to review</li>
-            <li>Grades and student feedback</li>
-          </ul>
+          {isFaculty && sections.length > 0 ? (
+            <ul className="detail-list">
+              {sections.map((section) => (
+                <li key={section.id}>
+                  {section.courseCode}-{section.sectionNumber} {section.title} · {section.studentCount} students · {section.gradedCount} graded
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p>Sign in with a faculty account to see your assigned sections.</p>
+          )}
         </section>
         <section id="faculty-alerts" className="dashboard-card" aria-labelledby="faculty-alerts-heading" tabIndex={-1}>
           <h2 id="faculty-alerts-heading">Alerts</h2>

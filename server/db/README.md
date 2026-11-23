@@ -62,3 +62,41 @@ ORDER BY s.id;
 ```
 
 For one record, add `WHERE s.id = 4` (use the id shown on the dashboard).
+
+# Lab 12: Faculty dashboard
+
+## Setup
+
+Run after `schema.sql` and `seed.sql`. It is safe to run again.
+
+```powershell
+psql -h localhost -U postgres -d csc425_practice -f server/db/lab12_faculty.sql
+```
+
+It adds `faculty`, `courses`, `course_sections`, `enrollments`, `app_users`, and `auth_sessions`, plus fictional sample data. The Lab 10 tables are not changed. Deleting a student still works, because their enrollments are removed with them.
+
+## Demo accounts (fictional, for class demos only)
+
+| Email | Password | Role | Sections |
+|---|---|---|---|
+| morgan.ellis@example.edu | FacultyDemo1! | faculty | CSC 425-01, CIS 210-01 |
+| casey.hart@example.edu | FacultyDemo2! | faculty | BUS 150-01 |
+| avery.morgan@example.test | StudentDemo1! | student | none |
+
+Passwords are stored as bcrypt hashes with `crypt()` from the `pgcrypto` extension. Sign-in tokens are random, and only their SHA-256 hash is stored in `auth_sessions`.
+
+## Faculty endpoints
+
+Every `/api/faculty` request needs the header `Authorization: Bearer <token>` from a faculty account. No token or an expired token returns **401**. A student token returns **403**. A section or enrollment that is not assigned to the signed-in faculty member returns **404**.
+
+| Method | Path | Purpose | Request body | Success |
+|---|---|---|---|---|
+| POST | `/api/auth/login` | Sign in | `{ email, password }` | 200 `{ token, user }`, 401 if wrong |
+| GET | `/api/auth/me` | Who is signed in | none | 200 `{ user }` |
+| POST | `/api/auth/logout` | Sign out, token stops working | none | 204 |
+| GET | `/api/faculty/sections` | Your sections | none | 200 `{ sections }` |
+| GET | `/api/faculty/sections/:sectionId/roster` | Students in one of your sections | none | 200 `{ roster }` |
+| PUT | `/api/faculty/sections/:sectionId/enrollments/:enrollmentId/grade` | Post, change, or clear a final grade | `{ finalGrade: "B+" }` or `{ finalGrade: null }` | 200 `{ enrollment }` |
+| GET | `/api/faculty/students/search?q=text` | Search students in your sections by name or email | none | 200 `{ students }` |
+
+Sending the same grade again gives the same result, so a grade save that timed out can be retried safely after reloading the roster.

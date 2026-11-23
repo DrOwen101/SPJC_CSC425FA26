@@ -1,0 +1,88 @@
+/* Lab 12 faculty cards. Scoped class names so the student cards keep their own layout. */
+.faculty-wide {
+  grid-column: 1 / -1;
+}
+.faculty-form {
+  display: flex;
+  flex-direction: column;
+  gap: .35rem;
+  max-width: 28rem;
+}
+.faculty-card label {
+  font-weight: 700;
+  margin-top: .35rem;
+}
+.faculty-card input,
+.faculty-card select,
+.faculty-card button {
+  min-height: 44px;
+  padding: .5rem .7rem;
+  border: 1px solid #568069;
+  border-radius: .45rem;
+  font: inherit;
+}
+.faculty-card input,
+.faculty-card select {
+  color: #123524;
+  background: white;
+}
+.faculty-card button {
+  color: white;
+  background: #075c35;
+  font-weight: 700;
+  cursor: pointer;
+}
+.faculty-card button:hover:not(:disabled) {
+  background: #06482a;
+}
+.faculty-card button:disabled {
+  opacity: .6;
+  cursor: not-allowed;
+}
+.faculty-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+}
+.faculty-status {
+  font-weight: 700;
+}
+.faculty-error {
+  color: #9b1c1c;
+  font-weight: 700;
+}
+.faculty-table-wrap {
+  overflow-x: auto;
+}
+.faculty-table-wrap table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.faculty-table-wrap caption {
+  text-align: left;
+  font-weight: 700;
+  padding: .5rem 0;
+}
+.faculty-table-wrap th,
+.faculty-table-wrap td {
+  padding: .55rem .6rem;
+  border-bottom: 1px solid #c9dccf;
+  text-align: left;
+  vertical-align: middle;
+}
+.faculty-matches {
+  padding-left: 1.2rem;
+}
+.faculty-matches li {
+  margin-bottom: .6rem;
+}
+/* Readable by screen readers, hidden visually. */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
