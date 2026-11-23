@@ -181,7 +181,7 @@ export default function StudentRecords({ id, selection, onChange }: StudentRecor
         <button disabled={busy} type="submit">Retrieve by ID</button>
       </form>
 
-      <h3>{selected ? `Edit student #${selected.id}` : 'New student'}</h3>
+      <h3>{selected ? `Edit studenast #${selected.id}` : 'New student'}</h3>
       {selected && <dl className="records-saved" aria-label="Saved student details">
         <div><dt>Saved name</dt><dd>{selected.firstName} {selected.lastName}</dd></div>
         <div><dt>Saved email</dt><dd>{selected.email}</dd></div>

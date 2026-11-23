@@ -149,7 +149,7 @@ CREATE TABLE student_dashboard.course_sections (
 CREATE TABLE student_dashboard.enrollments (
   id integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   student_id integer NOT NULL REFERENCES student_dashboard.students(id) ON DELETE RESTRICT,
-  section_id integer NOT NULL,
+  section_id integer NOT NULL REFERENCES student_dashboard.course_sections(section_id) ON DELETE RESTRICT,
   grading_scheme_id integer NOT NULL,
   status varchar(20) NOT NULL DEFAULT 'enrolled' CHECK (status IN ('enrolled', 'dropped', 'withdrawn', 'incomplete', 'completed')),
   enrolled_at timestamptz NOT NULL DEFAULT now(),
@@ -258,7 +258,7 @@ CREATE TABLE student_dashboard.notifications (
   created_by integer REFERENCES student_dashboard.users(id) ON DELETE RESTRICT,
   section_id integer REFERENCES student_dashboard.course_sections(id) ON DELETE RESTRICT,
   title varchar(160) NOT NULL CHECK (length(btrim(title)) > 0),
-  body text NOT NULL CHECK (length(btrim(body)) > 0),
+  body_text NOT NULL CHECK (length(btrim(body)) > 0),
   severity varchar(20) NOT NULL DEFAULT 'info' CHECK (severity IN ('info', 'warning', 'urgent')),
   published_at timestamptz NOT NULL DEFAULT now(),
   expires_at timestamptz,

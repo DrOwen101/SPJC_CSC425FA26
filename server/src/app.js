@@ -4,14 +4,19 @@ import express from 'express'
 import { checkDatabase } from './db.js'
 import { createStudentRecordsRouter } from './studentRecordsRoutes.js'
 import { createAcademicRouter } from './academicRoutes.js'
+import { createCourseRouter } from './courseRoutes.js'
+import { createFacultyRouter } from './FacultyRoutes.js'
+import { createAssignmentRouter } from './assignmentRoutes.js'
 
 export const app = express()
 
 app.use(cors({ origin: process.env.CLIENT_ORIGIN || 'http://localhost:5173' }))
+app.use(express.json())
 app.use('/api', createAcademicRouter())
 app.use('/api/dashboard', createStudentRecordsRouter())
-app.use(express.json())
-
+app.use('/api/dashboard', createCourseRouter())
+app.use('/api/dashboard', createFacultyRouter())
+app.use('/api/dashboard', createAssignmentRouter())
 app.get('/', (_request, response) => {
   response.json({
     message: 'CSC 425 API',

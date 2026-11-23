@@ -72,7 +72,7 @@ function TranscriptCard({ id, apiBaseUrl = defaultApiBaseUrl }: TranscriptCardPr
   else if (transcript) status = `Transcript loaded for ${transcript.firstName} ${transcript.lastName}.`
 
   return (
-    <section id={id} className="transcript-card" aria-labelledby={`${labelId}-heading`} tabIndex={-1}>
+    <section id={id} className="dashboard-card student-records" aria-labelledby={`${labelId}-heading`} tabIndex={-1}>
       <h2 id={`${labelId}-heading`}>Transcript</h2>
       <p>Search saved transcripts by the student’s first and last name.</p>
 

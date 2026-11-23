@@ -214,6 +214,39 @@ p {
   background: #f3faf5;
   box-shadow: 0 4px 14px rgb(7 92 53 / 5%);
 }
+.assignment-table-scroll,
+.faculty-course-table-scroll {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+}
+.assignment-table-scroll table,
+.faculty-course-table-scroll table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  text-align: left;
+}
+.assignment-table-scroll table {
+  min-width: 58rem;
+}
+.faculty-course-table-scroll table {
+  min-width: 42rem;
+}
+.assignment-table-scroll th,
+.assignment-table-scroll td,
+.faculty-course-table-scroll th,
+.faculty-course-table-scroll td {
+  padding: .55rem .5rem;
+  vertical-align: top;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+.assignment-table-scroll th:nth-child(4) { width: 31%; }
+.assignment-table-scroll th:last-child { width: 6rem; }
+.faculty-course-table-scroll th:nth-child(4) { width: 32%; }
 .dashboard-card > :last-child {
   margin-bottom: 0;
 }
