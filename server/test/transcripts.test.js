@@ -1,10 +1,26 @@
 import assert from 'node:assert/strict'
 import { once } from 'node:events'
 import { after, before, test } from 'node:test'
-import { app } from '../src/app.js'
+
+process.env.FACULTY_USERNAME ||= 'faculty'
+process.env.FACULTY_PASSWORD ||= 'password'
+const { app } = await import('../src/app.js')
 
 let server
 let baseURL
+
+async function signIn() {
+  const response = await fetch(`${baseURL}/api/faculty/login`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({
+      username: process.env.FACULTY_USERNAME,
+      password: process.env.FACULTY_PASSWORD,
+    }),
+  })
+  assert.equal(response.status, 200)
+  return response.headers.get('set-cookie').split(';')[0]
+}
 
 before(async () => {
   server = app.listen(0, '127.0.0.1')
@@ -103,4 +119,68 @@ test('mock status works without connecting to PostgreSQL and writes are not avai
   assert.equal(post.status, 404)
   const root = await fetch(baseURL)
   assert.equal((await root.json()).message, 'CSC 425 API')
+})
+
+test('faculty API requires a login and supports session login and logout', async () => {
+  const preflight = await fetch(`${baseURL}/api/faculty/login`, {
+    method: 'OPTIONS',
+    headers: {
+      Origin: 'http://localhost:5173',
+      'Access-Control-Request-Method': 'POST',
+    },
+  })
+  assert.equal(preflight.status, 204)
+  assert.equal(preflight.headers.get('access-control-allow-origin'), 'http://localhost:5173')
+  assert.equal(preflight.headers.get('access-control-allow-credentials'), 'true')
+
+  const unauthorized = await fetch(`${baseURL}/api/faculty/courses`)
+  assert.equal(unauthorized.status, 401)
+
+  const invalidLogin = await fetch(`${baseURL}/api/faculty/login`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ username: 'faculty', password: 'wrong' }),
+  })
+  assert.equal(invalidLogin.status, 401)
+
+  const cookie = await signIn()
+  const currentSession = await fetch(`${baseURL}/api/faculty/session`, {
+    headers: { cookie },
+  })
+  assert.equal(currentSession.status, 200)
+  assert.deepEqual(await currentSession.json(), { authenticated: true })
+
+  const logout = await fetch(`${baseURL}/api/faculty/logout`, {
+    method: 'POST',
+    headers: { cookie },
+  })
+  assert.equal(logout.status, 204)
+
+  const afterLogout = await fetch(`${baseURL}/api/faculty/courses`, {
+    headers: { cookie },
+  })
+  assert.equal(afterLogout.status, 401)
+})
+
+test('faculty routes reject malformed section IDs and grades before querying the database', async () => {
+  const cookie = await signIn()
+  const invalidSection = await fetch(`${baseURL}/api/faculty/courses/not-a-number/roster`, {
+    headers: { cookie },
+  })
+  assert.equal(invalidSection.status, 400)
+  assert.deepEqual(await invalidSection.json(), { error: 'Section ID must be a number.' })
+
+  const invalidGrade = await fetch(`${baseURL}/api/faculty/courses/1/records/1/grade`, {
+    method: 'PUT',
+    headers: { 'content-type': 'application/json', cookie },
+    body: JSON.stringify({ grade: 'Z' }),
+  })
+  assert.equal(invalidGrade.status, 400)
+  assert.deepEqual(await invalidGrade.json(), { error: 'Choose a valid letter grade.' })
+
+  const invalidStudent = await fetch(`${baseURL}/api/faculty/students/not-a-number/progress`, {
+    headers: { cookie },
+  })
+  assert.equal(invalidStudent.status, 400)
+  assert.deepEqual(await invalidStudent.json(), { error: 'Student ID must be four digits.' })
 })

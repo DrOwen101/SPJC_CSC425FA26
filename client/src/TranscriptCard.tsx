@@ -11,13 +11,15 @@ const defaultApiBaseUrl = import.meta.env.VITE_API_BASE_URL
 type TranscriptCardProps = {
   id?: string
   apiBaseUrl?: string
+  facultyMode?: boolean
 }
 
 // The async Axios request is below; transcriptApi.ts contains only data types and validation.
-function TranscriptCard({ id, apiBaseUrl = defaultApiBaseUrl }: TranscriptCardProps) {
+function TranscriptCard({ id, apiBaseUrl = defaultApiBaseUrl, facultyMode = false }: TranscriptCardProps) {
   const labelId = useId()
-  const [studentID, setStudentID] = useState('1001')
-  const [request, setRequest] = useState({ studentID: '1001' })
+  const firstStudentID = facultyMode ? '9101' : '1001'
+  const [studentID, setStudentID] = useState(firstStudentID)
+  const [request, setRequest] = useState({ studentID: firstStudentID })
   const [result, setResult] = useState({
     transcript: null as Transcript | null, isLoading: true, error: '',
   })
@@ -35,11 +37,12 @@ function TranscriptCard({ id, apiBaseUrl = defaultApiBaseUrl }: TranscriptCardPr
 
     async function getTranscript() {
       try {
-        // Call the Express GET /api/transcripts/:studentID route in the server folder.
-        // await waits for the response; Axios puts the parsed JSON in response.data.
+        const path = facultyMode
+          ? `/api/faculty/students/${request.studentID}/progress`
+          : `/api/transcripts/${request.studentID}`
         const response = await axios.get<unknown>(
-          `${apiBaseUrl.replace(/\/$/, '')}/api/transcripts/${request.studentID}`,
-          { signal: controller.signal },
+          `${apiBaseUrl.replace(/\/$/, '')}${path}`,
+          { signal: controller.signal, withCredentials: facultyMode },
         )
         if (controller.signal.aborted) return
         const transcript = response.data
@@ -53,7 +56,11 @@ function TranscriptCard({ id, apiBaseUrl = defaultApiBaseUrl }: TranscriptCardPr
         // Axios rejects HTTP errors (such as 404) as well as network failures.
         if (axios.isAxiosError(requestError)) {
           const status = requestError.response?.status
-          if (status === 404) error = `No mock student was found with student ID ${request.studentID}. Try 1001–1005.`
+          if (status === 404) {
+            error = facultyMode
+              ? `No assigned-course records were found for student ID ${request.studentID}.`
+              : `No student was found with student ID ${request.studentID}. Try sample IDs 1001–1005.`
+          }
           else if (status) error = `The transcript request failed (HTTP ${status}). Please try again.`
           else error = 'Unable to reach the transcript service. Check your connection and try again.'
         } else if (requestError instanceof Error) {
@@ -73,7 +80,7 @@ function TranscriptCard({ id, apiBaseUrl = defaultApiBaseUrl }: TranscriptCardPr
       window.clearTimeout(timeout)
       controller.abort()
     }
-  }, [apiBaseUrl, request])
+  }, [apiBaseUrl, facultyMode, request])
 
   function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -96,9 +103,12 @@ function TranscriptCard({ id, apiBaseUrl = defaultApiBaseUrl }: TranscriptCardPr
 
   return (
     <section id={id} className="transcript-card" aria-labelledby={`${labelId}-heading`} tabIndex={-1}>
-     {/* // ASSIGNMENT DELIVERABLE CODE FOR LAB 6 */}
-      <h2 id={`${labelId}-heading`}>Transcript</h2>
-      <p>Explore fictional student records for this classroom exercise.</p>
+      <h2 id={`${labelId}-heading`}>{facultyMode ? 'Student Progress Review' : 'Transcript'}</h2>
+      <p>
+        {facultyMode
+          ? 'Review a student’s course history and academic progress.'
+          : 'View a student’s academic history.'}
+      </p>
 
       <form onSubmit={handleSubmit} noValidate>
         <label htmlFor={`${labelId}-student-id`}>Student ID</label>
@@ -119,7 +129,11 @@ function TranscriptCard({ id, apiBaseUrl = defaultApiBaseUrl }: TranscriptCardPr
           />
           <button type="submit" disabled={isLoading}>{isLoading ? 'Loading…' : 'Load transcript'}</button>
         </div>
-        <p id={`${labelId}-help`} className="transcript-card-help">Available mock student IDs: 1001–1005.</p>
+        <p id={`${labelId}-help`} className="transcript-card-help">
+          {facultyMode
+            ? 'Enter a student ID from one of your assigned course rosters.'
+            : 'Sample student IDs: 1001–1005.'}
+        </p>
         {inputError && <p id={`${labelId}-input-error`} className="transcript-card-error" role="alert">{inputError}</p>}
       </form>
 
@@ -132,7 +146,7 @@ function TranscriptCard({ id, apiBaseUrl = defaultApiBaseUrl }: TranscriptCardPr
             <h3>{transcript.firstName} {transcript.lastName}</h3>
             <p>{transcript.institution}</p>
             <p>Student ID: {transcript.studentID} · {transcript.major}</p>
-            {transcript.isMockData && <p className="transcript-card-help">Mock transcript · Not an official academic record</p>}
+            {transcript.isMockData && <p className="transcript-card-help">Sample transcript · Not an official academic record</p>}
           </header>
 
           {transcript.semesters.map((semester) => (
@@ -167,7 +181,6 @@ function TranscriptCard({ id, apiBaseUrl = defaultApiBaseUrl }: TranscriptCardPr
           <p className="transcript-card-help">GPA is weighted by credit hours on a 4.0 scale. F grades count toward attempted credits but earn no credits.</p>
         </div>
       )}
-        {/* END ASSIGNMENT DELIVERABLE CODE FOR LAB 6 */}
     </section>
   )
 }

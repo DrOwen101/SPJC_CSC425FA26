@@ -1,0 +1,104 @@
+.faculty-feature {
+  grid-column: 1 / -1;
+}
+
+.faculty-login {
+  max-width: 32rem;
+  margin: 2rem auto;
+}
+
+.faculty-login form {
+  display: grid;
+  gap: .65rem;
+}
+
+.faculty-login input {
+  min-height: 44px;
+  padding: .5rem .7rem;
+  border: 1px solid #568069;
+  border-radius: .45rem;
+  font: inherit;
+}
+
+.faculty-login button,
+.faculty-session-bar button {
+  min-height: 40px;
+  padding: .45rem .75rem;
+  border: 1px solid #075c35;
+  border-radius: .4rem;
+  color: white;
+  background: #075c35;
+  font: inherit;
+  cursor: pointer;
+}
+
+.faculty-login-note {
+  font-size: .9rem;
+}
+
+.faculty-session-bar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+
+.faculty-feature > label {
+  display: block;
+  margin-bottom: .35rem;
+  font-weight: 700;
+}
+
+.faculty-feature > select,
+.faculty-table-scroll select {
+  min-height: 44px;
+  padding: .5rem .7rem;
+  border: 1px solid #568069;
+  border-radius: .45rem;
+  color: #123524;
+  background: white;
+  font: inherit;
+}
+
+.faculty-table-scroll {
+  margin-top: 1rem;
+  overflow-x: auto;
+}
+
+.faculty-table-scroll table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.faculty-table-scroll th,
+.faculty-table-scroll td {
+  padding: .6rem;
+  border-bottom: 1px solid #b2ccbd;
+}
+
+.faculty-table-scroll button {
+  min-height: 40px;
+  padding: .45rem .75rem;
+  border: 1px solid #075c35;
+  border-radius: .4rem;
+  color: white;
+  background: #075c35;
+  font: inherit;
+  cursor: pointer;
+}
+
+.faculty-table-scroll button:disabled {
+  cursor: wait;
+  opacity: .7;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  clip-path: inset(50%);
+}
