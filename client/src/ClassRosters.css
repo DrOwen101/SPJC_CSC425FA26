@@ -1,0 +1,152 @@
+.class-rosters {
+  grid-column: 1 / -1;
+  color: #123524;
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  line-height: 1.6;
+}
+.class-rosters label {
+  display: block;
+  margin-bottom: .35rem;
+  font-weight: 700;
+}
+.class-rosters .class-rosters-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+.class-rosters-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .65rem;
+  max-width: 34rem;
+}
+.class-rosters-controls input,
+.class-rosters-controls button {
+  min-width: 0;
+  min-height: 44px;
+  padding: .65rem .75rem;
+  border: 1px solid #568069;
+  border-radius: .45rem;
+  font: inherit;
+}
+.class-rosters-controls input {
+  flex: 1 1 12rem;
+  color: #123524;
+  background: white;
+}
+.class-rosters-controls button {
+  color: white;
+  background: #075c35;
+  font-weight: 700;
+  cursor: pointer;
+}
+.class-rosters-controls button:hover:not(:disabled) {
+  background: #06482a;
+}
+.class-rosters-controls button:disabled {
+  opacity: .65;
+  cursor: wait;
+}
+.class-rosters-grade-controls {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  min-width: 10rem;
+}
+.class-rosters-grade-controls select,
+.class-rosters-grade-controls button {
+  min-width: 0;
+  min-height: 40px;
+  padding: .45rem .6rem;
+  border: 1px solid #568069;
+  border-radius: .45rem;
+  font: inherit;
+}
+.class-rosters-grade-controls select {
+  color: #123524;
+  background: white;
+}
+.class-rosters-grade-controls button {
+  color: white;
+  background: #075c35;
+  font-weight: 700;
+  cursor: pointer;
+}
+.class-rosters-grade-controls button:hover:not(:disabled) {
+  background: #06482a;
+}
+.class-rosters-grade-controls button:disabled,
+.class-rosters-grade-controls select:disabled {
+  opacity: .65;
+  cursor: wait;
+}
+.class-rosters-save-message {
+  min-width: 12rem;
+  margin: .35rem 0 0;
+  font-size: .85rem;
+}
+.class-rosters-save-message-success {
+  color: #075c35;
+}
+.class-rosters-save-message-error {
+  color: #982525;
+}
+.class-rosters-status {
+  font-size: .9rem;
+}
+.class-rosters-record {
+  padding-top: 1rem;
+  border-top: 1px solid #b2ccbd;
+}
+.class-rosters-record h3 {
+  margin: 0 0 .5rem;
+  font-size: 1.2rem;
+}
+.class-rosters-error {
+  color: #982525;
+  font-weight: 650;
+}
+.class-rosters-table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+}
+.class-rosters table {
+  width: 100%;
+  min-width: 28rem;
+  border-collapse: collapse;
+  text-align: left;
+  background: white;
+}
+.class-rosters caption {
+  padding: .5rem 0;
+  text-align: left;
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+.class-rosters th,
+.class-rosters td {
+  padding: .65rem .75rem;
+  border-bottom: 1px solid #b2ccbd;
+}
+.class-rosters thead {
+  background: #e0f2e7;
+}
+.class-rosters :focus-visible,
+.class-rosters:focus-visible {
+  outline: 3px solid #123524;
+  outline-offset: 3px;
+  box-shadow: 0 0 0 3px white;
+}
+@media (forced-colors: active) {
+  .class-rosters,
+  .class-rosters th,
+  .class-rosters td {
+    border-color: CanvasText;
+  }
+}

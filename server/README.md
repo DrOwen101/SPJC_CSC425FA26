@@ -1,6 +1,6 @@
 # Mock Student Transcript API
 
-A read-only classroom API with **five fictional students**. Students build their own frontend to request a transcript by `studentID` and display it. No database, API key, login, or additional packages are required for these endpoints.
+A classroom API with **five fictional students**. Students can request transcripts and try the mock grade-update endpoint. No database or additional packages are required.
 
 ## Run the server
 
@@ -34,6 +34,8 @@ Replace `BASE_URL` with your server address, such as `http://localhost:3000` whe
 | GET | `BASE_URL/api/students` | `{ "students": [...] }` with available IDs, names, and majors |
 | GET | `BASE_URL/api/transcripts/1001` | One complete student transcript |
 | GET | `BASE_URL/api/transcripts?studentID=1001` | The same transcript using a query parameter |
+| GET | `BASE_URL/api/rosters/CSC%20101` | Students, terms, and grades for a course code |
+| PATCH | `BASE_URL/api/transcripts/1001/grades` | Change one course grade and recalculate transcript totals |
 | GET | `BASE_URL/api/status` | API availability and student count |
 
 | studentID | Fictional student | Major |
@@ -53,7 +55,17 @@ IDs are strings containing exactly four digits. A missing or malformed ID return
 }
 ```
 
-Requests are public and allow browser access from any origin. Use normal `fetch`; no credentials or `mode: 'no-cors'` are needed. The API provides no create, update, or delete operations.
+Requests are public and allow browser access from any origin. Use normal `fetch`; no credentials or `mode: 'no-cors'` are needed. The grade-update route changes only the fictional JSON fixtures. It has no authentication, so do not expose it as a way to manage real student records.
+
+To change a grade, send the student ID in the path and the course code, term, and new letter grade in a JSON body:
+
+```bash
+curl -X PATCH http://localhost:3000/api/transcripts/1001/grades \
+  -H "Content-Type: application/json" \
+  -d '{"courseCode":"CSC 101","term":"Fall 2025","grade":"A"}'
+```
+
+Grades must be `A`, `B`, `C`, `D`, or `F`. The server saves the updated value to `src/data/transcripts.json`, recalculates the term GPA and credits and the cumulative GPA and credits, and returns the updated transcript. The term is required to distinguish repeated course codes.
 
 ## Hard-coded student lookup data
 
@@ -72,9 +84,11 @@ The editable JSON object is in [`src/data/transcripts.json`](src/data/transcript
 - Each course contains `courseCode`, `courseTitle`, `creditHours`, and `grade`.
 - `summary`: overall `creditsAttempted`, `creditsEarned`, and `cumulativeGPA`.
 
-Grades were randomly selected once and saved, so repeated requests and server restarts return the same data. Restart the server after editing the JSON (or use the development watcher). If grades or credits change, update the stored summaries and run the tests to verify them.
+Grades were randomly selected for these mock records and saved to JSON, so repeated requests and server restarts return the same data. Grade changes made through the PATCH route are also saved to JSON. If you edit grades or credits directly in the file, update the stored summaries too and run the tests to verify them.
 
 GPA uses A=4, B=3, C=2, D=1, F=0, weighted by credit hours and rounded to two decimal places. F grades count toward attempted credits and GPA but earn no credits. Cumulative GPA is calculated from all courses, not rounded semester averages. A frontend can use `.toFixed(2)` for display.
+
+The mock roster endpoint searches the course records in these transcripts by course code, case-insensitively. For example, `GET /api/rosters/CSC%20101` returns each matching student, the term, and the course grade. These are mock transcript records, not live enrollment data.
 
 ## Frontend request example
 
