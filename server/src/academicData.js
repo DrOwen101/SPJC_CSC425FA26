@@ -5,14 +5,37 @@ const gradePoints = {
 const studentColumns = `s.studentid::text AS "studentID", s.firstname AS "firstName",
   s.lastname AS "lastName", s.major`
 const studentTables = 'public.students s'
+const courseColumns = `c.instructor, c.coursetitle AS "courseTitle", c.sectionnumber AS "sectionNumber", c.enrollment, c.seats, c.coursematerials AS "courseMaterials"`
+const courseTables = 'public.courses c'
+const attendanceRecordsColumns = `a.courseid AS "courseID", a.date, a.attendancenumber AS "attendanceNumber"`
+const attendanceRecordsTables = 'public.attendanceRecords a'
 const roundedGpa = (points, credits) => credits ? Number((points / credits).toFixed(2)) : 0
 
 export function createAcademicData(database) {
   return {
     async listStudents(name) {
       return (await database.query(`SELECT ${studentColumns} FROM ${studentTables}
-        ${name === undefined ? '' : `WHERE lower(regexp_replace(btrim(s.first_name || ' ' || s.last_name), '[[:space:]]+', ' ', 'g')) = $1`}
+        ${name === undefined ? '' : `WHERE lower(regexp_replace(btrim(s.firstname || ' ' || s.lastname), '[[:space:]]+', ' ', 'g')) = $1`}
         ORDER BY s.studentid`, name === undefined ? [] : [name])).rows
+    },
+    async listCourseInfo(name) {
+      return (await database.query(`SELECT ${courseColumns} FROM ${courseTables}
+        ${name === undefined ? '' : `WHERE lower(regexp_replace(btrim(c.instructor), '[[:space:]]+', ' ', 'g')) = $1`}
+        ORDER BY c.sectionnumber`, name === undefined ? [] : [name])).rows
+    },
+    async listAttendanceRecords(courseID) {
+      return (await database.query(`SELECT ${attendanceRecordsColumns} FROM ${attendanceRecordsTables}
+        ORDER BY a.date`, courseID === undefined ? [] : [courseID])).rows
+    },
+    async getAttendanceRecord(id) {
+      return (await database.query(`SELECT ${attendanceRecordsColumns} FROM ${attendanceRecordsTables} WHERE a.courseid = $1`, [id])).rows[0]
+    },
+    async isInstructorCodeValid(code) {
+      const result = await database.query(
+        'SELECT EXISTS (SELECT 1 FROM public.instructorcodes WHERE btrim(instructorcode) = $1) AS valid',
+        [code],
+      )
+      return result.rows[0].valid
     },
     async getStudent(id) {
       return (await database.query(`SELECT ${studentColumns} FROM ${studentTables} WHERE s.studentid = $1`, [id])).rows[0]

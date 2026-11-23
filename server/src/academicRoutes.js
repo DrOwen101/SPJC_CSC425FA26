@@ -12,9 +12,17 @@ function parseName(value) {
   return value.trim().replace(/\s+/g, ' ').toLowerCase()
 }
 
+function parseInstructorCode(value) {
+  if (typeof value !== 'string' || !value.trim() || value.trim().length > 4) {
+    throw invalid('Enter a valid instructor code.')
+  }
+  return value.trim()
+}
+
 export function createAcademicRouter(database = pool) {
   const router = express.Router()
   const data = createAcademicData(database)
+  router.use(express.json({ limit: '16kb' }))
 
   router.get('/status', async (_request, response) => {
     const students = await data.listStudents()
@@ -23,6 +31,24 @@ export function createAcademicRouter(database = pool) {
   router.get('/students', async (request, response) => {
     const name = request.query.name === undefined ? undefined : parseName(request.query.name)
     response.json({ students: await data.listStudents(name) })
+  })
+  router.get('/courses', async (request, response) => {
+    const name = request.query.name === undefined ? undefined : parseName(request.query.name)
+    response.json({ courses: await data.listCourseInfo(name) })
+  })
+  router.post('/auth/instructor-code', async (request, response) => {
+    const code = parseInstructorCode(request.body?.code)
+    if (!await data.isInstructorCodeValid(code)) {
+      return response.status(401).json({ error: 'ACCESS_DENIED', message: 'Access Denied' })
+    }
+    response.json({ valid: true })
+  })
+  router.get('/attendanceRecords', async (request, response) => {
+    response.json({ attendanceRecords: await data.listAttendanceRecords() })
+  })
+  router.get('/attendanceRecords/:id', async (request, response) => {
+    const id = request.params.id === undefined ? undefined : parseName(request.params.id)
+    response.json({ attendanceRecord: await data.getAttendanceRecord(id) })
   })
   async function getTranscript(request, response) {
     let student

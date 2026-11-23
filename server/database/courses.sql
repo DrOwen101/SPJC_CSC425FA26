@@ -13,4 +13,6 @@ CREATE TABLE IF NOT EXISTS students.courses (
     instructor varchar(50) NOT NULL CHECK (length(btrim(instructor)) > 0), -- name of the instructor
     courseDescription varchar(200) NOT NULL CHECK (length(btrim(courseDescription)) > 0),  -- information/description about the course. Includes prerequisites and restrictions
     restrictions varchar(50) -- restrictions to registering for the class
+    enrollment integer,
+    courseMaterials varchar(1000)
 )

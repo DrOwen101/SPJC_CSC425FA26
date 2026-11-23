@@ -254,6 +254,60 @@
   cursor: not-allowed;
 }
 
+/* ===== FacultyCourse ===== */
+/* Scope the lookup styles so the other teaching cards keep their own layout. */
+.course-lookup {
+  grid-column: 1 / -1;
+}
+.course-lookup label {
+  display: block;
+  margin-bottom: .35rem;
+  font-weight: 700;
+}
+.course-lookup-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .65rem;
+  max-width: 34rem;
+}
+.course-lookup-controls input,
+.course-lookup-controls button {
+  min-width: 0;
+  min-height: 44px;
+  padding: .65rem .75rem;
+  border: 1px solid #568069;
+  border-radius: .45rem;
+  font: inherit;
+}
+.course-lookup-controls input {
+  flex: 1 1 12rem;
+  color: #123524;
+  background: white;
+}
+.course-lookup-controls button {
+  color: white;
+  background: #075c35;
+  font-weight: 700;
+  cursor: pointer;
+}
+.course-lookup-controls button:hover {
+  background: #06482a;
+}
+.course-lookup-result {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+  gap: 1rem;
+  border-top: 1px solid #b2ccbd;
+  padding-top: 1rem;
+}
+.course-lookup-result dt {
+  font-weight: 700;
+}
+.course-lookup-result dd {
+  margin: .25rem 0 0;
+  overflow-wrap: anywhere;
+}
+
 /* ===== TranscriptCard ===== */
 .transcript-card,
 .transcript-card * {

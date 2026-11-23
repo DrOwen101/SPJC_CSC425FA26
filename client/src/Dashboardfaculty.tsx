@@ -1,4 +1,8 @@
 import AllStudents from './AllStudents'
+import FacultyCourses from './FacultyCourses'
+import ClassRosters from './ClassRosters'
+import StudentRecords from './StudentRecords'
+import StudentLookup from './StudentLookup'
 
 // This role component supplies content; App.css supplies the shared layout.
 // Keep these examples separate from live records until a data source is connected.
@@ -30,27 +34,11 @@ function Dashboardfaculty() {
           adding every card to the Tab sequence; links remain the normal stops. */}
       
       <div className="dashboard-grid">
-        <div>
-          <AllStudents />
-        </div>
-        <section id="faculty-courses" className="dashboard-card" aria-labelledby="faculty-courses-heading" tabIndex={-1}>
-          <h2 id="faculty-courses-heading">Courses</h2>
-          <p className="status-label">Not connected</p>
-          <p>Your assigned courses and sections will appear here.</p>
-          <ul className="detail-list">
-            <li>Course name and section</li>
-            <li>Enrollment and course materials</li>
-          </ul>
-        </section>
-        <section id="class-rosters" className="dashboard-card" aria-labelledby="class-rosters-heading" tabIndex={-1}>
-          <h2 id="class-rosters-heading">Class Rosters</h2>
-          <p className="status-label">Not connected</p>
-          <p>Student lists will appear here when enrollment records are available.</p>
-          <ul className="detail-list">
-            <li>Students organized by course and section</li>
-            <li>Attendance records for each class</li>
-          </ul>
-        </section>
+        <AllStudents />
+        <FacultyCourses id="faculty-courses" />
+        <ClassRosters id="class-rosters" />
+        <StudentRecords />
+        <StudentLookup />
         <section id="grading" className="dashboard-card" aria-labelledby="grading-heading" tabIndex={-1}>
           <h2 id="grading-heading">Grading</h2>
           <p className="status-label">Not connected</p>
