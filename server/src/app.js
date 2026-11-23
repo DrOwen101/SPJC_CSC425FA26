@@ -2,7 +2,12 @@ import 'dotenv/config'
 import { readFileSync } from 'node:fs'
 import cors from 'cors'
 import express from 'express'
-import { checkDatabase, ensureAttendanceTable, pool } from './db.js'
+import {
+  checkDatabase,
+  ensureAttendanceTable,
+  ensureFacultyScheduleTables,
+  pool,
+} from './db.js'
 
 export const app = express()
 
@@ -42,13 +47,40 @@ const mockStudents = [
   },
 ]
 
+const mockFaculty = [
+  {
+    facultyId: 'F001',
+    firstName: 'John',
+    lastName: 'Smith',
+    department: 'Computer Science',
+  },
+  {
+    facultyId: 'F002',
+    firstName: 'Emily',
+    lastName: 'Johnson',
+    department: 'Information Systems',
+  },
+  {
+    facultyId: 'F003',
+    firstName: 'Michael',
+    lastName: 'Williams',
+    department: 'Business Administration',
+  },
+  {
+    facultyId: 'F004',
+    firstName: 'Sarah',
+    lastName: 'Brown',
+    department: 'Mathematics',
+  },
+]
+
 // The earlier transcript exercise keeps its course/grade fixtures in JSON.
 // It also works without a database. /api/students uses only the array above.
 const { students: transcripts } = JSON.parse(readFileSync(new URL('./data/transcripts.json', import.meta.url), 'utf8'))
 
 // Only the fictional API allows requests from any frontend origin.
 const teachingApi = express.Router()
-teachingApi.use(['/status', '/students', '/transcripts', '/courses'], cors({ methods: ['GET', 'HEAD', 'OPTIONS'] }))
+teachingApi.use(['/status', '/students', '/transcripts', '/courses', '/faculty'], cors({ methods: ['GET', 'HEAD', 'OPTIONS'] }))
 
 teachingApi.get('/status', (_request, response) => {
   response.json({ status: 'ok', service: 'Mock transcript API', studentCount: mockStudents.length })
@@ -58,6 +90,85 @@ teachingApi.get('/students', (_request, response) => {
   // Express converts the JavaScript object to JSON for the React frontend.
   // StudentLookup selects the matching full name from this returned array.
   response.json({ students: mockStudents })
+})
+
+// For the faculty schedule table interactions
+teachingApi.get('/faculty', (_request, response) => {
+  response.json({ faculty: mockFaculty })
+})
+
+// Read facultyId from the path and term from the query string.
+teachingApi.get('/faculty/:facultyId/schedule', async (request, response) => {
+  const { facultyId } = request.params
+  const { term } = request.query
+
+  if (!facultyId || typeof term !== 'string' || !term.trim()) {
+    return response.status(400).json({ error: 'MISSING_PARAMETERS', message: 'Both facultyId and term are required.' })
+  }
+
+  try {
+    await ensureFacultyScheduleTables()
+
+    const facultyResult = await pool.query(
+      `SELECT faculty_id AS "facultyId", first_name AS "firstName",
+              last_name AS "lastName"
+       FROM faculty
+       WHERE faculty_id = $1`,
+      [facultyId],
+    )
+
+    if (facultyResult.rows.length === 0) {
+      return response.status(404).json({
+        error: 'FACULTY_NOT_FOUND',
+        message: `No faculty member was found with facultyId ${facultyId}.`,
+      })
+    }
+
+    const scheduleResult = await pool.query(
+      `SELECT
+         MIN(se.schedule_id) AS "scheduleId",
+         cs.section_id AS "sectionId",
+         c.course_code AS "courseCode",
+         c.course_title AS "courseTitle",
+         cs.section_number AS "sectionNumber",
+         cs.term,
+         cs.delivery_mode AS "deliveryMode",
+         se.meeting_day AS "meetingDay",
+         se.start_time AS "startTime",
+         se.end_time AS "endTime",
+         se.building,
+         se.room,
+         se.effective_start AS "effectiveStart",
+         se.effective_end AS "effectiveEnd"
+       FROM faculty AS f
+       JOIN course_sections AS cs
+         ON cs.faculty_id = f.faculty_id
+       JOIN courses AS c
+         ON c.course_id = cs.course_id
+       JOIN schedule_entries AS se
+         ON se.section_id = cs.section_id
+       WHERE f.faculty_id = $1
+         AND cs.term = $2
+       GROUP BY cs.section_id, c.course_code, c.course_title,
+                cs.section_number, cs.term, cs.delivery_mode,
+                se.meeting_day, se.start_time, se.end_time,
+                se.building, se.room, se.effective_start, se.effective_end
+       ORDER BY se.meeting_day, se.start_time, c.course_code`,
+      [facultyId, term],
+    )
+
+    return response.json({
+      faculty: facultyResult.rows[0],
+      term,
+      schedule: scheduleResult.rows,
+    })
+  } catch (error) {
+    console.error('Unable to load faculty schedule:', error.message)
+    return response.status(503).json({
+      error: 'DATABASE_UNAVAILABLE',
+      message: 'The faculty schedule could not be loaded because the database is unavailable.',
+    })
+  }
 })
 
 // Support both a path parameter and a query parameter for classroom examples.
@@ -211,6 +322,7 @@ app.get('/', (_request, response) => {
       attendance: '/api/attendance',
       status: '/api/status',
       databaseHealth: '/api/health',
+      facultySchedule: '/api/faculty/:facultyId/schedule',
     },
   })
 })

@@ -3,6 +3,7 @@
 import StudentLookup from "./StudentLookup"
 import WeatherCard from "./WeatherCard"
 import AttendanceRecord from "./AttendanceRecord"
+import ScheduleFaculty from "./ScheduleFaculty"
 
 // Keep these examples separate from live records until a data source is connected.
 function Dashboardfaculty() {
@@ -44,6 +45,7 @@ function Dashboardfaculty() {
           </ul>
         </section>
         <AttendanceRecord />
+        <ScheduleFaculty />
         <section id="grading" className="dashboard-card" aria-labelledby="grading-heading" tabIndex={-1}>
           <h2 id="grading-heading">Grading</h2>
           <p className="status-label">Not connected</p>
@@ -57,15 +59,6 @@ function Dashboardfaculty() {
           <h2 id="faculty-alerts-heading">Alerts</h2>
           <p className="status-label">Live alerts unavailable</p>
           <p>Teaching reminders, schedule changes, and department announcements will appear here when notifications are connected.</p>
-        </section>
-        <section id="teaching-schedule" className="dashboard-card" aria-labelledby="teaching-schedule-heading" tabIndex={-1}>
-          <h2 id="teaching-schedule-heading">Teaching Schedule</h2>
-          <p className="status-label">Not connected</p>
-          <p>Class meetings and office hours will appear here.</p>
-          <ul className="detail-list">
-            <li>Day, time, and room or online location</li>
-            <li>Office hours and student appointments</li>
-          </ul>
         </section>
       </div>
     </main>

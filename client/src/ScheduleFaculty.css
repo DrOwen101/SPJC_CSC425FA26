@@ -1,0 +1,62 @@
+.schedule-faculty {
+  grid-column: 1 / -1;
+}
+
+.schedule-filters {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+.schedule-filters label {
+  display: block;
+  margin-bottom: .35rem;
+  font-weight: 700;
+}
+
+.schedule-filters select {
+  min-height: 44px;
+  width: 100%;
+  padding: .65rem;
+  border: 1px solid #568069;
+  border-radius: .45rem;
+  background: white;
+  color: #123524;
+  font: inherit;
+}
+
+.schedule-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.schedule-list li {
+  margin-top: .75rem;
+  padding: .75rem 1rem;
+  border: 1px solid #b2ccbd;
+  border-radius: .45rem;
+  background: white;
+}
+
+.schedule-list p {
+  margin: .25rem 0 0;
+}
+
+.schedule-error {
+  padding: .75rem 1rem;
+  border-left: 4px solid #8a1c1c;
+  background: #fbeaea;
+  color: #661313;
+}
+
+@media (max-width: 700px) {
+  .schedule-faculty {
+    grid-column: auto;
+  }
+
+  .schedule-filters {
+    grid-template-columns: 1fr;
+  }
+}
