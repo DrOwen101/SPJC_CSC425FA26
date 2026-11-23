@@ -11,6 +11,9 @@ const originalQuery = pool.query
 const { students: fixtureStudents } = JSON.parse(
   readFileSync(new URL('../src/data/transcripts.json', import.meta.url), 'utf8'),
 )
+const courseGrades = new Map()
+const scheduleEntries = []
+let nextScheduleId = 1
 
 before(async () => {
   pool.query = async (text, values = []) => {
@@ -33,6 +36,49 @@ before(async () => {
     if (text.includes('JOIN transcripts t') && text.includes('WHERE s.student_id = $1')) {
       const student = fixtureStudents.find(({ studentID }) => studentID === values[0])
       return { rows: student ? [student] : [] }
+    }
+    if (text.includes('LEFT JOIN course_grades')) {
+      return {
+        rows: fixtureStudents.slice(0, 2).map((student) => ({
+          studentID: student.studentID,
+          firstName: student.firstName,
+          lastName: student.lastName,
+          major: student.major,
+          grade: courseGrades.get(student.studentID) ?? null,
+        })),
+      }
+    }
+    if (text.includes('INSERT INTO course_grades')) {
+      const [, studentID, grade] = values
+      if (!['1001', '1002'].includes(studentID)) return { rows: [] }
+      courseGrades.set(studentID, grade)
+      return { rows: [{ studentID, grade }] }
+    }
+    if (text.includes('DELETE FROM faculty_schedule')) {
+      const index = scheduleEntries.findIndex(({ scheduleId }) => String(scheduleId) === values[0])
+      if (index < 0) return { rows: [] }
+      const [removed] = scheduleEntries.splice(index, 1)
+      return { rows: [{ scheduleId: removed.scheduleId }] }
+    }
+    if (text.includes('INSERT INTO faculty_schedule')) {
+      const [meetingType, courseId, dayOfWeek, startTime, endTime, location] = values
+      const schedule = {
+        scheduleId: nextScheduleId++,
+        meetingType,
+        courseId,
+        courseCode: meetingType === 'class' ? 'CSC425' : null,
+        courseTitle: meetingType === 'class' ? 'Full Stack Development' : null,
+        section: meetingType === 'class' ? '01' : null,
+        dayOfWeek,
+        startTime,
+        endTime,
+        location,
+      }
+      scheduleEntries.push(schedule)
+      return { rows: [{ scheduleId: schedule.scheduleId }] }
+    }
+    if (text.includes('FROM faculty_schedule')) {
+      return { rows: [...scheduleEntries] }
     }
     throw new Error(`Unexpected SQL in API test: ${text}`)
   }
@@ -123,6 +169,12 @@ test('supports frontend origins and preflight, including error responses', async
   })
   assert.equal(preflight.status, 204)
   assert.match(preflight.headers.get('access-control-allow-methods'), /GET/)
+  const facultyPreflight = await fetch(`${baseURL}/api/faculty/courses/1/grades/1001`, {
+    method: 'OPTIONS',
+    headers: { Origin: 'http://student-project.example', 'Access-Control-Request-Method': 'PUT' },
+  })
+  assert.equal(facultyPreflight.status, 204)
+  assert.match(facultyPreflight.headers.get('access-control-allow-methods'), /PUT/)
 })
 
 test('database status reports student count and writes are not available', async () => {
@@ -143,4 +195,78 @@ test('database status reports student count and writes are not available', async
   assert.equal(post.status, 404)
   const root = await fetch(baseURL)
   assert.equal((await root.json()).message, 'CSC 425 API')
+})
+
+test('faculty can read and save final grades only for enrolled students', async () => {
+  const grades = await fetch(`${baseURL}/api/faculty/courses/1/grades`)
+  assert.equal(grades.status, 200)
+  assert.deepEqual((await grades.json()).students.map(({ grade }) => grade), [null, null])
+
+  const invalidGrade = await fetch(`${baseURL}/api/faculty/courses/1/grades/1001`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ grade: 'A+' }),
+  })
+  assert.equal(invalidGrade.status, 400)
+  assert.equal((await invalidGrade.json()).error, 'INVALID_GRADE')
+
+  const save = await fetch(`${baseURL}/api/faculty/courses/1/grades/1001`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ grade: 'A' }),
+  })
+  assert.equal(save.status, 200)
+  assert.deepEqual((await save.json()).student, { studentID: '1001', grade: 'A' })
+
+  const updated = await fetch(`${baseURL}/api/faculty/courses/1/grades`)
+  assert.deepEqual((await updated.json()).students.map(({ grade }) => grade), ['A', null])
+  const notEnrolled = await fetch(`${baseURL}/api/faculty/courses/1/grades/1003`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ grade: 'B' }),
+  })
+  assert.equal(notEnrolled.status, 404)
+  assert.equal((await notEnrolled.json()).error, 'STUDENT_NOT_ENROLLED')
+})
+
+test('faculty can create, list, and remove class meetings and office hours', async () => {
+  const invalid = await fetch(`${baseURL}/api/faculty/schedule`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      meetingType: 'class',
+      courseId: 1,
+      dayOfWeek: 'Monday',
+      startTime: '11:00',
+      endTime: '10:00',
+      location: 'Room 12',
+    }),
+  })
+  assert.equal(invalid.status, 400)
+  assert.equal((await invalid.json()).error, 'INVALID_SCHEDULE_ENTRY')
+
+  for (const entry of [
+    { meetingType: 'class', courseId: 1, dayOfWeek: 'Monday', startTime: '09:00', endTime: '10:00', location: 'Room 12' },
+    { meetingType: 'office_hours', courseId: null, dayOfWeek: 'Tuesday', startTime: '13:00', endTime: '14:00', location: 'Office 4' },
+  ]) {
+    const response = await fetch(`${baseURL}/api/faculty/schedule`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(entry),
+    })
+    assert.equal(response.status, 201)
+  }
+
+  const listed = await fetch(`${baseURL}/api/faculty/schedule`)
+  assert.equal(listed.status, 200)
+  const { schedule } = await listed.json()
+  assert.equal(schedule.length, 2)
+  assert.deepEqual(schedule.map(({ meetingType }) => meetingType), ['class', 'office_hours'])
+
+  const removed = await fetch(`${baseURL}/api/faculty/schedule/${schedule[0].scheduleId}`, {
+    method: 'DELETE',
+  })
+  assert.equal(removed.status, 204)
+  const remaining = await fetch(`${baseURL}/api/faculty/schedule`)
+  assert.equal((await remaining.json()).schedule.length, 1)
 })

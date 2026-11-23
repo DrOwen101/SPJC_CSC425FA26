@@ -169,7 +169,7 @@ From the repository root, initialize the tables and insert any missing sample re
 npm run db:setup --prefix server
 ```
 
-This creates the `students` and `transcripts` tables and loads five fictional sample students from `server/src/data/transcripts.json`. It does not overwrite existing rows with the same student IDs.
+This creates the student, transcript, course, enrollment, final-grade, and faculty-schedule tables and loads five fictional sample students from `server/src/data/transcripts.json`. It does not overwrite existing rows with the same student IDs.
 
 ## 7. Start the Application
 

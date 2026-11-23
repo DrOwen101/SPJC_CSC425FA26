@@ -1,6 +1,6 @@
 # PostgreSQL Student Transcript API
 
-A read-only classroom API backed by PostgreSQL. The setup command creates the `students` and `transcripts` tables and loads five fictional sample students from `src/data/transcripts.json`.
+A classroom API backed by PostgreSQL. The setup command creates the student, transcript, course, enrollment, grade, and faculty-schedule tables and loads five fictional sample students from `src/data/transcripts.json`.
 
 ## Run the server
 
@@ -36,6 +36,15 @@ Replace `BASE_URL` with your server address, such as `http://localhost:3000` whe
 | GET | `BASE_URL/api/transcripts/1001` | One complete student transcript |
 | GET | `BASE_URL/api/transcripts?studentID=1001` | The same transcript using a query parameter |
 | GET | `BASE_URL/api/status` | Database-backed API availability and student count |
+| GET | `BASE_URL/api/faculty/courses` | Faculty course list |
+| GET | `BASE_URL/api/faculty/courses/:courseId/roster` | Enrolled students for a course |
+| GET | `BASE_URL/api/faculty/courses/:courseId/grades` | Enrolled students and their final grades (null if not graded) |
+| PUT | `BASE_URL/api/faculty/courses/:courseId/grades/:studentID` | Create or update an enrolled student's final letter grade (`A`–`F`) |
+| GET | `BASE_URL/api/faculty/schedule` | Teaching schedule and office-hour entries |
+| POST | `BASE_URL/api/faculty/schedule` | Add a class meeting or office-hours entry |
+| DELETE | `BASE_URL/api/faculty/schedule/:scheduleId` | Remove a schedule entry |
+
+The faculty dashboard supports entering final letter grades for enrolled students. The schema setup also creates `course_grades` and `faculty_schedule`; schedule records can be added from the dashboard or directly through the API. Class entries require a `courseId`; office-hour entries use `courseId: null`. Both types require `dayOfWeek` (full weekday name), `startTime` and `endTime` (`HH:MM` in 24-hour time), and a non-empty `location`. Re-run `npm run db:setup --prefix server` after pulling schema changes; it adds missing tables without overwriting existing grades or schedule entries.
 
 | studentID | Fictional student | Major |
 | --- | --- | --- |
