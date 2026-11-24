@@ -285,6 +285,23 @@ main, .dashboard-card {
 .gpa-entry-row button:hover, .calculate-button:hover {
   background: #06472a;
 }
+.gpa-form input,
+.gpa-form textarea,
+.gpa-form select {
+  width: 100%;
+  min-height: 44px;
+  margin-bottom: .75rem;
+  padding: .65rem .75rem;
+  border: 1px solid #568069;
+  border-radius: .45rem;
+  color: #123524;
+  background: white;
+  font: inherit;
+}
+.gpa-form textarea {
+  min-height: 6rem;
+  resize: vertical;
+}
 .field-help, .field-error {
   margin: .5rem 0 0;
   font-size: .9rem;
@@ -310,6 +327,12 @@ main, .dashboard-card {
 .calculate-button {
   width: 100%;
   margin-top: 1.25rem;
+}
+.calculate-button.faculty-logout-button {
+  display: block;
+  width: auto;
+  margin: 0 0 1rem auto;
+  padding: .65rem 1.25rem;
 }
 .calculate-button:disabled {
   border-color: #718078;
