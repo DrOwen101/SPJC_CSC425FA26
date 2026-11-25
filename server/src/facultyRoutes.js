@@ -22,9 +22,9 @@ function unavailableSection(res) {
   return res.status(404).json({ message: 'That section is unavailable to this account.' })
 }
 
-export function createFacultyRouter(db = pool) {
+export function createFacultyRouter(db = pool, auth = createFacultyAuth(db)) {
   const router = Router()
-  const { signIn, signOut, authenticate, requireFaculty } = createFacultyAuth(db)
+  const { signIn, signOut, authenticate, requireFaculty } = auth
   router.use((_req, res, next) => {
     res.set('Cache-Control', 'no-store')
     next()

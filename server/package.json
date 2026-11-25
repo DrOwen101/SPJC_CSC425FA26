@@ -9,7 +9,8 @@
     "test": "node --test",
     "test:db": "node scripts/verify-crud.mjs",
     "setup:faculty": "node scripts/setup-faculty.mjs",
-    "test:faculty": "node scripts/verify-faculty.mjs"
+    "test:faculty": "node scripts/verify-faculty.mjs",
+    "setup:admin": "node scripts/setup-admin.mjs"
   },
   "dependencies": {
     "cors": "^2.8.5",

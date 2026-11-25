@@ -14,7 +14,7 @@ function getRole(hash: string): DashboardRole | null {
   const id = hash.slice(1)
   if (['student-dashboard', 'student-records', 'student-lookup', 'gpa', 'attendance', 'transcript', 'alerts', 'courses'].includes(id)) return 'student'
   if (['faculty-dashboard', 'faculty-courses', 'class-rosters', 'faculty-attendance', 'grading', 'faculty-alerts', 'teaching-schedule'].includes(id)) return 'faculty'
-  if (['admin-dashboard', 'user-management', 'course-management', 'reports', 'admin-alerts', 'system-status'].includes(id)) return 'admin'
+  if (['admin-dashboard', 'user-management', 'course-management', 'instructor-assignment', 'course-directory', 'reports', 'admin-alerts', 'system-status'].includes(id)) return 'admin'
   return null
 }
 

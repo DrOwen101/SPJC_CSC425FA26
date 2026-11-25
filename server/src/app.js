@@ -2,7 +2,9 @@ import 'dotenv/config'
 import { readFileSync } from 'node:fs'
 import cors from 'cors'
 import express from 'express'
-import { checkDatabase } from './db.js'
+import { checkDatabase, pool } from './db.js'
+import { createFacultyAuth } from './facultyAuth.js'
+import { createAdminRouter, adminErrorHandler } from './adminRoutes.js'
 import { createFacultyRouter, facultyErrorHandler } from './facultyRoutes.js'
 import { createDashboardRouter, dashboardErrorHandler } from './dashboardRoutes.js'
 
@@ -137,7 +139,9 @@ app.use(express.json())
 app.use('/api/dashboard', createDashboardRouter())
 // Handles malformed JSON rejected before a dashboard route runs.
 app.use('/api/dashboard', dashboardErrorHandler)
-app.use('/api/faculty', createFacultyRouter(), facultyErrorHandler)
+const dashboardAuth = createFacultyAuth(pool)
+app.use('/api/faculty', createFacultyRouter(pool, dashboardAuth), facultyErrorHandler)
+app.use('/api/admin', createAdminRouter(dashboardAuth), adminErrorHandler)
 
 app.get('/', (_request, response) => {
   response.json({

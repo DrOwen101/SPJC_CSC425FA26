@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState, type SubmitEvent } from 'rea
 import FacultyAttendance from './FacultyAttendance'
 import FacultyGradeSummary from './FacultyGradeSummary'
 import FacultyStudentLookup from './FacultyStudentLookup'
-import RecordTable from './RecordTable'
+import SectionScheduleTable from './SectionScheduleTable'
 import { createFacultyApi, facultyError, signIn, type FacultyApi, type Section, type Session } from './facultyApi'
 import './FacultyDashboard.css'
 
@@ -67,7 +67,7 @@ function Dashboardfaculty() {
             </form>
           </>
         )}
-        {session?.user.role === 'student' && <p role="alert" className="field-error">Faculty access is required to view this workspace.</p>}
+        {session && session.user.role !== 'faculty' && <p role="alert" className="field-error">Faculty access is required to view this workspace.</p>}
         {error && <p role="alert" className="field-error">{error}</p>}
       </section>
       {api && session?.user.role === 'faculty' && <FacultyWorkspace api={api} />}
@@ -112,15 +112,7 @@ function FacultyWorkspace({ api }: { api: FacultyApi }) {
         <section id="teaching-schedule" className="dashboard-card faculty-card" aria-labelledby="schedule-heading" tabIndex={-1}>
           <h2 id="schedule-heading">Teaching schedule</h2>
           {sections.length === 0 ? <p>No sections are assigned to you yet.</p> : (
-            <RecordTable caption="Your assigned sections" regionLabel="Weekly teaching schedule"
-              columns={['Section', 'Course', 'Days', 'Time', 'Location', 'Enrolled']}>
-              {sections.map((section) => (
-                <tr key={section.id}>
-                  <th scope="row">{section.id}</th><td>{section.title}</td><td>{section.meetingDays}</td>
-                  <td>{section.startsAt}–{section.endsAt}</td><td>{section.location}</td><td>{section.studentCount}</td>
-                </tr>
-              ))}
-            </RecordTable>
+            <SectionScheduleTable sections={sections} caption="Your assigned sections" />
           )}
         </section>
         <FacultyAttendance api={api} sections={sections} />

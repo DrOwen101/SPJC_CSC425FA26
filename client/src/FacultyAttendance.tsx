@@ -1,5 +1,5 @@
 import { useEffect, useState, type SubmitEvent } from 'react'
-import RecordTable from './RecordTable'
+import AttendanceTable from './AttendanceTable'
 import { facultyError, type AttendanceRow, type AttendanceStatus, type FacultyApi, type Section } from './facultyApi'
 
 const statuses: AttendanceStatus[] = ['present', 'absent', 'late', 'excused']
@@ -81,28 +81,25 @@ function AttendanceRoster({ api, section, date, saving, setSaving }: {
       {!roster && error && <button type="button" onClick={() => { setError(''); setReload(reload + 1) }}>Try again</button>}
       {!!roster?.length && (
         <form onSubmit={save}>
-          <RecordTable caption={`Roster for ${section} on ${date}`} regionLabel="Attendance roster" columns={['ID', 'Student', 'Status']}>
-            {roster.map((student) => (
-              <tr key={student.studentId}>
-                <td>{student.studentId}</td><th scope="row">{student.fullName}</th>
-                <td>
-                  <select aria-label={`Attendance for ${student.fullName}`} disabled={saving}
+          <AttendanceTable rows={roster} caption={`Roster for ${section} on ${date}`} columns={['Status']} regionLabel="Attendance roster"
+            renderDetails={(student) => (
+              <td>
+                <select aria-label={`Attendance for ${student.fullName}`} disabled={saving}
                     value={edits[student.studentId] ?? student.status ?? ''}
-                    onChange={(event) => {
-                      const nextStatus = event.target.value as AttendanceStatus | ''
-                      const nextEdits = { ...edits }
-                      if (!nextStatus || nextStatus === student.status) delete nextEdits[student.studentId]
-                      else nextEdits[student.studentId] = nextStatus
-                      setEdits(nextEdits)
-                      setStatus('')
-                    }}>
-                    {student.status === null && <option value="">Unmarked</option>}
-                    {statuses.map((value) => <option key={value} value={value}>{value[0].toUpperCase() + value.slice(1)}</option>)}
-                  </select>
-                </td>
-              </tr>
-            ))}
-          </RecordTable>
+                  onChange={(event) => {
+                    const nextStatus = event.target.value as AttendanceStatus | ''
+                    const nextEdits = { ...edits }
+                    if (!nextStatus || nextStatus === student.status) delete nextEdits[student.studentId]
+                    else nextEdits[student.studentId] = nextStatus
+                    setEdits(nextEdits)
+                    setStatus('')
+                  }}>
+                  {student.status === null && <option value="">Unmarked</option>}
+                  {statuses.map((value) => <option key={value} value={value}>{value[0].toUpperCase() + value.slice(1)}</option>)}
+                </select>
+              </td>
+            )}
+          />
           <button type="submit" disabled={saving || !Object.keys(edits).length}>
             {saving ? 'Saving…' : 'Save attendance'}
           </button>
