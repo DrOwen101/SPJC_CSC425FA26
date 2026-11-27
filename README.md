@@ -1,11 +1,3 @@
-## Lab 12 faculty dashboard
-
-See [Lab 12 setup, feature inventory, and verification](docs/lab12/README.md).
-
-## Lab 10 relational database CRUD
-
-See [Lab 10 setup and demonstration](docs/lab10/README.md), [endpoint inventory](docs/lab10/ENDPOINTS.md) and [recorded evidence](docs/lab10/EVIDENCE.md).
-
 # CSC 425 Full-Stack Development Starter
 
 Welcome to CSC 425: Web-Based Services and Applications with Dr. Jason T. Owen.
